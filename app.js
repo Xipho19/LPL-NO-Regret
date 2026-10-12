@@ -72,7 +72,7 @@ function shell(content) {
 
 function gridView() {
   const bgMap = { blg2024: './assets/blg-worlds-2024.png', rng2018: './assets/rng-worlds-2018.png', tes2020: './assets/tes-worlds-2020.png', jdg2023: './assets/jdg-worlds-2023.png' };
-  const posMap = { blg2024: 'center top', rng2018: 'center 30%', tes2020: 'center 35%', jdg2023: 'center 35%' };
+  const posMap = { blg2024: 'center 25%', rng2018: 'center 30%', tes2020: 'center 35%', jdg2023: 'center 35%' };
   return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>选择你的遗憾<span class="orange">。</span></h1><p>四场比赛，四个转折点。选一场，重新来过。</p></div></section>
   <div class="grid-cards">${CHAPTERS.map(ch => { const bg = bgMap[ch.id]; const pos = posMap[ch.id]; const accentColor = { blg2024:'#d3df9b', rng2018:'#c9a227', tes2020:'#3a6bd8', jdg2023:'#b83a3a' }[ch.id]; return `<button class="grid-card ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[ch.id]||'blg-feature'}" data-action="chapter" data-id="${ch.id}" ${bg?`style="--card-bg:url('${bg}');background-position:${pos}"`:''}>
     <div class="grid-card-inner" ${bg?'':`style="background:linear-gradient(135deg,${accentColor}22 0%,#191c19 60%)"`}><span class="grid-year">${ch.year}</span><h2>${ch.team} <small>vs</small> ${ch.opponent}</h2><p>${ch.event} · ${ch.stage}</p><div class="grid-score">${ch.startingScore[0]} : ${ch.startingScore[1]}</div><span class="grid-hist">历史：${ch.historicalScore}</span></div>
