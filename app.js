@@ -30,7 +30,7 @@ const load = () => { try { return JSON.parse(localStorage.getItem(STORAGE)) || {
 const saved = load();
 let run = validateRun(saved.run) ? saved.run : null;
 let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x && CHAPTERS.some(c => c.id === x.chapterId) && typeof x.won === 'boolean' && typeof x.player === 'string').slice(-100) : [];
-let scene = 'catalog';
+let scene = 'home';
 let chapterId = 'blg2024';
 let playerIndex = 2;
 let permit = null;
@@ -67,6 +67,10 @@ function shell(content) {
   </aside>
   <div class="workspace"><header class="topbar"><div class="breadcrumb">平行赛场 <span>/</span> ${scene === 'journey' ? '我的改写' : scene === 'play' ? '比赛进行中' : scene === 'review' ? '赛后复盘' : '遗憾档案馆'}</div><div class="top-actions"><button class="sound-button ${sound ? 'on' : ''}" data-action="sound" aria-pressed="${sound}" aria-label="${sound ? '关闭' : '开启'}提示音">${icon('sound')}<span>提示音${sound ? '开' : '关'}</span></button><span class="local-label"><span class="tiny-dot"></span>本地存档</span></div></header>
   <main id="main" tabindex="-1">${content}</main><footer class="page-footer"><span>献给每一个，还记得那场比赛的人。</span><span>真实历史 × 战术推演</span></footer></div>`;
+}
+
+function homeView() {
+  return `<section class="home-screen"><div class="home-bg"></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE</span><h1>不再遗憾</h1><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始游戏 ${icon('arrow')}</button><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
 }
 
 function catalog() {
@@ -184,7 +188,8 @@ function journeyView() {
 }
 
 function render(focus = false) {
-  app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
+  if (scene === 'home') { app.innerHTML = homeView(); }
+  else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
   app.classList.toggle('catalog-scene', scene === 'catalog');
   if (scene === 'catalog') {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
@@ -265,7 +270,8 @@ app.addEventListener('click', event=>{
   const button=event.target.closest('[data-action]');if(!button)return;
   event.preventDefault();
   const action=button.dataset.action;
-  if(action==='home'){scene='catalog';render(true);}
+  if(action==='home'){scene='home';render(true);}
+  if(action==='start-game'){scene='catalog';render(true);}
   if(action==='nav'){scene=button.dataset.view;render(true);}
   if(action==='chapter'){chapterId=button.dataset.id;playerIndex=chapterId==='blg2024'?2:3;render();}
   if(action==='player'){playerIndex=Number(button.dataset.index);render();}
