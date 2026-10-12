@@ -39,7 +39,7 @@ let rewindReady = Boolean(run?.finished && !run.won && saved.rewindReady);
 let sound = false;
 let toastTimer;
 
-function persist() { try { localStorage.setItem(STORAGE, JSON.stringify({ run, completed, rewindReady })); } catch { toast('浏览器存储不可用；当前对局仍可继续。'); } }
+function persist() { try { const slim = { ...run, gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed, rewindReady })); } catch { toast('浏览器存储不可用；当前对局仍可继续。'); } }
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message; el.classList.add('visible');
@@ -132,6 +132,9 @@ function endingType(run) {
       title: c.id==='blg2024' ? '这一次，金色雨为你而落。' : '这一次，釜山的故事没有结束。',
       desc: c.id==='blg2024' ? '你与 BLG 赢下了决胜局，在这个平行故事中捧起奖杯。' : '你与 RNG 赢下了决胜局，晋级四强。距离冠军，仍有接下来的比赛。' };
   }
+  if (c.seriesTotal) return { kind: 'regret', label: '系列赛落败', icon: 'flag',
+    title: `系列赛 ${run.seriesScore[0]}:${run.seriesScore[1]}，你们没能翻盘。`,
+    desc: `第 1 局为真实 BP，后续局次为架空推演。${run.seriesScore[0] > 0 ? '你改写了其中一些局次，但整体仍未能晋级。' : '每一局都在重新开局，却始终没有找到赢的方法。'}` };
   const checks = [run.gold >= 1800, run.cohesion >= 2, run.tempo >= 1];
   const satisfied = checks.filter(Boolean).length;
   if (satisfied >= 2) return { kind: 'near', label: '改变关键节点', icon: 'flag',
