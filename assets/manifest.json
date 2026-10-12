@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "chapters": {
+    "blg2024": {
+      "year": 2024,
+      "team": "BLG",
+      "rosterSource": "https://gol.gg/game/stats/62820/page-game/",
+      "championPatch": "14.18.1",
+      "championSource": "https://ddragon.leagueoflegends.com/cdn/14.18.1/img/champion/",
+      "teamLogo": { "status": "not-used-unverified" },
+      "playerPortraits": { "status": "not-used-unverified", "fallback": "text-nameplates" }
+    },
+    "rng2018": {
+      "year": 2018,
+      "team": "RNG",
+      "rosterSource": "https://gol.gg/game/stats/14513/page-game/",
+      "championPatch": "8.19.1",
+      "championSource": "https://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/",
+      "teamLogo": { "status": "not-used-unverified" },
+      "playerPortraits": { "status": "not-used-unverified", "fallback": "text-nameplates" }
+    }
+  }
+}
