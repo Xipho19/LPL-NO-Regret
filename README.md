@@ -3,6 +3,7 @@
 可玩的本地网页原型。零构建依赖，Node.js 18+。
 
 ## 启动
+Github Pages试玩链接：https://xipho19.github.io/LPL-NO-Regret/
 
 `npm start`，打开 http://127.0.0.1:4173 。
 
