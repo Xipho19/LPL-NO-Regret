@@ -40,7 +40,17 @@ export const CHAPTERS = [
     ],
     enemies: [player('Bin', '上单', '悟空', 'MonkeyKing'), player('SofM', '打野', '李青', 'LeeSin'), player('Angel', '中单', '阿兹尔', 'Azir'), player('huanfeng', 'ADC', '伊泽瑞尔', 'Ezreal'), player('SwordArt', '辅助', '洛', 'Rakan')],
     threats: ['Bin 的悟空配合 SofM 有极快的上路启动速度，369 需要保持安全距离。', 'Angel 的沙皇在中路有极强的推线和区域控制，游走前先确认他的位置。', 'huanfeng 的伊泽瑞尔poke距离很远，团战前需要维持血量优势。'],
-    source: 'https://gol.gg/game/stats/27130/page-summary/'
+    source: 'https://gol.gg/game/stats/27130/page-summary/',
+    phases: [
+      { time: '00:00', seconds: 0, name: '开局入侵路线', location: '己方下半区野区入口', copy: 'Karsa 潘森一级入侵是 TES 的招牌开局。SofM 李青的开野路线尚未确认——他可能在红buff野区反蹲，也可能直接放下半区。你决定第一轮往哪边走。', signal: 'Karsa 标记对方红buff入口，问你要不要跟。', kind: 'setup' },
+      { time: '03:15', seconds: 195, name: '上路第一波', location: '上路河道入口', copy: '369 杰斯已经把 Bin 悟空压在塔下。SofM 李青在下半区消失了 20 秒——他是在刷野，还是偷偷摸上来了？上路这波你必须做出判断。', signal: '369 ping 了河道入口，请求你靠近。', kind: 'lane' },
+      { time: '06:40', seconds: 400, name: '下河蟹争夺', location: '下半区河道', copy: 'JackeyLove 烬和 yuyanjia 腕豪已经把线推过去。SwordArt 洛往河道走了——他在和你抢下河蟹，还是在等 SofM 李青就位？这波 2v2 接不接由你定。', signal: '下路双人组标记河蟹位置，等你到场。', kind: 'rotate' },
+      { time: '10:20', seconds: 620, name: '第一条小龙', location: '龙坑入口', copy: '火龙即将刷新。TES 前期有阵容强势期，但 SofM 李青已经在旁边露过头了。Angel 沙皇刚推完中线——他随时可以支援龙坑。拿龙还是放龙换先锋？', signal: '队友标记龙坑，问你这波接不接。', kind: 'trade' },
+      { time: '15:00', seconds: 900, name: '一血塔与资源互换', location: '上路一塔', copy: '369 杰斯已经把上路一塔磨到半血。SN 下路 huanfeng 伊泽瑞尔在推你的下路一塔。推上塔换掉下塔，还是全员转下保塔？时间差只有 20 秒。', signal: '369 ping 上路塔，SwordArt 洛在下路消失了。', kind: 'vision' },
+      { time: '20:30', seconds: 1230, name: '大龙刷新前', location: '上半区河道', copy: '大龙还有 30 秒刷新。SofM 李青在视野里消失了——他大概率在藏。Angel 沙皇站在中路侧翼，随时可以大招推人。这波视野怎么做？', signal: 'yuyanjia 腕豪标记河道草丛，请求一起排眼。', kind: 'fight' },
+      { time: '25:00', seconds: 1500, name: '大龙团战', location: '大龙坑外', copy: 'SN 主动开龙了。SofM 李青在龙坑内，Bin 悟空从侧翼绕后。你的位置决定这波团怎么接——是正面逼龙，还是等他们打完龙再收割？', signal: '队友 ping 大龙血量，问你能不能进。', kind: 'decisive' },
+      { time: '30:00', seconds: 1800, name: '高地推进', location: '中路高地前', copy: '你拿下了大龙 buff。兵线到了高地塔下。但 Angel 沙皇的沙兵阵地和 huanfeng 伊泽瑞尔的 poke 已经在高地上架好了。这波推进是一波结束，还是被反一波？', signal: '队友标记高地塔，等你最后决定。', kind: 'finish' }
+    ]
   },
   {
     id: 'jdg2023', year: '2023', team: 'JDG', opponent: 'T1', title: '全年大满贯，差最后一步', short: '首尔的那座山', event: '全球总决赛 · 半决赛', city: 'SEOUL', date: '2023.11.12', stage: '半决赛', patch: '13.19', assetPatch: '13.19.1', game: 1, seriesTotal: 3, historicalScore: 'JDG 1 : 3 T1', historicalResult: 'T1 以 3:1 战胜 JDG，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: false, startingScore: [0, 0],
@@ -54,7 +64,17 @@ export const CHAPTERS = [
     ],
     enemies: [player('Zeus', '上单', '亚托克斯', 'Aatrox'), player('Oner', '打野', '芮尔', 'Rell'), player('Faker', '中单', '奥莉安娜', 'Orianna'), player('Gumayusi', 'ADC', '烬', 'Jhin'), player('Keria', '辅助', '巴德', 'Bard')],
     threats: ['Zeus 的亚托克斯在对线期压制力极强，369 需要稳住塔下。', 'Faker 的发条团战大招位置极为关键，注意分散站位不被拉满。', 'Keria 的巴德有全图大招，任何位置的开战都可能被反手大招反制。'],
-    source: 'https://gol.gg/game/stats/53618/page-summary/'
+    source: 'https://gol.gg/game/stats/53618/page-summary/',
+    phases: [
+      { time: '00:00', seconds: 0, name: 'Kanavi 开野路线', location: '己方上半区野区', copy: 'Kanavi 蔚一级入侵是 JDG 的常规起手。Oner 芮尔大概率从下半区开野，但 Keria 巴德可能一级就去上半区做视野。你决定第一轮刷野路线。', signal: 'Kanavi ping 对方红buff，问你要不要一起进。', kind: 'setup' },
+      { time: '04:00', seconds: 240, name: '上路对线压力', location: '上路河道', copy: '369 兰博在和 Zeus 亚托克斯对线。Zeus 已经把兵线推过来了——他在等 Oner 芮尔 gank。369 的血量只有 60%，你这波来不来上？', signal: '369 ping 自己脚下，Zeus 往河道靠了。', kind: 'lane' },
+      { time: '08:00', seconds: 480, name: '中路第一次联动', location: '中路河道入口', copy: 'knight 阿卡丽推完线消失了——她要么去游走下路，要么在蹲 Faker。Faker 发条也不见了。中野这波是谁在找谁？你的路线决定这次联动的结果。', signal: 'knight ping 下路三角草，问你要不要跟。', kind: 'rotate' },
+      { time: '12:00', seconds: 720, name: '峡谷先锋', location: '上半区先锋坑', copy: '峡谷先锋刷新了。JDG 上路有优势，369 兰博可以先到。但 Oner 芮尔已经在先锋坑旁边站视野了——他在等 Keria 巴德到场。先打先锋还是先打人？', signal: '队友 ping 先锋坑，369 已经就位。', kind: 'trade' },
+      { time: '17:00', seconds: 1020, name: '第二条小龙团', location: '龙坑入口', copy: '水龙刷新。Ruler 霞刚补完女神泪，还没到强势期。Keria 巴德已经在野区放了一个通道——他可能从任何位置绕后。这波团接不接？', signal: 'Missing 牛头 ping 龙坑，Ruler 还在中路收线。', kind: 'vision' },
+      { time: '22:00', seconds: 1320, name: '大龙前对峙', location: '大龙坑外', copy: '大龙还有 1 分钟刷新。Faker 发条站在中路侧翼，Oner 芮尔在龙坑口做视野。Keria 巴德不见了——他大概率在某个草里蹲着等机会。这波视野差怎么补？', signal: 'Missing ping 河道草，请求一起排。', kind: 'fight' },
+      { time: '27:00', seconds: 1620, name: '大龙决胜团', location: '大龙坑', copy: 'T1 先手动龙了。Zeus 亚托克斯在前面顶，Oner 芮尔准备开团。Faker 发条的球在后排——你猜他会拉谁？这波是抢龙还是接团？', signal: 'Kanavi ping 大龙血量，问你能不能进。', kind: 'decisive' },
+      { time: '32:00', seconds: 1920, name: '高地推进', location: '中路高地', copy: '你拿下了大龙 buff。兵线压到高地塔下。Ruler 霞的装备已经成型，但 Faker 发条和 Gumayusi 烬在高地上架好了防守。这波推高是一波结束，还是被 T1 反打？', signal: 'Ruler ping 高地塔，等你最后开团。', kind: 'finish' }
+    ]
   }
 ];
 

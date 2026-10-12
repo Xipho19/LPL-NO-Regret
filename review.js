@@ -60,7 +60,7 @@ const roleLessons = {
 export function deepReview(run) {
   if (!run.finished) throw new Error('Review requires a completed match');
   if (cache.has(run)) return cache.get(run);
-  const states = statesFor(run), c = getChapter(run.chapterId), p = c.players[run.playerIndex];
+  const states = statesFor(run), c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES;
   const repair = minimumRepair(run);
   const nodes = run.history.map((h, i) => {
     const before = states[i], after = states[i + 1];
@@ -75,8 +75,8 @@ export function deepReview(run) {
     else cause = [1, 2, 3, 7].includes(i)
       ? `当下获得 +260 经济，但接应 ${before.cohesion} → ${after.cohesion}、视野 ${before.vision} → ${after.vision}、节奏 ${before.tempo} → ${after.tempo}。这解释了为什么个人收益为正，整局仍可能更难结束。`
       : `本次脱节带来 −900 基础经济代价，并削减视野、接应和节奏（到达下限后不再降低）。行动前的团队条件会影响后续恢复速度，不只是一次经济损失。`;
-    if (h.result === 'risk') cause += before.flashReadyAt > PHASES[i].seconds
-      ? `闪现还差 ${before.flashReadyAt - PHASES[i].seconds} 秒，因此额外损失 300 经济，最终本次变化 ${signed(h.gold)}。`
+    if (h.result === 'risk') cause += before.flashReadyAt > phases[i].seconds
+      ? `闪现还差 ${before.flashReadyAt - phases[i].seconds} 秒，因此额外损失 300 经济，最终本次变化 ${signed(h.gold)}。`
       : '本次还交掉闪现，使接下来 300 秒内的高风险行动失去这一撤离手段。';
     if (run.rulesVersion === 2) cause = tacticalReading(run,i).reason;
     const alternatives = choicesFor(before).map((choice, a) => {

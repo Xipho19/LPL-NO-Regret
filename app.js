@@ -100,7 +100,7 @@ function intermissionView() {
   <section class="review-actions" style="text-align:center"><div><h3>第 ${run.gameNumber + 1} 局即将开始</h3><p>系列赛是 BO5，先赢三局。当前比分 ${a}:${b}，${a > b ? '你领先，再赢一局就拿到赛点。' : a < b ? '对手领先，再输一局就被淘汰。' : '平局，下一局谁赢谁领先。'}</p><p style="color:var(--muted);font-size:11px;margin-top:8px">后续局次为架空推演，英雄将根据选手擅长与团队需求调整。</p></div><div class="review-action-buttons" style="justify-content:center"><button class="primary" data-action="next-game">进入第 ${run.gameNumber + 1} 局 ${icon('arrow')}</button></div></section>`;
 }
 function matchView() {
-  const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phase = PHASES[run.step];
+  const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES, phase = phases[run.step];
   const choice = choicesFor(run);
   const vision = run.vision >= 3 ? '河道视野较完整' : run.vision >= 1 ? '部分区域可见' : '河道信息不足';
   const formation = run.cohesion >= 3 ? '队友接应良好' : run.cohesion >= 1 ? '需要确认队友距离' : '阵型出现脱节';
@@ -109,7 +109,7 @@ function matchView() {
   return `<div class="match-heading"><button class="text-button" data-action="leave">${icon('back')} 暂存并返回</button><div class="live-label"><span class="tiny-dot"></span>文字直播 <span>·</span> 游戏推演</div><span class="subtle">${c.year} ${c.event} / G${run.gameNumber}</span></div>
   <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>${run.seriesScore[0]} <span>:</span> ${run.seriesScore[1]}</strong><span class="match-time">${phase.time} <small>推演时钟</small></span></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
   <p class="simulation-boundary">你的平行赛况 · 首发与英雄来自真实比赛，以下事件由你的选择推演。${run.rulesVersion===2?'本局采用阶段取舍规则。':'此存档沿用原版规则。'}</p>
-  <div class="phase-track" aria-label="第${run.step+1}个决策，共8个">${PHASES.map((ph,i)=>`<span class="${i<run.step?'done':i===run.step?'current':''}"><i>${i<run.step?'✓':String(i+1).padStart(2,'0')}</i><small>${ph.name}</small></span>`).join('')}</div>
+  <div class="phase-track" aria-label="第${run.step+1}个决策，共8个">${phases.map((ph,i)=>`<span class="${i<run.step?'done':i===run.step?'current':''}"><i>${i<run.step?'✓':String(i+1).padStart(2,'0')}</i><small>${ph.name}</small></span>`).join('')}</div>
   <div class="match-layout"><section class="broadcast"><div class="panel-title"><div>${icon('archive')}<h2>比赛直播</h2></div><span>你的视角 · ${p.name}</span></div>
     <div class="broadcast-feed" aria-label="比赛直播记录">${run.history.length>1 ? `<details class="past-feed"><summary>查看之前的 ${run.history.length-1} 次决策</summary>${run.history.slice(0,-1).map((h,i)=>`<div class="log-row"><time>${h.time}</time><div><span class="log-kind">你的选择 / ${h.phase}</span>${settledAction(i)}</div></div>`).join('')}</details>` : ''}
     ${last ? `<div class="log-row result-log"><time>${last.time}</time><div><span class="log-kind">行动结算 / ${last.phase}</span>${settledAction(run.history.length-1)}</div></div>` : `<div class="log-row"><time>00:00</time><div><span class="log-kind">真实背景</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}

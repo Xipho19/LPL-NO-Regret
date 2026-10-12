@@ -1,6 +1,7 @@
 import { CHAPTERS, PHASES, ACTIONS } from './data.js';
 import { tacticalChoices } from './tactics.js';
 export const getChapter = id => CHAPTERS.find(c => c.id === id) || CHAPTERS[0];
+const getPhases = c => c.phases || PHASES;
 const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 export function createRun(chapterId, playerIndex, rulesVersion = 1) {
@@ -11,8 +12,8 @@ export function createRun(chapterId, playerIndex, rulesVersion = 1) {
 }
 export function choicesFor(run) {
   if (run.rulesVersion === 2) return tacticalChoices(run);
-  const chapter = getChapter(run.chapterId), p = chapter.players[run.playerIndex];
-  const time = PHASES[run.step].seconds;
+  const chapter = getChapter(run.chapterId), p = chapter.players[run.playerIndex], phases = getPhases(chapter);
+  const time = phases[run.step].seconds;
   return ACTIONS[p.position][run.step].map((label, index) => {
     let note = ['降低暴露风险，为下一轮行动留出空间。', '争取主动，需要队友位置与视野支持。', '改变资源分配，但可能失去团队接应。'][index];
     if (run.step === 5 || run.step === 6) {
@@ -28,7 +29,7 @@ export function advance(run, actionIndex) {
   if (run.finished) throw new Error('Match already finished');
   const choice = choicesFor(run)[actionIndex];
   if (!choice || choice.disabled) throw new Error('Action unavailable');
-  const next = structuredClone(run), phase = PHASES[run.step];
+  const next = structuredClone(run), chapter = getChapter(run.chapterId), phases = getPhases(chapter), phase = phases[run.step];
   const before = structuredClone(run);
   delete before.history;
   let gold = 0, outcome = '', result = 'neutral';
@@ -73,7 +74,7 @@ export function advance(run, actionIndex) {
   if (run.step >= 3 && result === 'risk') next.towers[1] = Math.min(11, next.towers[1] + 1);
   next.history.push({ step: run.step, time: phase.time, phase: phase.name, actionIndex, action: choice.label, note: choice.note, outcome, result, gold, before });
   next.step += 1;
-  if (next.step === PHASES.length) {
+  if (next.step === getPhases(getChapter(next.chapterId)).length) {
     const gameWon = next.gold >= 1800 && next.cohesion >= 2 && next.tempo >= 1;
     const chapter = getChapter(next.chapterId);
     if (chapter.seriesTotal) {
@@ -114,7 +115,7 @@ export function validateRun(run) {
   try {
     if (!run || typeof run !== 'object' || !CHAPTERS.some(c => c.id === run.chapterId)) return false;
     let replay = createRun(run.chapterId, run.playerIndex, run.rulesVersion ?? 1);
-    if (!Array.isArray(run.history) || run.history.length > PHASES.length) return false;
+    if (!Array.isArray(run.history) || run.history.length > getPhases(getChapter(run.chapterId)).length) return false;
     for (const record of run.history) replay = advance(replay, record.actionIndex);
     return JSON.stringify(canonical(replay)) === JSON.stringify(canonical(run));
   } catch { return false; }
