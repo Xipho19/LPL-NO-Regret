@@ -125,12 +125,12 @@ function endingType(run) {
   const c = getChapter(run.chapterId);
   const decider = c.game === 5;
   if (run.won) {
+    if (c.seriesTotal) return { kind: 'rewritten', label: '改写系列赛', icon: 'trophy',
+      title: `你赢下了这个 BO5。`,
+      desc: `系列赛比分 ${run.seriesScore[0]}:${run.seriesScore[1]}，${c.team} 晋级。第 1 局为真实 BP，后续局次为架空推演——英雄选择根据选手擅长与团队需求设计。` };
     if (decider) return { kind: 'rewritten', label: '改写终局', icon: 'trophy',
       title: c.id==='blg2024' ? '这一次，金色雨为你而落。' : '这一次，釜山的故事没有结束。',
       desc: c.id==='blg2024' ? '你与 BLG 赢下了决胜局，在这个平行故事中捧起奖杯。' : '你与 RNG 赢下了决胜局，晋级四强。距离冠军，仍有接下来的比赛。' };
-    return { kind: 'rewritten', label: '拿下首局', icon: 'trophy',
-      title: '第一局，你拿下了。',
-      desc: `你赢下了系列赛第一局，比分来到 1:0。但半决赛是 BO5，后续第二到第五局将是完全的架空推演——${c.team} 需要再赢两局才能晋级。架空局的英雄将根据选手擅长英雄与团队需求重新设计。` };
   }
   const checks = [run.gold >= 1800, run.cohesion >= 2, run.tempo >= 1];
   const satisfied = checks.filter(Boolean).length;
@@ -142,6 +142,7 @@ function endingType(run) {
     desc: '你做了不同的选择，比赛走向了另一条分支，但同样没有转化为胜势。有些差距，换一条路也未必能绕开。' };
 }
 function seriesScore(run, c) {
+  if (c.seriesTotal) return `${run.seriesScore[0]} : ${run.seriesScore[1]}`;
   const [a, b] = c.startingScore;
   return run.won ? `${a+1} : ${b}` : `${a} : ${b+1}`;
 }
@@ -150,7 +151,7 @@ function reviewView() {
   const basic = basicReview(run);
   const et = endingType(run);
   const score = seriesScore(run, c);
-  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : `游戏推演结局 · 第${c.game}局为真实BP，后续局次为架空推演`)}</div>
+  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : '游戏推演结局 · 第1局为真实BP，后续局次为架空推演')}</div>
   <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><a href="${c.source}" target="_blank" rel="noopener noreferrer">查看当局比赛记录 ↗</a></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${score} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
   <details class="basic-events"><summary>展开 8 次选择与数值结算</summary><div class="review-timeline">${run.history.map((h,i)=>`<div class="review-event"><time>${h.time}</time><span class="review-dot ${h.result}"></span><div><strong>${h.phase}</strong><p>${esc(h.action)}</p><small>${esc(basic.events[i])}</small></div></div>`).join('')}</div></details></section>
 ${detailed ? deepReviewView() : '<section class="deep-preview"><h2>深度复盘会告诉你什么？</h2><p>胜负根因 → 关键转折 → 两种替代选择的终局验证 → 一条最少改动的获胜路线。</p><p>还会判断：只回溯最后一步，究竟能不能挽回本局。</p></section>'}
