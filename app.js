@@ -73,8 +73,8 @@ function shell(content) {
 function gridView() {
   const bgMap = { blg2024: '', rng2018: './assets/rng-worlds-2018.png', tes2020: './assets/tes-worlds-2020.png', jdg2023: './assets/jdg-worlds-2023.png' };
   return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>选择你的遗憾<span class="orange">。</span></h1><p>四场比赛，四个转折点。选一场，重新来过。</p></div></section>
-  <div class="grid-cards">${CHAPTERS.map(ch => { const bg = bgMap[ch.id]; return `<button class="grid-card ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[ch.id]||'blg-feature'}" data-action="chapter" data-id="${ch.id}" ${bg?`style="--card-bg:url('${bg}')"`:''}>
-    <div class="grid-card-inner"><span class="grid-year">${ch.year}</span><h2>${ch.team} <small>vs</small> ${ch.opponent}</h2><p>${ch.event} · ${ch.stage}</p><div class="grid-score">${ch.startingScore[0]} : ${ch.startingScore[1]}</div><span class="grid-hist">历史：${ch.historicalScore}</span></div>
+  <div class="grid-cards">${CHAPTERS.map(ch => { const bg = bgMap[ch.id]; const accentColor = { blg2024:'#d3df9b', rng2018:'#c9a227', tes2020:'#3a6bd8', jdg2023:'#b83a3a' }[ch.id]; return `<button class="grid-card ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[ch.id]||'blg-feature'}" data-action="chapter" data-id="${ch.id}" ${bg?`style="--card-bg:url('${bg}')"`:''}>
+    <div class="grid-card-inner" ${bg?'':`style="background:linear-gradient(135deg,${accentColor}22 0%,#191c19 60%)"`}><span class="grid-year">${ch.year}</span><h2>${ch.team} <small>vs</small> ${ch.opponent}</h2><p>${ch.event} · ${ch.stage}</p><div class="grid-score">${ch.startingScore[0]} : ${ch.startingScore[1]}</div><span class="grid-hist">历史：${ch.historicalScore}</span></div>
   </button>`;}).join('')}</div>`;
 }
 
@@ -86,7 +86,6 @@ function catalog() {
   const c = getChapter(chapterId), p = c.players[playerIndex];
   const open = c.unlocked || permit === c.id;
   return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><button class="text-button" data-action="back-grid">← 返回选关</button></section>
-    <div class="chapter-tabs" role="group" aria-label="选择历史章节">${CHAPTERS.map((ch, i) => `<button class="chapter-tab ${ch.id === c.id ? 'selected' : ''}" data-action="chapter" data-id="${ch.id}" aria-pressed="${ch.id === c.id}"><span class="tab-year">${ch.year}</span><span>${ch.team} <span class="versus">vs</span> ${ch.opponent}</span><small>${ch.stage}</small>${ch.unlocked ? '<span class="tiny-dot"></span>' : icon('lock')}</button>`).join('')}</div>
     <section class="feature ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[c.id]||'blg-feature'}" aria-label="${c.year}年${c.team}对${c.opponent}">
       <div class="feature-top"><span class="overline">${c.event} <span> / </span> GAME 0${c.game}</span><span class="edition">${c.year} WORLDS</span></div>
       <div class="feature-body"><div class="feature-copy"><div class="feature-label"><span class="tiny-dot"></span>${c.unlocked ? '免费首章' : '额外体验章节'} <span>·</span> ${c.game === 5 ? '决胜局' : '第' + ['一','二','三','四','五'][c.game-1] + '局'}</div><h2>${c.id === 'blg2024' ? '差的那一步，<br>由你走完。' : c.id === 'rng2018' ? '那一年的梦，<br>再续一局。' : c.id === 'tes2020' ? '上海的半决赛，<br>从第一局改写。' : '大满贯只差一步，<br>从第一局开始。'}</h2><p>${c.description}</p><div class="feature-meta"><span>${icon('clock')}8 次关键决策</span><span>${icon('flag')}5 位真实选手</span></div></div>
