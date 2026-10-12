@@ -31,6 +31,7 @@ const saved = load();
 let run = validateRun(saved.run) ? saved.run : null;
 let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x && CHAPTERS.some(c => c.id === x.chapterId) && typeof x.won === 'boolean' && typeof x.player === 'string').slice(-100) : [];
 let scene = 'home';
+let showGrid = true;
 let chapterId = 'blg2024';
 let playerIndex = 2;
 let permit = null;
@@ -69,6 +70,14 @@ function shell(content) {
   <main id="main" tabindex="-1">${content}</main><footer class="page-footer"><span>献给每一个，还记得那场比赛的人。</span><span>真实历史 × 战术推演</span></footer></div>`;
 }
 
+function gridView() {
+  const bgMap = { blg2024: '', rng2018: './assets/rng-worlds-2018.png', tes2020: './assets/tes-worlds-2020.png', jdg2023: './assets/jdg-worlds-2023.png' };
+  return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>选择你的遗憾<span class="orange">。</span></h1><p>四场比赛，四个转折点。选一场，重新来过。</p></div></section>
+  <div class="grid-cards">${CHAPTERS.map(ch => { const bg = bgMap[ch.id]; return `<button class="grid-card ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[ch.id]||'blg-feature'}" data-action="chapter" data-id="${ch.id}" ${bg?`style="--card-bg:url('${bg}')"`:''}>
+    <div class="grid-card-inner"><span class="grid-year">${ch.year}</span><h2>${ch.team} <small>vs</small> ${ch.opponent}</h2><p>${ch.event} · ${ch.stage}</p><div class="grid-score">${ch.startingScore[0]} : ${ch.startingScore[1]}</div><span class="grid-hist">历史：${ch.historicalScore}</span></div>
+  </button>`;}).join('')}</div>`;
+}
+
 function homeView() {
   return `<section class="home-screen"><div class="home-bg"></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE</span><h1>不再遗憾</h1><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始游戏 ${icon('arrow')}</button><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
 }
@@ -76,7 +85,7 @@ function homeView() {
 function catalog() {
   const c = getChapter(chapterId), p = c.players[playerIndex];
   const open = c.unlocked || permit === c.id;
-  return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><span class="heading-number">01 — 02</span></section>
+  return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><button class="text-button" data-action="back-grid">← 返回选关</button></section>
     <div class="chapter-tabs" role="group" aria-label="选择历史章节">${CHAPTERS.map((ch, i) => `<button class="chapter-tab ${ch.id === c.id ? 'selected' : ''}" data-action="chapter" data-id="${ch.id}" aria-pressed="${ch.id === c.id}"><span class="tab-year">${ch.year}</span><span>${ch.team} <span class="versus">vs</span> ${ch.opponent}</span><small>${ch.stage}</small>${ch.unlocked ? '<span class="tiny-dot"></span>' : icon('lock')}</button>`).join('')}</div>
     <section class="feature ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[c.id]||'blg-feature'}" aria-label="${c.year}年${c.team}对${c.opponent}">
       <div class="feature-top"><span class="overline">${c.event} <span> / </span> GAME 0${c.game}</span><span class="edition">${c.year} WORLDS</span></div>
@@ -189,6 +198,7 @@ function journeyView() {
 
 function render(focus = false) {
   if (scene === 'home') { app.innerHTML = homeView(); }
+  else if (scene === 'catalog' && showGrid) { app.innerHTML = shell(gridView()); }
   else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
   app.classList.toggle('catalog-scene', scene === 'catalog');
   if (scene === 'catalog') {
@@ -271,9 +281,10 @@ app.addEventListener('click', event=>{
   event.preventDefault();
   const action=button.dataset.action;
   if(action==='home'){scene='home';render(true);}
-  if(action==='start-game'){scene='catalog';render(true);}
+  if(action==='start-game'){scene='catalog';showGrid=true;render(true);}
+  if(action==='back-grid'){showGrid=true;render(true);}
   if(action==='nav'){scene=button.dataset.view;render(true);}
-  if(action==='chapter'){chapterId=button.dataset.id;playerIndex=chapterId==='blg2024'?2:3;render();}
+  if(action==='chapter'){chapterId=button.dataset.id;playerIndex=chapterId==='blg2024'?2:3;showGrid=false;render();}
   if(action==='player'){playerIndex=Number(button.dataset.index);render();}
   if(action==='briefing')briefing();
   if(action==='unlock')reward('chapter');
