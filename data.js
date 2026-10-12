@@ -1,7 +1,7 @@
 const player = (name, position, champion, championId, task, kit) => ({ name, position, champion, championId, task, kit });
 export const CHAPTERS = [
   {
-    id: 'blg2024', year: '2024', team: 'BLG', opponent: 'T1', title: '距冠军，只差最后一局', short: '伦敦的最后一夜', event: '全球总决赛 · 决赛', city: 'LONDON', date: '2024.11.02', stage: '决赛', patch: '14.18', assetPatch: '14.18.1', game: 5, historicalDuration: '32:13', historicalScore: 'BLG 2 : 3 T1', historicalResult: 'BLG 在第五局落败，T1 以 3:2 赢得冠军。', goal: '赢下决胜局，捧起召唤师奖杯。', unlocked: true,
+    id: 'blg2024', year: '2024', team: 'BLG', opponent: 'T1', title: '距冠军，只差最后一局', short: '伦敦的最后一夜', event: '全球总决赛 · 决赛', city: 'LONDON', date: '2024.11.02', stage: '决赛', patch: '14.18', assetPatch: '14.18.1', game: 5, historicalDuration: '32:13', historicalScore: 'BLG 2 : 3 T1', historicalResult: 'BLG 在第五局落败，T1 以 3:2 赢得冠军。', goal: '赢下决胜局，捧起召唤师奖杯。', unlocked: true, startingScore: [2, 2],
     description: '从成都到伦敦，从春天到深秋。四局鏖战之后，比分来到 2:2。现在，你坐在第五局的选手席上。',
     players: [
       player('Bin', '上单', '贾克斯', 'Jax', '边线牵制 · 传送进场', { engage: '跳斩接反击风暴', protect: '反击风暴限制突进', escape: '跳斩撤回队友身边' }),
@@ -15,7 +15,7 @@ export const CHAPTERS = [
     source: 'https://gol.gg/game/stats/62820/page-game/'
   },
   {
-    id: 'rng2018', year: '2018', team: 'RNG', opponent: 'G2', title: '把那一年的梦，再续一局', short: '釜山，未完的金色雨', event: '全球总决赛 · 四分之一决赛', city: 'BUSAN', date: '2018.10.20', stage: '八强', patch: '8.19', assetPatch: '8.19.1', game: 5, historicalDuration: '38:38', historicalScore: 'RNG 2 : 3 G2', historicalResult: 'RNG 在第五局落败，G2 以 3:2 晋级四强。', goal: '赢下决胜局，晋级四强。此章胜利不等于夺冠。', unlocked: false,
+    id: 'rng2018', year: '2018', team: 'RNG', opponent: 'G2', title: '把那一年的梦，再续一局', short: '釜山，未完的金色雨', event: '全球总决赛 · 四分之一决赛', city: 'BUSAN', date: '2018.10.20', stage: '八强', patch: '8.19', assetPatch: '8.19.1', game: 5, historicalDuration: '38:38', historicalScore: 'RNG 2 : 3 G2', historicalResult: 'RNG 在第五局落败，G2 以 3:2 晋级四强。', goal: '赢下决胜局，晋级四强。此章胜利不等于夺冠。', unlocked: false, startingScore: [2, 2],
     description: '春夏双冠、MSI 冠军。曾经以为会一直赢下去的那一年，在釜山迎来了决胜局。把时间拨回开局，这一次，故事还没结束。',
     players: [
       player('Letme', '上单', '赛恩', 'Sion', '前排承伤 · 边线处理', { engage: '蛮横冲撞寻找进场角度', protect: '蓄力残虐猛击阻挡突进', escape: '掩护队友后退' }),
@@ -27,6 +27,34 @@ export const CHAPTERS = [
     enemies: [player('Wunder', '上单', '亚托克斯', 'Aatrox'), player('Jankos', '打野', '奥拉夫', 'Olaf'), player('Perkz', '中单', '乐芙兰', 'Leblanc'), player('Hjarnan', 'ADC', '烬', 'Jhin'), player('Wadid', '辅助', '布隆', 'Braum')],
     threats: ['乐芙兰有很强的侧翼威胁，不要把敌方中单消失视为安全。', '奥拉夫开启诸神黄昏时不能依赖控制技能阻止他。', '布隆的坚不可摧会影响正面输出，需要调整集火角度。'],
     source: 'https://gol.gg/game/stats/14513/page-game/'
+  },
+  {
+    id: 'tes2020', year: '2020', team: 'TES', opponent: 'SN', title: '上海半决赛，差一步进决赛', short: '2020 秋冬的金色雨没有落下', event: '全球总决赛 · 半决赛', city: 'SHANGHAI', date: '2020.10.25', stage: '半决赛', patch: '10.19', assetPatch: '10.19.1', game: 1, seriesTotal: 3, historicalScore: 'TES 1 : 3 SN', historicalResult: 'SN 以 3:1 战胜 TES，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: false, startingScore: [0, 0],
+    description: 'MSC 冠军、春夏常规赛第一。所有人都在等 TES 进决赛。但第一场比赛，你们就输了。这一次，从第一局开始。',
+    players: [
+      player('369', '上单', '杰斯', 'Jayce', '线上压制 · 传送支援', { engage: '开启闪电冲刺，电能震荡接加速之门消耗', protect: '切换锤形态，雷霆一击击退突进', escape: '开启加速之门，切换锤形态快速撤离' }),
+      player('Karsa', '打野', '潘森', 'Pantheon', '前期节奏 · 入侵反蹲', { engage: '贯星长枪起跳，接盾跃晕住目标', protect: '保留神枪盾阵格挡敌方爆发', escape: '用盾跃跳离战场，脱离集火范围' }),
+      player('knight', '中单', '奥莉安娜', 'Orianna', '推线团战 · 大招位置', { engage: '指令：冲击波拉回集中目标', protect: '指令：保护套住被突进的队友', escape: '用指令：冲击波调整位置后后撤' }),
+      player('JackeyLove', 'ADC', '烬', 'Jhin', '远程狙击 · 残局收割', { engage: '完美审判远程狙击暴露目标', protect: '保留束缚手雷保护自身安全', escape: '用队友位置作掩护，装填后后撤' }),
+      player('yuyanjia', '辅助', '腕豪', 'Sett', '对线压制 · 开团保护', { engage: '叹为观止抱回敌方关键人物', protect: '刻意挥拳击退突进者', escape: '强手裂颅晕眩后拉开距离' })
+    ],
+    enemies: [player('Bin', '上单', '悟空', 'MonkeyKing'), player('SofM', '打野', '李青', 'LeeSin'), player('Angel', '中单', '阿兹尔', 'Azir'), player('huanfeng', 'ADC', '伊泽瑞尔', 'Ezreal'), player('SwordArt', '辅助', '洛', 'Rakan')],
+    threats: ['Bin 的悟空配合 SofM 有极快的上路启动速度，369 需要保持安全距离。', 'Angel 的沙皇在中路有极强的推线和区域控制，游走前先确认他的位置。', 'huanfeng 的伊泽瑞尔poke距离很远，团战前需要维持血量优势。'],
+    source: 'https://gol.gg/game/stats/27130/page-summary/'
+  },
+  {
+    id: 'jdg2023', year: '2023', team: 'JDG', opponent: 'T1', title: '全年大满贯，差最后一步', short: '首尔的那座山', event: '全球总决赛 · 半决赛', city: 'SEOUL', date: '2023.11.12', stage: '半决赛', patch: '13.19', assetPatch: '13.19.1', game: 1, seriesTotal: 3, historicalScore: 'JDG 1 : 3 T1', historicalResult: 'T1 以 3:1 战胜 JDG，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: false, startingScore: [0, 0],
+    description: '春冠、夏冠、MSI 冠军。全年大满贯只差最后一步。半决赛面对 T1，第一场就输了。这一次，从第一局开始。',
+    players: [
+      player('369', '上单', '兰博', 'Rumble', '对线压制 · 团战分割', { engage: '恒温灼烧封锁敌方走位，火焰散射补伤害', protect: '火焰散射减速突进者，为后排争取空间', escape: '用火焰屏障掩护自己和队友后撤' }),
+      player('Kanavi', '打野', '蔚', 'Vi', '前期节奏 · 野区对抗', { engage: '爆气冲冲撞墙接强能冲拳击飞目标', protect: '保留金属壁垒保护被开的队友', escape: '用爆气冲穿墙撤离战场' }),
+      player('knight', '中单', '阿卡丽', 'Akali', '刺客切入 · 边线单带', { engage: '我流奥义：隼舞突进，接寒影打伤害', protect: '保留霞阵在被集火时隐身脱战', escape: '用隼舞位移到安全位置后后撤' }),
+      player('Ruler', 'ADC', '霞', 'Xayah', '持续输出 · 团战拉扯', { engage: '羽翼利刃铺场，倒钩拉回集中目标', protect: '保留倒钩限制突进者靠近', escape: '用暴风羽刃拉开与敌人的距离' }),
+      player('Missing', '辅助', '阿利斯塔', 'Alistar', '视野控制 · 开团保护', { engage: '粉碎技能接大地震撼，眩晕敌方前排', protect: '用坚定意志保护后排不被秒', escape: '用冲锋接粉碎技能将敌人顶开后撤退' })
+    ],
+    enemies: [player('Zeus', '上单', '亚托克斯', 'Aatrox'), player('Oner', '打野', '芮尔', 'Rell'), player('Faker', '中单', '奥莉安娜', 'Orianna'), player('Gumayusi', 'ADC', '烬', 'Jhin'), player('Keria', '辅助', '巴德', 'Bard')],
+    threats: ['Zeus 的亚托克斯在对线期压制力极强，369 需要稳住塔下。', 'Faker 的发条团战大招位置极为关键，注意分散站位不被拉满。', 'Keria 的巴德有全图大招，任何位置的开战都可能被反手大招反制。'],
+    source: 'https://gol.gg/game/stats/53618/page-summary/'
   }
 ];
 

@@ -54,10 +54,10 @@ function cue() {
     osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .12); osc.onended = () => ctx.close();
   } catch { /* Sound is optional. */ }
 }
-const championImg = (p, c, cls = '') => `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="assets/${c.assetPatch}/${p.championId}.png" alt="${esc(p.champion)} · ${c.patch}版本头像" loading="lazy"></span>`;
+const championImg = (p, c, cls = '') => { const local = `assets/${c.assetPatch}/${p.championId}.png`; const cdn = `https://ddragon.leagueoflegends.com/cdn/${c.assetPatch}/img/champion/${p.championId}.png`; return `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="${local}" data-cdn="${cdn}" onerror="this.onerror=null;this.src=this.dataset.cdn" alt="${esc(p.champion)} · ${c.patch}版本头像" loading="lazy"></span>`; };
 const tag = (text, cls = '') => `<span class="tag ${cls}">${text}</span>`;
 function shell(content) {
-  const nav = (id, name, glyph) => `<button class="nav-item ${scene === id || (id === 'catalog' && ['play','review'].includes(scene)) ? 'active' : ''}" data-action="nav" data-view="${id}">${icon(glyph)}<span>${name}</span>${id === 'catalog' ? '<span class="nav-count">02</span>' : ''}</button>`;
+  const nav = (id, name, glyph) => `<button class="nav-item ${scene === id || (id === 'catalog' && ['play','review'].includes(scene)) ? 'active' : ''}" data-action="nav" data-view="${id}">${icon(glyph)}<span>${name}</span>${id === 'catalog' ? '<span class="nav-count">04</span>' : ''}</button>`;
   return `<aside class="sidebar">
     <a href="#" class="brand" data-action="home" aria-label="不再遗憾首页"><span class="brand-mark">↶</span><span>不再遗憾<small>THE SECOND CHANCE</small></span></a>
     <div class="sidebar-label">你的平行赛场</div>
@@ -74,7 +74,7 @@ function catalog() {
   const open = c.unlocked || permit === c.id;
   return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><span class="heading-number">01 — 02</span></section>
     <div class="chapter-tabs" role="group" aria-label="选择历史章节">${CHAPTERS.map((ch, i) => `<button class="chapter-tab ${ch.id === c.id ? 'selected' : ''}" data-action="chapter" data-id="${ch.id}" aria-pressed="${ch.id === c.id}"><span class="tab-year">${ch.year}</span><span>${ch.team} <span class="versus">vs</span> ${ch.opponent}</span><small>${ch.stage}</small>${ch.unlocked ? '<span class="tiny-dot"></span>' : icon('lock')}</button>`).join('')}</div>
-    <section class="feature ${c.id === 'rng2018' ? 'rng-feature' : 'blg-feature'}" aria-label="${c.year}年${c.team}对${c.opponent}">
+    <section class="feature ${{rng2018:'rng-feature',tes2020:'blg-feature',jdg2023:'rng-feature'}[c.id]||'blg-feature'}" aria-label="${c.year}年${c.team}对${c.opponent}">
       <div class="feature-top"><span class="overline">${c.event} <span> / </span> GAME 0${c.game}</span><span class="edition">${c.year} WORLDS</span></div>
       <div class="feature-body"><div class="feature-copy"><div class="feature-label"><span class="tiny-dot"></span>${c.unlocked ? '免费首章' : '额外体验章节'} <span>·</span> 决胜局</div><h2>${c.id === 'blg2024' ? '差的那一步，<br>由你走完。' : '那一年的梦，<br>再续一局。'}</h2><p>${c.description}</p><div class="feature-meta"><span>${icon('clock')}8 次关键决策</span><span>${icon('flag')}5 位真实选手</span></div></div>
       <div class="match-art" aria-label="系列赛比分2比2"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="match-location">${c.city} / ${c.date}</span><div class="team-names"><span>${c.team}</span><small>VS</small><span>${c.opponent}</span></div><div class="big-score">2<span>:</span>2</div><div class="match-caption">一局，决定故事的结尾。</div><span class="match-coordinate">BO5 / MATCH POINT</span></div></div>
@@ -100,12 +100,12 @@ function matchView() {
   const gold = `${run.gold >= 0 ? '+' : '−'}${(Math.abs(run.gold)/1000).toFixed(2)}k`;
   const last = run.history.at(-1);
   return `<div class="match-heading"><button class="text-button" data-action="leave">${icon('back')} 暂存并返回</button><div class="live-label"><span class="tiny-dot"></span>文字直播 <span>·</span> 游戏推演</div><span class="subtle">${c.year} ${c.event} / G${c.game}</span></div>
-  <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>2 <span>:</span> 2</strong><span class="match-time">${phase.time} <small>推演时钟</small></span></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
+  <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>${c.startingScore[0]} <span>:</span> ${c.startingScore[1]}</strong><span class="match-time">${phase.time} <small>推演时钟</small></span></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
   <p class="simulation-boundary">你的平行赛况 · 首发与英雄来自真实比赛，以下事件由你的选择推演。${run.rulesVersion===2?'本局采用阶段取舍规则。':'此存档沿用原版规则。'}</p>
   <div class="phase-track" aria-label="第${run.step+1}个决策，共8个">${PHASES.map((ph,i)=>`<span class="${i<run.step?'done':i===run.step?'current':''}"><i>${i<run.step?'✓':String(i+1).padStart(2,'0')}</i><small>${ph.name}</small></span>`).join('')}</div>
   <div class="match-layout"><section class="broadcast"><div class="panel-title"><div>${icon('archive')}<h2>比赛直播</h2></div><span>你的视角 · ${p.name}</span></div>
     <div class="broadcast-feed" aria-label="比赛直播记录">${run.history.length>1 ? `<details class="past-feed"><summary>查看之前的 ${run.history.length-1} 次决策</summary>${run.history.slice(0,-1).map((h,i)=>`<div class="log-row"><time>${h.time}</time><div><span class="log-kind">你的选择 / ${h.phase}</span>${settledAction(i)}</div></div>`).join('')}</details>` : ''}
-    ${last ? `<div class="log-row result-log"><time>${last.time}</time><div><span class="log-kind">行动结算 / ${last.phase}</span>${settledAction(run.history.length-1)}</div></div>` : '<div class="log-row"><time>00:00</time><div><span class="log-kind">真实背景</span><p>双方带着 2:2 的比分进入第五局。你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>'}
+    ${last ? `<div class="log-row result-log"><time>${last.time}</time><div><span class="log-kind">行动结算 / ${last.phase}</span>${settledAction(run.history.length-1)}</div></div>` : `<div class="log-row"><time>00:00</time><div><span class="log-kind">真实背景</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}
     <div class="log-row active-log"><time>${phase.time}</time><div><span class="log-kind accent">${phase.name} / 游戏推演</span><p>${phase.copy}</p></div></div><div class="team-signal">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phase.signal}</p></div></div>
     <div class="known-info">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div></div>
     <div class="decision"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${choice.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
@@ -115,9 +115,16 @@ function matchView() {
 }
 
 function endingType(run) {
-  if (run.won) return { kind: 'rewritten', label: '改写终局', icon: 'trophy',
-    title: run.chapterId==='blg2024' ? '这一次，金色雨为你而落。' : '这一次，釜山的故事没有结束。',
-    desc: run.chapterId==='blg2024' ? '你与 BLG 赢下了决胜局，在这个平行故事中捧起奖杯。' : '你与 RNG 赢下了决胜局，晋级四强。距离冠军，仍有接下来的比赛。' };
+  const c = getChapter(run.chapterId);
+  const decider = c.game === 5;
+  if (run.won) {
+    if (decider) return { kind: 'rewritten', label: '改写终局', icon: 'trophy',
+      title: c.id==='blg2024' ? '这一次，金色雨为你而落。' : '这一次，釜山的故事没有结束。',
+      desc: c.id==='blg2024' ? '你与 BLG 赢下了决胜局，在这个平行故事中捧起奖杯。' : '你与 RNG 赢下了决胜局，晋级四强。距离冠军，仍有接下来的比赛。' };
+    return { kind: 'rewritten', label: '拿下首局', icon: 'trophy',
+      title: '第一局，你拿下了。',
+      desc: `你赢下了系列赛第一局，比分来到 1:0。但半决赛是 BO5，后续第二到第五局将是完全的架空推演——${c.team} 需要再赢两局才能晋级。架空局的英雄将根据选手擅长英雄与团队需求重新设计。` };
+  }
   const checks = [run.gold >= 1800, run.cohesion >= 2, run.tempo >= 1];
   const satisfied = checks.filter(Boolean).length;
   if (satisfied >= 2) return { kind: 'near', label: '改变关键节点', icon: 'flag',
@@ -127,12 +134,17 @@ function endingType(run) {
     title: '避开了老路，却走进了另一道坎。',
     desc: '你做了不同的选择，比赛走向了另一条分支，但同样没有转化为胜势。有些差距，换一条路也未必能绕开。' };
 }
+function seriesScore(run, c) {
+  const [a, b] = c.startingScore;
+  return run.won ? `${a+1} : ${b}` : `${a} : ${b+1}`;
+}
 function reviewView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex];
   const basic = basicReview(run);
   const et = endingType(run);
-  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${run.won?'3 : 2':'2 : 3'}</strong><span>${c.opponent}</span></div>${tag('游戏推演结局 · 架空分支起点 00:00')}</div>
-  <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><a href="${c.source}" target="_blank" rel="noopener noreferrer">查看当局比赛记录 ↗</a></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${run.won?'3 : 2':'2 : 3'} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
+  const score = seriesScore(run, c);
+  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : `游戏推演结局 · 第${c.game}局为真实BP，后续局次为架空推演`)}</div>
+  <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><a href="${c.source}" target="_blank" rel="noopener noreferrer">查看当局比赛记录 ↗</a></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${score} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
   <details class="basic-events"><summary>展开 8 次选择与数值结算</summary><div class="review-timeline">${run.history.map((h,i)=>`<div class="review-event"><time>${h.time}</time><span class="review-dot ${h.result}"></span><div><strong>${h.phase}</strong><p>${esc(h.action)}</p><small>${esc(basic.events[i])}</small></div></div>`).join('')}</div></details></section>
 ${detailed ? deepReviewView() : '<section class="deep-preview"><h2>深度复盘会告诉你什么？</h2><p>胜负根因 → 关键转折 → 两种替代选择的终局验证 → 一条最少改动的获胜路线。</p><p>还会判断：只回溯最后一步，究竟能不能挽回本局。</p></section>'}
 <section class="review-actions"><div><h3>故事，仍然由你决定。</h3><p>免费重开始终可用，广告不会改变角色属性。</p></div><div class="review-action-buttons"><button class="secondary" data-action="restart">${icon('rewind')}免费重新开局</button>${!run.won?`<button class="primary" data-action="reward-rewind">${icon('play')}${rewindReady?'选择回溯节点（已解锁）':'观看广告，回溯任意节点'}</button>`:''}<button class="secondary" data-action="${detailed?'deep-open':'reward-deep'}">${icon(detailed?'check':'play')}${detailed?'已展开深度复盘':'观看广告，解锁深度复盘'}</button></div><small class="ad-disclosure">激励广告为开发版模拟；关闭不发奖励，完成后才解锁。</small></section><button class="text-button return-archive" data-action="home">${icon('back')}返回档案馆，选择另一场比赛</button>`;
@@ -231,7 +243,7 @@ function help() {
   showModal('把遗憾，交给下一次选择', `<div class="help-content"><h3>01 · 先选一场，再选一个人</h3><p>锁定真实比赛的首发与英雄。你只控制所选选手，其他九名选手保留当局身份。</p><h3>02 · 读信息，作决定</h3><p>视野与队友接应决定主动进攻能否兑现。持续独自行事会丢失接应；保持阵型也会让出一部分进攻机会。</p><h3>03 · 不靠广告赢比赛</h3><p>免费首章、基础复盘与免费重开始终可用。仅有失败回溯、深度复盘和额外章节三个自愿激励点位，开发版均为模拟。</p><h3>真实与推演</h3><p>参赛名单、英雄、版本、历史结果有比赛来源；开局介入后的时钟、经济、击杀和直播均为简化规则推演，不是录像逐帧复刻，也不是选手真实语音。</p></div>`, '<button class="primary" data-modal="close">明白了</button>');
 }
 function sources() {
-  showModal('历史资料与素材', `<div class="help-content"><p>每个章节绑定自己的年份、参赛名单、英雄和版本，禁止跨章节共用现役选手照片。</p>${CHAPTERS.map(c=>`<h3>${c.year} · ${c.team} vs ${c.opponent} · G5</h3><p>版本 ${c.patch}，真实本局时长 ${c.historicalDuration}。<a href="${c.source}" target="_blank" rel="noopener noreferrer">Games of Legends 当局记录 ↗</a></p>`).join('')}<h3>图片使用状态</h3><p>英雄头像来自 Riot Data Dragon，分别固定为 14.18.1 与 8.19.1。网络不可用时自动显示文字标识。</p><p>尚未加入队标和选手照片：现有文字队名与选手名牌不是官方图形标志，不用未经核实的年份素材代替。</p><h3>推演范围</h3><p>当前为规则驱动的文字决策原型，尚非完整伤害、装备、兵线与寻路模拟器。未冒充历史现场或官方授权游戏。</p></div>`, '<button class="primary" data-modal="close">返回游戏</button>');
+  showModal('历史资料与素材', `<div class="help-content"><p>每个章节绑定自己的年份、参赛名单、英雄和版本，禁止跨章节共用现役选手照片。</p>${CHAPTERS.map(c=>`<h3>${c.year} · ${c.team} vs ${c.opponent} · G${c.game}</h3><p>版本 ${c.patch}${c.historicalDuration ? '，真实本局时长 ' + c.historicalDuration : ''}。<a href="${c.source}" target="_blank" rel="noopener noreferrer">Games of Legends 当局记录 ↗</a></p>`).join('')}<h3>图片使用状态</h3><p>英雄头像来自 Riot Data Dragon 对应版本，本地无图时自动从 CDN 加载。</p><p>选手席背景为历史定妆照，阵容以当局首发为准。</p><h3>推演范围</h3><p>当前为规则驱动的文字决策原型，尚非完整伤害、装备、兵线与寻路模拟器。未冒充历史现场或官方授权游戏。</p></div>`, '<button class="primary" data-modal="close">返回游戏</button>');
 }
 function chapterInfo() {
   const c = getChapter(chapterId);
