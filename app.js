@@ -1,5 +1,5 @@
 import { CHAPTERS, PHASES } from './data.js';
-import { createRun, getChapter, choicesFor, advance, rewind, validateRun } from './engine.js';
+import { createRun, getChapter, choicesFor, advance, rewind, validateRun, nextGame } from './engine.js';
 import { basicReview, deepReview, signed, stateText } from './review.js';
 import { actionCommentary } from './commentary.js';
 
@@ -92,6 +92,13 @@ function settledAction(index) {
   const text = actionCommentary(run, index);
   return `<div class="action-reading"><p>${esc(text.context)}</p><p><span>局势变化</span>${esc(text.impact)}</p><details class="reading-details"><summary>为什么会这样？查看依据与下一步</summary><p><span>结算依据</span>${esc(text.reason)}</p><p class="reading-next"><span>下一步</span>${esc(text.next)}</p></details></div>`;
 }
+function intermissionView() {
+  const c = getChapter(run.chapterId);
+  const lastGame = run.gameHistory.at(-1);
+  const [a, b] = run.seriesScore;
+  return `<div class="review-header" style="padding-top:40px"><div class="eyebrow">GAME ${lastGame.game} 结束</div><span class="ending-glyph" style="${lastGame.won?'':'border-color:var(--red)'}">${icon(lastGame.won?'trophy':'flag')}</span><h1>第 ${lastGame.game} 局，${lastGame.won ? '你们拿下了。' : '你们输了。'}</h1><p>${lastGame.won ? '系列赛比分改写。对手回到更衣室调整，你们也需要复盘这一局的关键选择。' : '对手抓住了机会。休息一下，下一局重新来过。'}</p><div class="ending-score"><span>${c.team}</span><strong>${a} : ${b}</strong><span>${c.opponent}</span></div>${tag(lastGame.won?'你领先':'对手领先')}</div>
+  <section class="review-actions" style="text-align:center"><div><h3>第 ${run.gameNumber + 1} 局即将开始</h3><p>系列赛是 BO5，先赢三局。当前比分 ${a}:${b}，${a > b ? '你领先，再赢一局就拿到赛点。' : a < b ? '对手领先，再输一局就被淘汰。' : '平局，下一局谁赢谁领先。'}</p><p style="color:var(--muted);font-size:11px;margin-top:8px">后续局次为架空推演，英雄将根据选手擅长与团队需求调整。</p></div><div class="review-action-buttons" style="justify-content:center"><button class="primary" data-action="next-game">进入第 ${run.gameNumber + 1} 局 ${icon('arrow')}</button></div></section>`;
+}
 function matchView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phase = PHASES[run.step];
   const choice = choicesFor(run);
@@ -99,8 +106,8 @@ function matchView() {
   const formation = run.cohesion >= 3 ? '队友接应良好' : run.cohesion >= 1 ? '需要确认队友距离' : '阵型出现脱节';
   const gold = `${run.gold >= 0 ? '+' : '−'}${(Math.abs(run.gold)/1000).toFixed(2)}k`;
   const last = run.history.at(-1);
-  return `<div class="match-heading"><button class="text-button" data-action="leave">${icon('back')} 暂存并返回</button><div class="live-label"><span class="tiny-dot"></span>文字直播 <span>·</span> 游戏推演</div><span class="subtle">${c.year} ${c.event} / G${c.game}</span></div>
-  <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>${c.startingScore[0]} <span>:</span> ${c.startingScore[1]}</strong><span class="match-time">${phase.time} <small>推演时钟</small></span></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
+  return `<div class="match-heading"><button class="text-button" data-action="leave">${icon('back')} 暂存并返回</button><div class="live-label"><span class="tiny-dot"></span>文字直播 <span>·</span> 游戏推演</div><span class="subtle">${c.year} ${c.event} / G${run.gameNumber}</span></div>
+  <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>${run.seriesScore[0]} <span>:</span> ${run.seriesScore[1]}</strong><span class="match-time">${phase.time} <small>推演时钟</small></span></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
   <p class="simulation-boundary">你的平行赛况 · 首发与英雄来自真实比赛，以下事件由你的选择推演。${run.rulesVersion===2?'本局采用阶段取舍规则。':'此存档沿用原版规则。'}</p>
   <div class="phase-track" aria-label="第${run.step+1}个决策，共8个">${PHASES.map((ph,i)=>`<span class="${i<run.step?'done':i===run.step?'current':''}"><i>${i<run.step?'✓':String(i+1).padStart(2,'0')}</i><small>${ph.name}</small></span>`).join('')}</div>
   <div class="match-layout"><section class="broadcast"><div class="panel-title"><div>${icon('archive')}<h2>比赛直播</h2></div><span>你的视角 · ${p.name}</span></div>
@@ -173,7 +180,7 @@ function journeyView() {
 }
 
 function render(focus = false) {
-  app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? matchView() : scene === 'review' ? reviewView() : journeyView());
+  app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
   app.classList.toggle('catalog-scene', scene === 'catalog');
   if (scene === 'catalog') {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
@@ -274,6 +281,7 @@ app.addEventListener('click', event=>{
   if(action==='reward-deep')reward('deep');
   if(action==='deep-open')document.querySelector('#deep-review').scrollIntoView({behavior:'smooth'});
   if(action==='decision-jump')document.querySelector('.decision').scrollIntoView({behavior:'smooth',block:'start'});
+  if(action==='next-game'){run=nextGame(run);persist();render(true);cue();}
   if(action==='sound'){sound=!sound;render();cue();}
   if(action==='help')help();
   if(action==='sources')sources();

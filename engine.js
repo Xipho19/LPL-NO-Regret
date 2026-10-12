@@ -7,7 +7,7 @@ export function createRun(chapterId, playerIndex, rulesVersion = 1) {
   const chapter = getChapter(chapterId);
   if (!Number.isInteger(playerIndex) || !chapter.players[playerIndex]) throw new Error('Unknown player');
   if (![1, 2].includes(rulesVersion)) throw new Error('Unknown rules');
-  return { ...(rulesVersion === 2 ? {rulesVersion: 2} : {}), chapterId: chapter.id, playerIndex, step: 0, vision: 1, tempo: 0, cohesion: 1, gold: 0, kills: [0, 0], towers: [0, 0], flashReadyAt: 0, ultReadyAt: 0, history: [], finished: false, won: false };
+  return { ...(rulesVersion === 2 ? {rulesVersion: 2} : {}), chapterId: chapter.id, playerIndex, step: 0, vision: 1, tempo: 0, cohesion: 1, gold: 0, kills: [0, 0], towers: [0, 0], flashReadyAt: 0, ultReadyAt: 0, history: [], finished: false, won: false, seriesScore: [0, 0], gameNumber: 1, gameHistory: [], intermission: false };
 }
 export function choicesFor(run) {
   if (run.rulesVersion === 2) return tacticalChoices(run);
@@ -74,9 +74,34 @@ export function advance(run, actionIndex) {
   next.history.push({ step: run.step, time: phase.time, phase: phase.name, actionIndex, action: choice.label, note: choice.note, outcome, result, gold, before });
   next.step += 1;
   if (next.step === PHASES.length) {
-    next.finished = true;
-    next.won = next.gold >= 1800 && next.cohesion >= 2 && next.tempo >= 1;
+    const gameWon = next.gold >= 1800 && next.cohesion >= 2 && next.tempo >= 1;
+    const chapter = getChapter(next.chapterId);
+    if (chapter.seriesTotal) {
+      next.seriesScore = [next.seriesScore[0] + (gameWon ? 1 : 0), next.seriesScore[1] + (gameWon ? 0 : 1)];
+      next.gameHistory.push({ game: next.gameNumber, won: gameWon, gold: next.gold, cohesion: next.cohesion, tempo: next.tempo, history: next.history });
+      if (next.seriesScore[0] >= 3 || next.seriesScore[1] >= 3) {
+        next.finished = true;
+        next.won = next.seriesScore[0] >= 3;
+      } else {
+        next.intermission = true;
+      }
+    } else {
+      next.finished = true;
+      next.won = gameWon;
+    }
   }
+  return next;
+}
+export function nextGame(run) {
+  if (!run.intermission) throw new Error('Not in intermission');
+  const next = structuredClone(run);
+  next.intermission = false;
+  next.gameNumber += 1;
+  next.step = 0;
+  next.vision = 1; next.tempo = 0; next.cohesion = 1; next.gold = 0;
+  next.kills = [0, 0]; next.towers = [0, 0];
+  next.flashReadyAt = 0; next.ultReadyAt = 0;
+  next.history = [];
   return next;
 }
 export function rewind(run, nodeIndex = run.history.length - 1) {
