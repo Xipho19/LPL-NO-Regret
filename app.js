@@ -88,6 +88,11 @@ function toast(message) {
   el.textContent = message; el.classList.add('visible');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('visible'), 2000);
 }
+let bgm = null;
+function getBGM() {
+  if (!bgm) { bgm = new Audio('assets/bgm.mp3'); bgm.loop = true; bgm.volume = 0.4; }
+  return bgm;
+}
 function cue() {
   if (!sound) return;
   try {
@@ -108,7 +113,7 @@ function shell(content) {
     <div class="sidebar-note"><span class="tiny-dot"></span><span>故事的另一种可能<br><small>真实阵容，属于你的决定。</small></span></div>
     <div class="sidebar-bottom"><span class="version">PLAYABLE BUILD · 0.1</span><button class="text-button" data-action="sources">${icon('info')}历史资料与素材</button></div>
   </aside>
-  <div class="workspace"><header class="topbar"><div class="breadcrumb">平行赛场 <span>/</span> ${scene === 'journey' ? '我的改写' : scene === 'achievements' ? '成就馆' : scene === 'play' ? '比赛进行中' : scene === 'review' ? '赛后复盘' : '遗憾档案馆'}</div><div class="top-actions"><button class="sound-button ${sound ? 'on' : ''}" data-action="sound" aria-pressed="${sound}" aria-label="${sound ? '关闭' : '开启'}提示音">${icon('sound')}<span>提示音${sound ? '开' : '关'}</span></button><span class="local-label"><span class="tiny-dot"></span>本地存档</span></div></header>
+  <div class="workspace"><header class="topbar"><div class="breadcrumb">平行赛场 <span>/</span> ${scene === 'journey' ? '我的改写' : scene === 'achievements' ? '成就馆' : scene === 'play' ? '比赛进行中' : scene === 'review' ? '赛后复盘' : '遗憾档案馆'}</div><div class="top-actions"><button class="sound-button ${sound ? 'on' : ''}" data-action="sound" aria-pressed="${sound}" aria-label="${sound ? '关闭' : '开启'}音乐">${icon('sound')}<span>音乐${sound ? '开' : '关'}</span></button><span class="local-label"><span class="tiny-dot"></span>本地存档</span></div></header>
   <main id="main" tabindex="-1">${content}</main><footer class="page-footer"><span>献给每一个，还记得那场比赛的人。</span><span>真实历史 × 战术推演</span></footer></div>`;
 }
 
@@ -350,7 +355,7 @@ app.addEventListener('click', event=>{
   if(action==='deep-open')document.querySelector('#deep-review').scrollIntoView({behavior:'smooth'});
   if(action==='decision-jump')document.querySelector('.decision').scrollIntoView({behavior:'smooth',block:'start'});
   if(action==='next-game'){run=nextGame(run);persist();render(true);cue();}
-  if(action==='sound'){sound=!sound;render();cue();}
+  if(action==='sound'){sound=!sound;if(sound){getBGM().play().catch(()=>{});}else{getBGM().pause();}render();}
   if(action==='help')help();
   if(action==='sources')sources();
   if(action==='chapter-info')chapterInfo();
