@@ -1,4 +1,4 @@
-import { CHAPTERS, PHASES } from './data.js?v=8';
+import { CHAPTERS, PHASES } from './data.js?v=9';
 import { createRun, getChapter, choicesFor, advance, rewind, validateRun, nextGame, getChampionForGame } from './engine.js';
 import { basicReview, deepReview, signed, stateText } from './review.js';
 import { actionCommentary } from './commentary.js';
