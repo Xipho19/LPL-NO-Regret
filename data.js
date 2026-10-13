@@ -49,7 +49,7 @@ export const CHAPTERS = [
     ]
   },
   {
-    id: 'tes2020', year: '2020', team: 'TES', opponent: 'SN', title: '上海半决赛，差一步进决赛', short: '2020 秋冬的金色雨没有落下', event: '全球总决赛 · 半决赛', city: 'SHANGHAI', date: '2020.10.25', stage: '半决赛', patch: '10.19', assetPatch: '10.19.1', game: 1, seriesTotal: 3, historicalScore: 'TES 1 : 3 SN', historicalResult: 'SN 以 3:1 战胜 TES，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: false, startingScore: [0, 0],
+    id: 'tes2020', year: '2020', team: 'TES', opponent: 'SN', title: '上海半决赛，差一步进决赛', short: '2020 秋冬的金色雨没有落下', event: '全球总决赛 · 半决赛', city: 'SHANGHAI', date: '2020.10.25', stage: '半决赛', patch: '10.19', assetPatch: '10.19.1', game: 1, seriesTotal: 3, historicalScore: 'TES 1 : 3 SN', historicalResult: 'SN 以 3:1 战胜 TES，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: true, startingScore: [0, 0],
     description: 'MSC 冠军、春夏常规赛第一。所有人都在等 TES 进决赛。但第一场比赛，你们就输了。这一次，从第一局开始。',
     players: [
       player('369', '上单', '杰斯', 'Jayce', '线上压制 · 传送支援', { engage: '开启闪电冲刺，电能震荡接加速之门消耗', protect: '切换锤形态，雷霆一击击退突进', escape: '开启加速之门，切换锤形态快速撤离' }),
