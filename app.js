@@ -251,6 +251,7 @@ function achievementsView() {
 function render(focus = false) {
   document.body.classList.toggle('scene-play', scene === 'play' && !run?.intermission);
   document.body.classList.toggle('scene-chapter', scene === 'catalog' && !showGrid);
+  document.body.classList.toggle('scene-review', scene === 'review');
   if (scene === 'home') { app.innerHTML = homeView(); }
   else if (scene === 'catalog' && showGrid) { app.innerHTML = shell(gridView()); }
   else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : scene === 'achievements' ? achievementsView() : journeyView());
