@@ -133,7 +133,7 @@ function homeView() {
 function catalog() {
   const c = getChapter(chapterId), p = c.players[playerIndex];
   const open = c.unlocked || permit === c.id;
-  return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><button class="text-button" data-action="back-grid">← 返回选关</button></section>
+  return `<section class="page-heading"><div><div class="eyebrow">THE ARCHIVE / 遗憾档案馆</div><h1>有些比赛，值得再打一次<span class="orange">。</span></h1><p>回到命运的转折点。这一次，把决定权交给你。</p></div><button class="secondary" data-action="back-grid">← 返回选关</button></section>
     <section class="feature ${{rng2018:'rng-feature',tes2020:'tes-feature',jdg2023:'jdg-feature'}[c.id]||'blg-feature'}" aria-label="${c.year}年${c.team}对${c.opponent}">
       <div class="feature-top"><span class="overline">${c.event} <span> / </span> GAME 0${c.game}</span><span class="edition">${c.year} WORLDS</span></div>
       <div class="feature-body"><div class="feature-copy"><div class="feature-label"><span class="tiny-dot"></span>${c.unlocked ? '免费首章' : '额外体验章节'} <span>·</span> ${c.game === 5 ? '决胜局' : '第' + ['一','二','三','四','五'][c.game-1] + '局'}</div><h2>${c.id === 'blg2024' ? '差的那一步，<br>由你走完。' : c.id === 'rng2018' ? '那一年的梦，<br>再续一局。' : c.id === 'tes2020' ? '上海的半决赛，<br>从第一局改写。' : '大满贯只差一步，<br>从第一局开始。'}</h2><p>${c.description}</p><div class="feature-meta"><span>${icon('clock')}8 次关键决策</span><span>${icon('flag')}5 位真实选手</span></div></div>
