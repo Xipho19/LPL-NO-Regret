@@ -102,7 +102,7 @@ function cue() {
     osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .12); osc.onended = () => ctx.close();
   } catch { /* Sound is optional. */ }
 }
-const championImg = (p, c, cls = '') => { const local = `assets/${c.assetPatch}/${p.championId}.png`; const cdn = `https://ddragon.leagueoflegends.com/cdn/${c.assetPatch}/img/champion/${p.championId}.png`; return `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="${local}" data-cdn="${cdn}" onerror="this.onerror=null;this.src=this.dataset.cdn" alt="${esc(p.champion)} · ${c.patch}版本头像" loading="lazy"></span>`; };
+const championImg = (p, c, cls = '') => { const cdn = `https://ddragon.leagueoflegends.com/cdn/${c.assetPatch}/img/champion/${p.championId}.png`; return `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="${cdn}" onerror="this.style.display='none'" alt="${esc(p.champion)} · ${c.patch}版本头像" loading="lazy"></span>`; };
 const tag = (text, cls = '') => `<span class="tag ${cls}">${text}</span>`;
 function shell(content) {
   const nav = (id, name, glyph) => `<button class="nav-item ${scene === id || (id === 'catalog' && ['play','review'].includes(scene)) ? 'active' : ''}" data-action="nav" data-view="${id}">${icon(glyph)}<span>${name}</span>${id === 'catalog' ? '<span class="nav-count">04</span>' : ''}</button>`;
