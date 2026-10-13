@@ -12,15 +12,30 @@ export function tacticalChoices(run) {
   if (i === 5 || i === 6) { labels[0] = `${p.kit.protect}，与队伍同步`; labels[1] = `${p.kit.engage}，争取主动`; }
   const hold = i === 3 || i === 6;
   const safeGold = i < 5 ? (hold ? -360 : 140) : hold ? (run.cohesion >= 2 ? 150 : -320) : (run.cohesion >= 2 ? 650 : 180);
+  // 当前局势摘要
+  const econ = run.gold >= 0 ? `经济领先${(run.gold/1000).toFixed(1)}k` : `经济落后${(Math.abs(run.gold)/1000).toFixed(1)}k`;
+  const kd = `击杀${run.kills[0]}:${run.kills[1]}`;
+  const situ = `当前${econ}，${kd}。`;
   return labels.map((label, a) => ({
     label, usesUlt: a === 1 && [5, 6].includes(i),
     disabled: a === 1 && [5, 6].includes(i) && run.ultReadyAt > getPhases(c)[i].seconds,
     supported, visionNeed,
     baseGold: a === 0 ? safeGold : a === 1 ? (supported ? 850 + bonus : -650) : [1, 2, 3, 7].includes(i) ? 540 : -900,
     gamble: a === 2 ? 0.35 : null,
-    note: a === 0 ? `补充视野与接应；${hold ? '让出当前资源窗口，经济收益减少 500。' : i < 5 ? '经济收益较小，保留下一轮联动条件。' : '接应达到 2 才能兑现完整反打收益。'}`
-      : a === 1 ? `需要视野 ${visionNeed}、接应 2（当前 ${run.vision}/${run.cohesion}）；${supported ? '已具备条件，行动消耗 1 级视野。' : '条件不足，可能被反打。'}${bonus ? `这是${p.position}的职责窗口，成功额外收益 150。` : ''}`
-      : [1, 2, 3, 7].includes(i) ? '高风险压线：35% 概率拿到线杀+900经济，65% 被反蹲送掉节奏。' : '关键操作：35% 概率打掉对方核心赢下团战，65% 自己先被秒。'
+    note: a === 0 ? `${situ}补充视野与接应；${hold ? '让出当前资源窗口，经济收益减少 500。' : i < 5 ? '经济收益较小，保留下一轮联动条件。' : '接应达到 2 才能兑现完整反打收益。'}`
+      : a === 1 ? `${situ}需要视野 ${visionNeed}、接应 2（当前 ${run.vision}/${run.cohesion}）；${supported ? '已具备条件，行动消耗 1 级视野。' : '条件不足，可能被反打。'}${bonus ? `这是${p.position}的职责窗口，成功额外收益 150。` : ''}`
+      : (() => {
+          const lbl = label;
+          let gambleDesc;
+          if (/深入|孤身|独自|直接|突进|越过|强行|包抄|前压|先手|开团|追击|越塔|开龙/.test(lbl)) {
+            gambleDesc = `${situ}高风险操作"${lbl}"：35% 成功率——成功打掉对方核心/拿资源，65% 失败自己先被秒。`;
+          } else if (/发育|带线|补刀|回城|刷野|清兵|清线/.test(lbl)) {
+            gambleDesc = `${situ}发育赌博"${lbl}"：35% 概率偷到额外经济/线杀，65% 被抓掉一波。`;
+          } else {
+            gambleDesc = `${situ}冒险选择"${lbl}"：35% 成功拿优势，65% 失败送节奏。`;
+          }
+          return gambleDesc;
+        })()
   }));
 }
 export function tacticalReading(run, index) {
