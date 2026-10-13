@@ -238,7 +238,6 @@ function achievementsView() {
   const pct = Math.round(unlockedAchievements.length / ACHIEVEMENTS.length * 100);
   return `<section class="page-heading"><div><div class="eyebrow">TROPHIES / 成就馆</div><h1>你改写的每一笔，都算数<span class="orange">。</span></h1><p>已解锁 ${unlockedAchievements.length} / ${ACHIEVEMENTS.length}（${pct}%）</p></div></section><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);return `<div class="ach-card ${un?'unlocked':'locked'}">${un?icon(a.icon,'ach-icon'):'<span class="ach-icon ach-lock">🔒</span>'}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div>`;
 }
-}
 
 function render(focus = false) {
   if (scene === 'home') { app.innerHTML = homeView(); }
