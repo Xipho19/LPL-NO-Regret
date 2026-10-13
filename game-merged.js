@@ -258,25 +258,24 @@ function advance(run, actionIndex) {
     if (choice.gamble != null) {
       const win = Math.random() < choice.gamble;
       // 根据节点类型决定加哪个评分维度
-      const statMap = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'gold', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
+      const statMap = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'tempo', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
       const winStat = statMap[kind] || 'tempo';
       if (win) {
         gold = choice.baseGold;
         if (choice.gamble < 0.8) {
-          if (winStat === 'gold') gold += choice.gamble > 0.5 ? 200 : 400;
-          else next[winStat] = clamp(run[winStat] + (choice.gamble > 0.5 ? 1 : 2), 0);
+          next[winStat] = clamp(run[winStat] + (choice.gamble > 0.5 ? 1 : 2), 0);
           if (choice.gamble < 0.5) {
-            next.cohesion = clamp(run.cohesion + 1, 0);
-            next.tempo = clamp(run.tempo + 1, 0);
+            if (winStat !== 'cohesion') next.cohesion = clamp(run.cohesion + 1, 0);
+            if (winStat !== 'tempo') next.tempo = clamp(run.tempo + 1, 0);
           }
         }
-        outcome = choice.gamble >= 0.8 ? '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。' : `这波${winStat === 'tempo' ? '节奏' : winStat === 'laning' ? '对线' : winStat === 'cohesion' ? '配合' : winStat === 'vision' ? '视野' : '经济'}拿到优势，局面打开了。`;
+        outcome = choice.gamble >= 0.8 ? '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。' : `这波${winStat === 'tempo' ? '节奏' : winStat === 'laning' ? '对线' : winStat === 'cohesion' ? '配合' : '视野'}拿到优势，局面打开了。`;
         result = choice.gamble >= 0.8 ? 'stable' : 'good';
         next.kills[0] += choice.gamble > 0.5 ? 1 : 3;
       } else {
         gold = choice.baseGold > 0 ? -choice.baseGold * 0.8 : choice.baseGold;
         if (choice.gamble < 0.8) {
-          if (winStat !== 'gold') next[winStat] = clamp(run[winStat] - 1, 0);
+          next[winStat] = clamp(run[winStat] - 1, 0);
           next.vision = clamp(run.vision - 1, 0);
         }
         outcome = '时机不对，对手反打成功，队伍节奏被打断。';
@@ -382,13 +381,14 @@ function tacticalChoices(run) {
   const successColor = (text) => `<span style="color:#7ee787">${text}</span>`;
   const failColor = (text) => `<span style="color:#ff7b72">${text}</span>`;
   // 每个节点加不同的评分维度
-  const statByKind = { setup: '节奏', lane: '对线', rotate: '配合', trade: '经济', vision: '视野', fight: '配合', decisive: '节奏', finish: '配合' };
-  const statKeyByKind = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'gold', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
+  const statByKind = { setup: '节奏', lane: '对线', rotate: '配合', trade: '节奏', vision: '视野', fight: '配合', decisive: '节奏', finish: '配合' };
+  const statKeyByKind = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'tempo', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
   const winStat = statByKind[kind] || '节奏';
-  const bSuccess = kind === 'trade' ? `经济+700，${winStat}+1` : `${winStat}+1，经济+500`;
-  const bFail = kind === 'trade' ? `经济-600，${winStat}-1` : `${winStat}-1，经济-400`;
-  const cSuccess = kind === 'trade' ? `经济+1300，${winStat}+2，配合+1` : `${winStat}+2，配合+1，经济+900`;
-  const cFail = kind === 'trade' ? `经济-900，${winStat}-2，视野-1` : `${winStat}-2，视野-1，经济-600`;
+  const winStatKey = statKeyByKind[kind] || 'tempo';
+  const bSuccess = `${winStat}+1，经济+500`;
+  const bFail = `${winStat}-1，经济-400`;
+  const cSuccess = winStat === '配合' ? `${winStat}+3，经济+900` : `${winStat}+2，配合+1，经济+900`;
+  const cFail = `${winStat}-2，视野-1，经济-600`;
   if (kind === 'setup') {
     labels = [`跟随队伍落位，确认防守入口`, `提前布置视野，抢占先手位置`, `独自深入野区，提前反蹲`];
   } else if (kind === 'lane') {
@@ -795,7 +795,7 @@ function matchView() {
     <div class="log-row active-log"><time>${phase.time}</time><div><span class="log-kind accent">${phase.name} / 游戏推演</span><p>${phase.copy}</p></div></div><div class="team-signal">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phase.signal}</p></div></div>
     <div class="known-info">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div></div>
     <div class="decision"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${choice.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
-  </section><aside class="match-sidebar"><section class="identity"><div class="side-overline">YOUR SEAT / 你的选手席</div><div class="identity-main">${championImg(p,c)}<div><h2>${p.name}</h2><span>${c.team} · ${p.position}</span></div></div><div class="hero-name">${p.champion}<span>PATCH ${c.patch}</span></div><p>${p.task}</p><div class="stat-row"><span>经济</span><strong class="${run.gold>=0?'ready':'danger'}">${signed(run.gold)}</strong></div><div class="stat-row"><span>视野</span><strong>${run.vision}</strong></div><div class="stat-row"><span>配合</span><strong>${run.cohesion}</strong></div><div class="stat-row"><span>节奏</span><strong>${run.tempo}</strong></div><div class="stat-row"><span>对线</span><strong>${run.laning}</strong></div><div class="skill-row"><span>闪现</span><strong class="${run.flashReadyAt > phase.seconds ? 'muted' : 'ready'}">${run.flashReadyAt > phase.seconds ? `${run.flashReadyAt-phase.seconds} 秒` : '可用'}</strong></div><div class="skill-row"><span>大招</span><strong class="${phase.seconds<550 || run.ultReadyAt > phase.seconds ? 'muted' : 'ready'}">${phase.seconds<550 ? '未解锁 / 推演阶段' : run.ultReadyAt > phase.seconds ? `${run.ultReadyAt-phase.seconds} 秒` : '可用'}</strong></div></section>
+  </section><aside class="match-sidebar"><section class="identity"><div style="display:flex;justify-content:space-between;align-items:center"><div class="side-overline">YOUR SEAT / 你的选手席</div><button class="ad-boost-btn" data-action="ad-boost">📺 广告强化 +1</button></div><div class="identity-main">${championImg(p,c)}<div><h2>${p.name}</h2><span>${c.team} · ${p.position}</span></div></div><div class="hero-name">${p.champion}<span>PATCH ${c.patch}</span></div><p>${p.task}</p><div class="stat-row"><span>经济</span><strong class="${run.gold>=0?'ready':'danger'}">${signed(run.gold)}</strong></div><div class="stat-row"><span>视野</span><strong>${run.vision}</strong></div><div class="stat-row"><span>配合</span><strong>${run.cohesion}</strong></div><div class="stat-row"><span>节奏</span><strong>${run.tempo}</strong></div><div class="stat-row"><span>对线</span><strong>${run.laning}</strong></div><div class="skill-row"><span>闪现</span><strong class="${run.flashReadyAt > phase.seconds ? 'muted' : 'ready'}">${run.flashReadyAt > phase.seconds ? `${run.flashReadyAt-phase.seconds} 秒` : '可用'}</strong></div><div class="skill-row"><span>大招</span><strong class="${phase.seconds<550 || run.ultReadyAt > phase.seconds ? 'muted' : 'ready'}">${phase.seconds<550 ? '未解锁 / 推演阶段' : run.ultReadyAt > phase.seconds ? `${run.ultReadyAt-phase.seconds} 秒` : '可用'}</strong></div></section>
   <section class="opponent-panel"><h3>对方首发<span>${c.opponent} / ${c.year}</span></h3>${c.enemies.map(e=>`<div class="enemy-row">${championImg(e,c)}<span>${e.name}<small>${e.champion}</small></span><small>${e.position}</small></div>`).join('')}</section><div class="tactical-note">${icon('info')}<p>${c.threats[run.step % c.threats.length]}</p></div></aside></div>`;
 }
 
@@ -953,6 +953,16 @@ app.addEventListener('click', event=>{
   if(action==='player'){playerIndex=Number(button.dataset.index);render();}
   if(action==='briefing')briefing();
   if(action==='unlock')reward('chapter');
+  if(action==='ad-boost'){
+    window.LampsPlatform.showRewardedVideo({source:'boost'}).then(res=>{
+      if(res.ok){
+        const stats = ['vision','cohesion','tempo','laning'];
+        for(let i=0;i<2;i++){const s=stats[Math.floor(Math.random()*stats.length)];run[s]=run[s]+1;}
+        toast('📺 广告完成，随机两项评分+1！');
+        persist();render(true);
+      }else{toast(res.message||'广告未完成');}
+    });
+  }
   if(action==='continue'){scene='play';render(true);}
   if(action==='choose'){
     try {
