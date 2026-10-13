@@ -30,6 +30,47 @@ const load = () => { try { return JSON.parse(localStorage.getItem(STORAGE)) || {
 const saved = load();
 let run = validateRun(saved.run) ? saved.run : null;
 let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x && CHAPTERS.some(c => c.id === x.chapterId) && typeof x.won === 'boolean' && typeof x.player === 'string').slice(-100) : [];
+let unlockedAchievements = Array.isArray(saved.achievements) ? saved.achievements : [];
+
+const ACHIEVEMENTS = [
+  { id:'first_win', icon:'trophy', name:'第一次改写', desc:'赢下任意一局比赛' },
+  { id:'rng_first', icon:'flag', name:'救赎开始', desc:'用 RNG 任意选手赢下 2018 八强战' },
+  { id:'rng_all', icon:'star', name:'全员无憾', desc:'用 RNG 全部五名选手各赢一局' },
+  { id:'tes_first', icon:'zap', name:'破浪', desc:'用 TES 任意选手赢下 2020 半决赛' },
+  { id:'tes_all', icon:'star', name:'银河圆满', desc:'用 TES 全部五名选手各赢一局' },
+  { id:'jdg_first', icon:'shield', name:'复仇之刃', desc:'用 JDG 任意选手赢下 2023 半决赛' },
+  { id:'jdg_all', icon:'star', name:'京东之王', desc:'用 JDG 全部五名选手各赢一局' },
+  { id:'blg_first', icon:'crown', name:'金色雨', desc:'用 BLG 任意选手赢下 2024 决赛' },
+  { id:'blg_all', icon:'star', name:'新王加冕', desc:'用 BLG 全部五名选手各赢一局' },
+  { id:'series_win', icon:'zap', name:'系列赛征服者', desc:'赢下一个完整的 BO5（TES 或 JDG）' },
+  { id:'all_chapters', icon:'flag', name:'传奇收藏家', desc:'四个章节都赢过至少一次' },
+  { id:'ten_games', icon:'trophy', name:'百折不挠', desc:'累计完成 10 局比赛' },
+];
+
+function checkAchievements() {
+  const newOnes = [];
+  const won = completed.filter(x=>x.won);
+  const wonByTeam = team => new Set(won.filter(x=>x.chapterId===team).map(x=>x.player));
+  const wonChapters = new Set(won.map(x=>x.chapterId));
+  const has = id => unlockedAchievements.includes(id);
+  const grant = id => { if(!has(id)){ unlockedAchievements.push(id); newOnes.push(id); } };
+
+  if(won.length>=1) grant('first_win');
+  if(wonByTeam('rng2018').size>=1) grant('rng_first');
+  if(wonByTeam('rng2018').size>=5) grant('rng_all');
+  if(wonByTeam('tes2020').size>=1) grant('tes_first');
+  if(wonByTeam('tes2020').size>=5) grant('tes_all');
+  if(wonByTeam('jdg2023').size>=1) grant('jdg_first');
+  if(wonByTeam('jdg2023').size>=5) grant('jdg_all');
+  if(wonByTeam('blg2024').size>=1) grant('blg_first');
+  if(wonByTeam('blg2024').size>=5) grant('blg_all');
+  // BO5 series win: won games count >=3 for tes/jdg
+  if(won.filter(x=>x.chapterId==='tes2020').length>=3 || won.filter(x=>x.chapterId==='jdg2023').length>=3) grant('series_win');
+  if(wonChapters.size>=4) grant('all_chapters');
+  if(completed.length>=10) grant('ten_games');
+
+  return newOnes;
+}
 let scene = 'home';
 let showGrid = true;
 let chapterId = 'blg2024';
@@ -40,7 +81,7 @@ let rewindReady = Boolean(run?.finished && !run.won && saved.rewindReady);
 let sound = false;
 let toastTimer;
 
-function persist() { try { const slim = { ...run, gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed, rewindReady })); } catch { toast('浏览器存储不可用；当前对局仍可继续。'); } }
+function persist() { try { const slim = { ...run, gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed, rewindReady, achievements: unlockedAchievements })); } catch { toast('浏览器存储不可用；当前对局仍可继续。'); } }
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message; el.classList.add('visible');
@@ -193,7 +234,8 @@ function deepReviewView() {
 
 function journeyView() {
   const wins = completed.filter(x=>x.won).length;
-  return `<section class="page-heading"><div><div class="eyebrow">YOUR JOURNEY / 我的改写</div><h1>每一个选择，都留下回声<span class="orange">。</span></h1><p>记录保存在这台设备的浏览器中。</p></div></section><div class="journey-stats"><div><strong>${completed.length}</strong><span>完成对局</span></div><div><strong>${wins}</strong><span>改写结局</span></div><div><strong>${new Set(completed.map(x=>x.player)).size}</strong><span>体验选手</span></div></div>${completed.length ? `<div class="journey-list">${completed.slice().reverse().map(x=>{const c=getChapter(x.chapterId);return `<article class="journey-record"><span class="record-year">${c.year}</span><div><h3>${c.team} vs ${c.opponent}</h3><p>${esc(x.player)} · ${c.event}</p></div>${tag(x.won?'改写终局':'未竟之梦',x.won?'success':'')}<span class="record-date">${new Date(x.date).toLocaleDateString('zh-CN')}</span></article>`;}).join('')}</div>` : `<div class="empty-state">${icon('archive')}<h2>你的第一场改写，还没开始。</h2><p>选一个你念念不忘的瞬间，回到选手席。</p><button class="primary" data-action="home">前往档案馆 ${icon('arrow')}</button></div>`}`;
+  const achGrid = `<section class="achievements"><div class="eyebrow">TROPHIES / 成就</div><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);return `<div class="ach-card ${un?'unlocked':'locked'}">${un?icon(a.icon,'ach-icon'):'<span class="ach-icon ach-lock">🔒</span>'}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div></section>`;
+  return `<section class="page-heading"><div><div class="eyebrow">YOUR JOURNEY / 我的改写</div><h1>每一个选择，都留下回声<span class="orange">。</span></h1><p>记录保存在这台设备的浏览器中。</p></div></section><div class="journey-stats"><div><strong>${completed.length}</strong><span>完成对局</span></div><div><strong>${wins}</strong><span>改写结局</span></div><div><strong>${new Set(completed.map(x=>x.player)).size}</strong><span>体验选手</span></div><div><strong>${unlockedAchievements.length}/${ACHIEVEMENTS.length}</strong><span>成就</span></div></div>${achGrid}${completed.length ? `<div class="journey-list">${completed.slice().reverse().map(x=>{const c=getChapter(x.chapterId);return `<article class="journey-record"><span class="record-year">${c.year}</span><div><h3>${c.team} vs ${c.opponent}</h3><p>${esc(x.player)} · ${c.event}</p></div>${tag(x.won?'改写终局':'未竟之梦',x.won?'success':'')}<span class="record-date">${new Date(x.date).toLocaleDateString('zh-CN')}</span></article>`;}).join('')}</div>` : `<div class="empty-state">${icon('archive')}<h2>你的第一场改写，还没开始。</h2><p>选一个你念念不忘的瞬间，回到选手席。</p><button class="primary" data-action="home">前往档案馆 ${icon('arrow')}</button></div>`}`;
 }
 
 function render(focus = false) {
@@ -292,7 +334,7 @@ app.addEventListener('click', event=>{
   if(action==='choose'){
     try {
       run=advance(run,Number(button.dataset.index));cue();
-      if(run.finished){scene='review';detailed=false;completed.push({chapterId:run.chapterId,player:getChapter(run.chapterId).players[run.playerIndex].name,won:run.won,date:new Date().toISOString()});completed=completed.slice(-100);}
+      if(run.finished){scene='review';detailed=false;completed.push({chapterId:run.chapterId,player:getChapter(run.chapterId).players[run.playerIndex].name,won:run.won,date:new Date().toISOString()});completed=completed.slice(-100);const newAch=checkAchievements();persist();if(newAch.length){setTimeout(()=>{const a=ACHIEVEMENTS.find(x=>x.id===newAch[newAch.length-1]);toast(`🏆 成就解锁：${a.name}`);},800);}}
       persist();render(true);
     } catch { toast('当前行动暂不可用，请重新选择。'); }
   }

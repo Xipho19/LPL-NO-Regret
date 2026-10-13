@@ -48,6 +48,15 @@ dialog{width:min(540px,calc(100% - 30px));max-height:calc(100dvh - 40px);padding
 .home-chapter-preview span{position:relative;padding:4px 8px}
 .home-chapter-preview span:not(:last-child)::after{content:'·';position:absolute;right:-12px;color:var(--lime)}
 .home-note{display:block;margin-top:24px;color:#5a6550;font-size:10px;letter-spacing:1px}
+.achievements{margin-top:32px}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+.ach-card{border:1px solid var(--border);border-radius:6px;padding:16px;background:#161816;text-align:center}
+.ach-card.unlocked{border-color:var(--lime);background:rgba(211,223,155,.06)}
+.ach-card.locked{opacity:.45}
+.ach-icon{width:28px;height:28px;margin:0 auto 8px;color:var(--lime)}
+.ach-lock{font-size:22px;line-height:28px}
+.ach-card h3{font:600 13px 'Space Grotesk',var(--font);margin-bottom:4px}
+.ach-card p{font-size:10px;color:var(--muted);line-height:1.4}
 .grid-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
 .grid-card{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-height:200px;text-align:left;background:#191c19;background-size:cover;background-position:center;transition:border-color .18s,transform .18s;cursor:pointer;background-image:var(--card-bg);padding:0;width:100%}
 .grid-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,10,.85) 0%,rgba(10,12,10,.55) 50%,rgba(10,12,10,.85) 100%);pointer-events:none}
