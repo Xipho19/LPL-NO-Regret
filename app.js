@@ -34,6 +34,7 @@ let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x &
 let unlockedAchievements = Array.isArray(saved.achievements) ? saved.achievements : [];
 
 const ACHIEVEMENTS = [
+  { id:'first_win', icon:'trophy', name:'你做到了', desc:'赢下任意一局比赛' },
   { id:'rng_first', icon:'flag', name:'救赎开始', desc:'用 RNG 任意选手赢下 2018 八强战' },
   { id:'rng_all', icon:'star', name:'全员无憾', desc:'用 RNG 全部五名选手各赢一局' },
   { id:'tes_first', icon:'zap', name:'破浪前行', desc:'用 TES 任意选手赢下 2020 半决赛' },
@@ -44,6 +45,7 @@ const ACHIEVEMENTS = [
   { id:'blg_all', icon:'star', name:'翻过那座山', desc:'用 BLG 全部五名选手各赢一局' },
   { id:'all_chapters', icon:'trophy', name:'联赛霸主', desc:'四个章节都赢过至少一次' },
   { id:'all_players', icon:'flag', name:'活着的传奇', desc:'用全部 20 名选手各赢一局' },
+  { id:'ten_games', icon:'trophy', name:'百折不挠', desc:'累计完成 10 局比赛' },
 ];
 
 function checkAchievements() {
@@ -65,6 +67,8 @@ function checkAchievements() {
   if(wonByTeam('blg2024').size>=5) grant('blg_all');
   if(wonChapters.size>=4) grant('all_chapters');
   if(wonPlayers.size>=20) grant('all_players');
+  if(won.length>=1) grant('first_win');
+  if(completed.length>=10) grant('ten_games');
 
   return newOnes;
 }
@@ -82,7 +86,7 @@ function persist() { try { const slim = { ...run, gameHistory: run.gameHistory?.
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message; el.classList.add('visible');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('visible'), 3500);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('visible'), 2000);
 }
 function cue() {
   if (!sound) return;
