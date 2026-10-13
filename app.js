@@ -35,14 +35,14 @@ let unlockedAchievements = Array.isArray(saved.achievements) ? saved.achievement
 
 const ACHIEVEMENTS = [
   { id:'first_win', icon:'trophy', name:'你做到了', desc:'赢下任意一局比赛' },
-  { id:'rng_first', icon:'flag', name:'救赎开始', desc:'用 RNG 任意选手赢下 2018 八强战' },
-  { id:'rng_all', icon:'star', name:'全员无憾', desc:'用 RNG 全部五名选手各赢一局' },
-  { id:'tes_first', icon:'zap', name:'破浪前行', desc:'用 TES 任意选手赢下 2020 半决赛' },
-  { id:'tes_all', icon:'star', name:'银河战舰', desc:'用 TES 全部五名选手各赢一局' },
-  { id:'jdg_first', icon:'shield', name:'复仇之刃', desc:'用 JDG 任意选手赢下 2023 半决赛' },
-  { id:'jdg_all', icon:'star', name:'黄金之路', desc:'用 JDG 全部五名选手各赢一局' },
-  { id:'blg_first', icon:'crown', name:'新王加冕', desc:'用 BLG 任意选手赢下 2024 决赛' },
-  { id:'blg_all', icon:'star', name:'翻过那座山', desc:'用 BLG 全部五名选手各赢一局' },
+  { id:'rng_first', icon:'flag', logo:'./assets/logo-rng.png', name:'救赎开始', desc:'用 RNG 任意选手赢下 2018 八强战' },
+  { id:'rng_all', icon:'star', logo:'./assets/logo-rng.png', name:'全员无憾', desc:'用 RNG 全部五名选手各赢一局' },
+  { id:'tes_first', icon:'zap', logo:'./assets/logo-tes.png', name:'破浪前行', desc:'用 TES 任意选手赢下 2020 半决赛' },
+  { id:'tes_all', icon:'star', logo:'./assets/logo-tes.png', name:'银河战舰', desc:'用 TES 全部五名选手各赢一局' },
+  { id:'jdg_first', icon:'shield', logo:'./assets/logo-jdg.png', name:'复仇之刃', desc:'用 JDG 任意选手赢下 2023 半决赛' },
+  { id:'jdg_all', icon:'star', logo:'./assets/logo-jdg.png', name:'黄金之路', desc:'用 JDG 全部五名选手各赢一局' },
+  { id:'blg_first', icon:'crown', logo:'./assets/logo-blg.png', name:'新王加冕', desc:'用 BLG 任意选手赢下 2024 决赛' },
+  { id:'blg_all', icon:'star', logo:'./assets/logo-blg.png', name:'翻过那座山', desc:'用 BLG 全部五名选手各赢一局' },
   { id:'all_chapters', icon:'trophy', name:'联赛霸主', desc:'四个章节都赢过至少一次' },
   { id:'all_players', icon:'flag', name:'活着的传奇', desc:'用全部 20 名选手各赢一局' },
   { id:'ten_games', icon:'trophy', name:'百折不挠', desc:'累计完成 10 局比赛' },
@@ -240,7 +240,7 @@ function journeyView() {
 
 function achievementsView() {
   const pct = Math.round(unlockedAchievements.length / ACHIEVEMENTS.length * 100);
-  return `<section class="page-heading"><div><div class="eyebrow">TROPHIES / 成就馆</div><h1>你改写的每一笔，都算数<span class="orange">。</span></h1><p>已解锁 ${unlockedAchievements.length} / ${ACHIEVEMENTS.length}（${pct}%）</p></div></section><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);return `<div class="ach-card ${un?'unlocked':'locked'}">${un?icon(a.icon,'ach-icon'):'<span class="ach-icon ach-lock">🔒</span>'}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div>`;
+  return `<section class="page-heading"><div><div class="eyebrow">TROPHIES / 成就馆</div><h1>你改写的每一笔，都算数<span class="orange">。</span></h1><p>已解锁 ${unlockedAchievements.length} / ${ACHIEVEMENTS.length}（${pct}%）</p></div></section><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);const iconHtml = un ? (a.logo ? `<img src="${a.logo}" class="ach-logo" alt="${a.name}">` : icon(a.icon,'ach-icon')) : '<span class="ach-icon ach-lock">🔒</span>';return `<div class="ach-card ${un?'unlocked':'locked'}">${iconHtml}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div>`;
 }
 
 function render(focus = false) {
