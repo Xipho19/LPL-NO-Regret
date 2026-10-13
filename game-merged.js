@@ -375,12 +375,8 @@ function tacticalChoices(run) {
   const hold = i === 3 || i === 6;
   const safeGold = i < 5 ? (hold ? -360 : 140) : hold ? (run.cohesion >= 2 ? 150 : -320) : (run.cohesion >= 2 ? 650 : 180);
 
-  // 根据局势类型生成匹配的选项
-  const position = p.position;
-  let labels, notes;
   const successColor = (text) => `<span style="color:#7ee787">${text}</span>`;
   const failColor = (text) => `<span style="color:#ff7b72">${text}</span>`;
-  // 每个节点加不同的评分维度
   const statByKind = { setup: '节奏', lane: '对线', rotate: '配合', trade: '节奏', vision: '视野', fight: '配合', decisive: '节奏', finish: '配合' };
   const statKeyByKind = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'tempo', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
   const winStat = statByKind[kind] || '节奏';
@@ -389,24 +385,74 @@ function tacticalChoices(run) {
   const bFail = `${winStat}-1，经济-400`;
   const cSuccess = winStat === '配合' ? `${winStat}+3，经济+900` : `${winStat}+2，配合+1，经济+900`;
   const cFail = `${winStat}-2，视野-1，经济-600`;
-  if (kind === 'setup') {
-    labels = [`跟随队伍落位，确认防守入口`, `提前布置视野，抢占先手位置`, `独自深入野区，提前反蹲`];
-  } else if (kind === 'lane') {
-    labels = [`稳线发育，等待队友支援`, `主动换血，压制对手`, `打得凶一点，尝试单杀`];
-  } else if (kind === 'rotate') {
-    labels = [`推完线再支援，不冒被蹲风险`, `走河道近路，抢先到场`, `放弃兵线直接游走，尝试抓单`];
-  } else if (kind === 'trade') {
-    labels = [`放掉这个资源，换另一侧塔/资源`, `集合打这个资源，需要队友到位`, `不等队友，强行抢资源`];
-  } else if (kind === 'vision') {
-    labels = [`和队友一起排视野，安全推进`, `先做视野再靠近，逐步压缩空间`, `独自探草，尝试冒险`];
-  } else if (kind === 'fight') {
-    labels = [`${p.kit.protect}，保后排接团`, `${p.kit.engage}，找机会开团`, `不等队友直接上，尝试切后排`];
-  } else if (kind === 'decisive') {
-    labels = [`等对手先交技能再反打`, `${p.kit.engage}，主动找关键目标`, `强行开对方后排，尝试一波`];
+
+  // 每个章节每个节点的自定义选项，直接回应当前局势，不绑定具体位置
+  const CUSTOM_CHOICES = {
+    blg2024: [
+      ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
+      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等ADC，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+    ],
+    rng2018: [
+      ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
+      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等上单，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+    ],
+    tes2020: [
+      ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
+      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等上单，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+    ],
+    jdg2023: [
+      ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
+      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等ADC，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+    ],
+  };
+
+  let labels;
+  if (CUSTOM_CHOICES[c.id] && CUSTOM_CHOICES[c.id][i]) {
+    labels = CUSTOM_CHOICES[c.id][i];
   } else {
-    labels = [`稳步推进，等对手失误`, `集体压上，强拆高地`, `独自前压逼水晶，尝试一波结束`];
+    if (kind === 'setup') {
+      labels = [`跟随队伍落位，确认防守入口`, `提前布置视野，抢占先手位置`, `独自深入野区，提前反蹲`];
+    } else if (kind === 'lane') {
+      labels = [`稳线发育，等待队友支援`, `主动换血，压制对手`, `打得凶一点，尝试单杀`];
+    } else if (kind === 'rotate') {
+      labels = [`推完线再支援，不冒被蹲风险`, `走河道近路，抢先到场`, `放弃兵线直接游走，尝试抓单`];
+    } else if (kind === 'trade') {
+      labels = [`放掉这个资源，换另一侧塔/资源`, `集合打这个资源，需要队友到位`, `不等队友，强行抢资源`];
+    } else if (kind === 'vision') {
+      labels = [`和队友一起排视野，安全推进`, `先做视野再靠近，逐步压缩空间`, `独自探草，尝试冒险`];
+    } else if (kind === 'fight') {
+      labels = [`${p.kit.protect}，保后排接团`, `${p.kit.engage}，找机会开团`, `不等队友直接上，尝试切后排`];
+    } else if (kind === 'decisive') {
+      labels = [`等对手先交技能再反打`, `${p.kit.engage}，主动找关键目标`, `强行开对方后排，尝试一波`];
+    } else {
+      labels = [`稳步推进，等对手失误`, `集体压上，强拆高地`, `独自前压逼水晶，尝试一波结束`];
+    }
   }
-  notes = [
+  const notes = [
     `${successColor('90% 成功：经济+150')}\n${failColor('10% 失败：经济-100')}`,
     `${successColor(`50% 成功：${bSuccess}`)}\n${failColor(`50% 失败：${bFail}`)}`,
     `${successColor(`30% 成功：${cSuccess}`)}\n${failColor(`70% 失败：${cFail}`)}`
@@ -764,7 +810,7 @@ function catalog() {
 
 function settledAction(index) {
   const text = actionCommentary(run, index);
-  return `<div class="action-reading"><p>${esc(text.context)}</p><p><span>局势变化</span>${esc(text.impact)}</p><details class="reading-details"><summary>为什么会这样？查看依据与下一步</summary><p><span>结算依据</span>${esc(text.reason)}</p><p class="reading-next"><span>下一步</span>${esc(text.next)}</p></details></div>`;
+  return `<div class="action-reading"><p>${esc(text.context)}</p><p><span>局势变化</span>${esc(text.impact)}</p></div>`;
 }
 function intermissionView() {
   const c = getChapter(run.chapterId);
@@ -772,6 +818,93 @@ function intermissionView() {
   const [a, b] = run.seriesScore;
   return `<div class="review-header" style="padding-top:40px"><div class="eyebrow">GAME ${lastGame.game} 结束</div><span class="ending-glyph" style="${lastGame.won?'':'border-color:var(--red)'}">${icon(lastGame.won?'trophy':'flag')}</span><h1>第 ${lastGame.game} 局，${lastGame.won ? '你们拿下了。' : '你们输了。'}</h1><p>${lastGame.won ? '系列赛比分改写。对手回到更衣室调整，你们也需要复盘这一局的关键选择。' : '对手抓住了机会。休息一下，下一局重新来过。'}</p><div class="ending-score"><span>${c.team}</span><strong>${a} : ${b}</strong><span>${c.opponent}</span></div>${tag(lastGame.won?'你领先':'对手领先')}</div>
   <section class="review-actions" style="text-align:center"><div><h3>第 ${run.gameNumber + 1} 局即将开始</h3><p>系列赛是 BO5，先赢三局。当前比分 ${a}:${b}，${a > b ? '你领先，再赢一局就拿到赛点。' : a < b ? '对手领先，再输一局就被淘汰。' : '平局，下一局谁赢谁领先。'}</p><p style="color:var(--muted);font-size:11px;margin-top:8px">后续局次为架空推演，英雄将根据选手擅长与团队需求调整。</p></div><div class="review-action-buttons" style="justify-content:center"><button class="primary" data-action="next-game">进入第 ${run.gameNumber + 1} 局 ${icon('arrow')}</button></div></section>`;
+}
+function liveFeed(kind, chapter) {
+  const myTeam = chapter ? chapter.team : '我方';
+  const oppTeam = chapter ? chapter.opponent : '对方';
+  const feeds = {
+    setup: [
+      '比赛即将开始！',
+      '双方选手已经在召唤师峡谷集结完毕！',
+      '现场观众欢呼声响彻整个场馆！',
+      `蓝色方${myTeam}！红色方${oppTeam}！`,
+      '兵线出发！比赛正式开始！',
+      '双方打野同时开始刷野！',
+      '辅助在河道布置了第一个视野！',
+      '上路已经开始激烈对线了！'
+    ],
+    lane: [
+      '上路兵线交汇了！',
+      '上路双方正在激烈对线！',
+      '双方补刀数几乎持平！',
+      '打野在下半区出现了！',
+      '中单推完线消失在视野中！',
+      '对方打野也在往中路靠！',
+      '这波中野博弈太关键了！',
+      '双方都在等对方先露破绽！'
+    ],
+    rotate: [
+      '中单消失了！他在往哪走？',
+      '辅助在三角草做了视野！',
+      '下路双人组开始压线了！',
+      '对方打野在你方上半区露头了！',
+      '双方中单都在找游走机会！',
+      '这波支援窗口稍纵即逝！',
+      '谁先动谁就能拿到主动权！',
+      '局势一触即发！'
+    ],
+    trade: [
+      '峡谷先锋刷新了！',
+      '双方辅助都在往资源区靠！',
+      '上单还在处理兵线！',
+      '谁能先到位谁就掌握主动！',
+      '这波资源团太关键了！',
+      '双方都在等队友集结！',
+      '经济差距就在这一波拉开！',
+      '能不能接？怎么接？'
+    ],
+    vision: [
+      '辅助在河道入口放了真眼！',
+      '你方队伍开始往资源区收缩！',
+      '对方打野在野区被看到了！',
+      '视野决定了这波团的胜负！',
+      '谁能先排掉对方的眼谁就能先手！',
+      '草里有人吗？真的有人吗？',
+      '双方辅助都在极限找视野！',
+      '这波视野博弈太刺激了！'
+    ],
+    fight: [
+      '双方在资源区集结了！',
+      '辅助在找开团角度！',
+      'ADC正在后排找输出位置！',
+      '对方上单打野顶在最前面！',
+      '技能都在CD！谁先出手？',
+      '团战一触即发！',
+      '这波团打赢了就能终结比赛！',
+      '所有人都绷紧了神经！'
+    ],
+    decisive: [
+      '大龙血量开始下降了！',
+      '双方都在等对方先交技能！',
+      '辅助的开团技能已经好了！',
+      '后排在找安全输出位置！',
+      '这就是决胜团！',
+      '一波定胜负！',
+      '所有人都在等那个关键闪现！',
+      '谁失误谁就回家！'
+    ],
+    finish: [
+      '兵线压到高地塔下了！',
+      '对方防守队员已经就位！',
+      '你方正在等兵线到位！',
+      '高地塔血量在下降！',
+      '推还是不推？',
+      '这一波就能结束一切！',
+      '所有人都在高地下面等着！',
+      '水晶就在眼前！'
+    ]
+  };
+  return feeds[kind] || feeds.setup;
 }
 function matchView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES, phase = phases[run.step];
@@ -791,10 +924,11 @@ function matchView() {
   <div class="phase-track" aria-label="第${run.step+1}个决策，共8个">${phases.map((ph,i)=>`<span class="${i<run.step?'done':i===run.step?'current':''}"><i>${i<run.step?'✓':String(i+1).padStart(2,'0')}</i><small>${ph.name}</small></span>`).join('')}</div>
   <div class="match-layout"><section class="broadcast"><div class="panel-title"><div>${icon('archive')}<h2>比赛直播</h2></div><span>你的视角 · ${p.name}</span></div>
     <div class="broadcast-feed" aria-label="比赛直播记录">${run.history.length>1 ? `<details class="past-feed"><summary>查看之前的 ${run.history.length-1} 次决策</summary>${run.history.slice(0,-1).map((h,i)=>`<div class="log-row"><time>${h.time}</time><div><span class="log-kind">你的选择 / ${h.phase}</span>${settledAction(i)}</div></div>`).join('')}</details>` : ''}
-    ${last ? `<div class="log-row result-log"><time>${last.time}</time><div><span class="log-kind">行动结算 / ${last.phase}</span>${settledAction(run.history.length-1)}</div></div>` : `<div class="log-row"><time>00:00</time><div><span class="log-kind">真实背景</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}
-    <div class="log-row active-log"><time>${phase.time}</time><div><span class="log-kind accent">${phase.name} / 游戏推演</span><p>${phase.copy}</p></div></div><div class="team-signal">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phase.signal}</p></div></div>
-    <div class="known-info">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div></div>
-    <div class="decision"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${choice.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
+    ${last ? `<div class="log-row result-log"><time>${last.time}</time><div><span class="log-kind">行动结算 / ${last.phase}</span>${settledAction(run.history.length-1)}</div></div>` : `<div class="log-row"><time>00:00</time><div><span class="log-kind">主播开场</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}
+    <div id="live-feed-container"></div>
+    <div class="log-row active-log" id="active-log" style="display:none"><time>${phase.time}</time><div><span class="log-kind accent">${phase.name} / 关键节点</span><p>${phase.copy}</p></div></div><div class="team-signal" id="team-signal" style="display:none">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phase.signal}</p></div></div>
+    <div class="known-info" id="known-info" style="display:none">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div></div>
+    <div class="decision" id="decision-panel" style="display:none"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${choice.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
   </section><aside class="match-sidebar"><section class="identity"><div style="display:flex;justify-content:space-between;align-items:center"><div class="side-overline">YOUR SEAT / 你的选手席</div><button class="ad-boost-btn" data-action="ad-boost">📺 广告强化 +1</button></div><div class="identity-main">${championImg(p,c)}<div><h2>${p.name}</h2><span>${c.team} · ${p.position}</span></div></div><div class="hero-name">${p.champion}<span>PATCH ${c.patch}</span></div><p>${p.task}</p><div class="stat-row"><span>经济</span><strong class="${run.gold>=0?'ready':'danger'}">${signed(run.gold)}</strong></div><div class="stat-row"><span>视野</span><strong>${run.vision}</strong></div><div class="stat-row"><span>配合</span><strong>${run.cohesion}</strong></div><div class="stat-row"><span>节奏</span><strong>${run.tempo}</strong></div><div class="stat-row"><span>对线</span><strong>${run.laning}</strong></div><div class="skill-row"><span>闪现</span><strong class="${run.flashReadyAt > phase.seconds ? 'muted' : 'ready'}">${run.flashReadyAt > phase.seconds ? `${run.flashReadyAt-phase.seconds} 秒` : '可用'}</strong></div><div class="skill-row"><span>大招</span><strong class="${phase.seconds<550 || run.ultReadyAt > phase.seconds ? 'muted' : 'ready'}">${phase.seconds<550 ? '未解锁 / 推演阶段' : run.ultReadyAt > phase.seconds ? `${run.ultReadyAt-phase.seconds} 秒` : '可用'}</strong></div></section>
   <section class="opponent-panel"><h3>对方首发<span>${c.opponent} / ${c.year}</span></h3>${c.enemies.map(e=>`<div class="enemy-row">${championImg(e,c)}<span>${e.name}<small>${e.champion}</small></span><small>${e.position}</small></div>`).join('')}</section><div class="tactical-note">${icon('info')}<p>${c.threats[run.step % c.threats.length]}</p></div></aside></div>`;
 }
@@ -878,9 +1012,41 @@ function render(focus = false) {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
     app.insertAdjacentHTML('beforeend', `<div class="mobile-entry"><span>${c.team} · ${p.name}<small>${p.champion} / ${p.position}</small></span><div class="mobile-entry-actions">${run && !run.finished ? '<button class="secondary" data-action="continue">继续已保存的对局</button>' : ''}<button class="primary" data-action="${open?'briefing':'unlock'}">${open?`以 ${p.name} 身份进入`:'观看广告后解锁'}</button></div></div>`);
   }
-  if (scene === 'play') app.insertAdjacentHTML('beforeend', '<button class="decision-jump secondary" data-action="decision-jump">前往当前决策 ↓</button>');
   app.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;img.parentElement.classList.add('missing');},{once:true}));
-  if (focus) { const m=document.querySelector('#main'); if(m) m.focus({ preventScroll: true }); window.scrollTo({top:0,behavior:'instant'}); }
+  if (focus && scene !== 'play') { const m=document.querySelector('#main'); if(m) m.focus({ preventScroll: true }); window.scrollTo({top:0,behavior:'instant'}); }
+  if (scene === 'play' && !run?.intermission) {
+    const broadcast = document.querySelector('.broadcast');
+    if (broadcast) setTimeout(()=>broadcast.scrollIntoView({block:'start',behavior:'instant'}), 50);
+  }
+  if (scene === 'play' && !run?.intermission) {
+    const container = document.getElementById('live-feed-container');
+    const activeLog = document.getElementById('active-log');
+    const teamSignal = document.getElementById('team-signal');
+    const knownInfo = document.getElementById('known-info');
+    const decisionPanel = document.getElementById('decision-panel');
+    const feed = document.querySelector('.broadcast-feed');
+    if (container && feed) {
+      const msgs = liveFeed(run ? getPhases(getChapter(run.chapterId))[run.step].kind : 'setup', run ? getChapter(run.chapterId) : null);
+      let i = 0;
+      const timer = setInterval(() => {
+        if (i >= msgs.length) {
+          clearInterval(timer);
+          if (activeLog) activeLog.style.display = '';
+          if (teamSignal) teamSignal.style.display = '';
+          if (knownInfo) knownInfo.style.display = '';
+          if (decisionPanel) decisionPanel.style.display = '';
+          setTimeout(()=>feed.scrollTop = feed.scrollHeight, 100);
+          return;
+        }
+        const div = document.createElement('div');
+        div.className = 'log-row live-feed-row';
+        div.innerHTML = `<time>${getPhases(getChapter(run.chapterId))[run.step].time}</time><div><span class="log-kind">主播</span><p>${msgs[i]}</p></div>`;
+        container.appendChild(div);
+        feed.scrollTop = feed.scrollHeight;
+        i++;
+      }, 1000);
+    }
+  }
 }
 function showModal(title, body, footer = '') {
   if (modal.open) modal.close();
@@ -976,7 +1142,6 @@ app.addEventListener('click', event=>{
   if(action==='reward-rewind'){if(rewindReady)selectRewindNode();else reward('rewind');}
   if(action==='reward-deep')reward('deep');
   if(action==='deep-open')document.querySelector('#deep-review').scrollIntoView({behavior:'smooth'});
-  if(action==='decision-jump')document.querySelector('.decision').scrollIntoView({behavior:'smooth',block:'start'});
   if(action==='next-game'){run=nextGame(run);persist();render(true);cue();}
   if(action==='sound'){sound=!sound;if(sound){getBGM().play().catch(()=>{});}else{getBGM().pause();}render();}
   if(action==='help')help();
