@@ -25,7 +25,7 @@ export const CHAPTERS = [
     ]
   },
   {
-    id: 'rng2018', year: '2018', team: 'RNG', opponent: 'G2', title: '把那一年的梦，再续一局', short: '釜山，未完的金色雨', event: '全球总决赛 · 四分之一决赛', city: 'BUSAN', date: '2018.10.20', stage: '八强', patch: '8.19', assetPatch: '8.19.1', game: 5, historicalDuration: '38:38', historicalScore: 'RNG 2 : 3 G2', historicalResult: 'RNG 在第五局落败，G2 以 3:2 晋级四强。', goal: '赢下决胜局，晋级四强。此章胜利不等于夺冠。', unlocked: false, startingScore: [2, 2],
+    id: 'rng2018', year: '2018', team: 'RNG', opponent: 'G2', title: '把那一年的梦，再续一局', short: '釜山，未完的金色雨', event: '全球总决赛 · 四分之一决赛', city: 'BUSAN', date: '2018.10.20', stage: '八强', patch: '8.19', assetPatch: '8.19.1', game: 5, historicalDuration: '38:38', historicalScore: 'RNG 2 : 3 G2', historicalResult: 'RNG 在第五局落败，G2 以 3:2 晋级四强。', goal: '赢下决胜局，晋级四强。此章胜利不等于夺冠。', unlocked: true, startingScore: [2, 2],
     description: '春夏双冠、MSI 冠军。曾经以为会一直赢下去的那一年，在釜山迎来了决胜局。把时间拨回开局，这一次，故事还没结束。',
     players: [
       player('Letme', '上单', '赛恩', 'Sion', '前排承伤 · 边线处理', { engage: '蛮横冲撞寻找进场角度', protect: '蓄力残虐猛击阻挡突进', escape: '掩护队友后退' }),
@@ -73,7 +73,7 @@ export const CHAPTERS = [
     ]
   },
   {
-    id: 'jdg2023', year: '2023', team: 'JDG', opponent: 'T1', title: '全年大满贯，差最后一步', short: '首尔的那座山', event: '全球总决赛 · 半决赛', city: 'SEOUL', date: '2023.11.12', stage: '半决赛', patch: '13.19', assetPatch: '13.19.1', game: 1, seriesTotal: 3, historicalScore: 'JDG 1 : 3 T1', historicalResult: 'T1 以 3:1 战胜 JDG，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: false, startingScore: [0, 0],
+    id: 'jdg2023', year: '2023', team: 'JDG', opponent: 'T1', title: '全年大满贯，差最后一步', short: '首尔的那座山', event: '全球总决赛 · 半决赛', city: 'SEOUL', date: '2023.11.12', stage: '半决赛', patch: '13.19', assetPatch: '13.19.1', game: 1, seriesTotal: 3, historicalScore: 'JDG 1 : 3 T1', historicalResult: 'T1 以 3:1 战胜 JDG，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: true, startingScore: [0, 0],
     description: '春冠、夏冠、MSI 冠军。全年大满贯只差最后一步。半决赛面对 T1，第一场就输了。这一次，从第一局开始。',
     players: [
       player('369', '上单', '兰博', 'Rumble', '对线压制 · 团战分割', { engage: '恒温灼烧封锁敌方走位，火焰散射补伤害', protect: '火焰散射减速突进者，为后排争取空间', escape: '用火焰屏障掩护自己和队友后撤' }),
