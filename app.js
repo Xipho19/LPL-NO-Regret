@@ -329,7 +329,7 @@ app.addEventListener('click', event=>{
   const action=button.dataset.action;
   if(action==='home'){scene='home';render(true);}
   if(action==='start-game'){scene='catalog';showGrid=true;render(true);}
-  if(action==='back-grid'){showGrid=true;render(true);}
+  if(action==='back-grid'){scene='catalog';showGrid=true;render(true);}
   if(action==='nav'){scene=button.dataset.view;render(true);}
   if(action==='chapter'){chapterId=button.dataset.id;playerIndex=chapterId==='blg2024'?2:3;showGrid=false;render();}
   if(action==='player'){playerIndex=Number(button.dataset.index);render();}
