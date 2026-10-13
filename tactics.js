@@ -17,9 +17,10 @@ export function tacticalChoices(run) {
     disabled: a === 1 && [5, 6].includes(i) && run.ultReadyAt > getPhases(c)[i].seconds,
     supported, visionNeed,
     baseGold: a === 0 ? safeGold : a === 1 ? (supported ? 850 + bonus : -650) : [1, 2, 3, 7].includes(i) ? 540 : -900,
+    gamble: a === 2 ? 0.35 : null,
     note: a === 0 ? `补充视野与接应；${hold ? '让出当前资源窗口，经济收益减少 500。' : i < 5 ? '经济收益较小，保留下一轮联动条件。' : '接应达到 2 才能兑现完整反打收益。'}`
       : a === 1 ? `需要视野 ${visionNeed}、接应 2（当前 ${run.vision}/${run.cohesion}）；${supported ? '已具备条件，行动消耗 1 级视野。' : '条件不足，可能被反打。'}${bonus ? `这是${p.position}的职责窗口，成功额外收益 150。` : ''}`
-      : [1, 2, 3, 7].includes(i) ? '交换资源获得 540 经济；视野、接应和节奏各降低 1。' : '缺少协同的高风险路线；失败会损失经济与闪现。'
+      : [1, 2, 3, 7].includes(i) ? '高风险压线：35% 概率拿到线杀+900经济，65% 被反蹲送掉节奏。' : '关键操作：35% 概率打掉对方核心赢下团战，65% 自己先被秒。'
   }));
 }
 export function tacticalReading(run, index) {

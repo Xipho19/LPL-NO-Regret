@@ -73,7 +73,29 @@ export function advance(run, actionIndex) {
       result = 'risk';
     }
   }
-  if (run.rulesVersion === 2) gold = choice.baseGold;
+  if (run.rulesVersion === 2) {
+    if (choice.gamble != null) {
+      const win = Math.random() < choice.gamble;
+      if (win) {
+        gold = choice.baseGold > 0 ? choice.baseGold + 400 : 1200;
+        next.cohesion = clamp(run.cohesion + 1, 0, 5);
+        next.tempo = clamp(run.tempo + 2, -3, 5);
+        next.kills[0] += choice.baseGold > 0 ? 2 : 3;
+        outcome = choice.baseGold > 0 ? '你冒险压线寻找机会，抓到对手走位失误，一套打退对方并拿到线杀。这次赌博成功了，经济和线权都到手。' : '你抓住对手技能真空期果断上前！关键输出拉满，对方核心被瞬间融化，团战打赢了。这波冒险值了。';
+        result = 'good';
+      } else {
+        gold = choice.baseGold;
+        next.cohesion = clamp(run.cohesion - 1, 0, 5);
+        next.tempo = clamp(run.tempo - 1, -3, 5);
+        next.vision = clamp(run.vision - 1, 0, 5);
+        next.kills[1] += choice.baseGold > 0 ? 1 : 2;
+        outcome = choice.baseGold > 0 ? '你冒险压线，但对手早有埋伏。被抓掉一波，经济反而落后了。' : '你冲得太深了，对手集火你先被秒。团战少了核心输出，队伍只能后撤。';
+        result = 'risk';
+      }
+    } else {
+      gold = choice.baseGold;
+    }
+  }
   if (choice.usesUlt) next.ultReadyAt = phase.seconds + 120;
   if (result === 'risk') {
     if (next.flashReadyAt <= phase.seconds) {
