@@ -54,7 +54,7 @@ dialog{width:min(540px,calc(100% - 30px));max-height:calc(100dvh - 40px);padding
 .ach-card.unlocked{border-color:var(--lime);background:rgba(211,223,155,.06)}
 .ach-card.locked{opacity:.45}
 .ach-icon{width:28px;height:28px;margin:0 auto 8px;color:var(--lime)}
-.ach-logo{width:56px;height:56px;object-fit:contain;margin:0 auto 8px;display:block}
+.ach-logo{width:64px;height:64px;object-fit:cover;margin:0 auto 8px;display;border-radius:6px;background:#1a1d1a}
 .ach-lock{font-size:22px;line-height:28px}
 .ach-card h3{font:600 13px 'Space Grotesk',var(--font);margin-bottom:4px}
 .ach-card p{font-size:10px;color:var(--muted);line-height:1.4}
