@@ -1,4 +1,4 @@
-const player = (name, position, champion, championId, task, kit) => ({ name, position, champion, championId, task, kit });
+const player = (name, position, champion, championId, task, kit, heroPool) => ({ name, position, champion, championId, task, kit, heroPool: heroPool || [{champion, championId}] });
 export const CHAPTERS = [
   {
     id: 'blg2024', year: '2024', team: 'BLG', opponent: 'T1', title: '距冠军，只差最后一局', short: '伦敦的最后一夜', event: '全球总决赛 · 决赛', city: 'LONDON', date: '2024.11.02', stage: '决赛', patch: '14.18', assetPatch: '14.18.1', game: 5, historicalDuration: '32:13', historicalScore: 'BLG 2 : 3 T1', historicalResult: 'BLG 在第五局落败，T1 以 3:2 赢得冠军。', goal: '赢下决胜局，捧起召唤师奖杯。', unlocked: true, startingScore: [2, 2],
@@ -52,11 +52,11 @@ export const CHAPTERS = [
     id: 'tes2020', year: '2020', team: 'TES', opponent: 'SN', title: '上海半决赛，差一步进决赛', short: '2020 秋冬的金色雨没有落下', event: '全球总决赛 · 半决赛', city: 'SHANGHAI', date: '2020.10.25', stage: '半决赛', patch: '10.19', assetPatch: '10.19.1', game: 1, seriesTotal: 3, historicalScore: 'TES 1 : 3 SN', historicalResult: 'SN 以 3:1 战胜 TES，晋级决赛。', goal: '赢下第一局，改写系列赛走向。此章胜利不等于晋级。', unlocked: true, startingScore: [0, 0],
     description: 'MSC 冠军、春夏常规赛第一。所有人都在等 TES 进决赛。但第一场比赛，你们就输了。这一次，从第一局开始。',
     players: [
-      player('369', '上单', '杰斯', 'Jayce', '线上压制 · 传送支援', { engage: '开启闪电冲刺，电能震荡接加速之门消耗', protect: '切换锤形态，雷霆一击击退突进', escape: '开启加速之门，切换锤形态快速撤离' }),
-      player('Karsa', '打野', '潘森', 'Pantheon', '前期节奏 · 入侵反蹲', { engage: '贯星长枪起跳，接盾跃晕住目标', protect: '保留神枪盾阵格挡敌方爆发', escape: '用盾跃跳离战场，脱离集火范围' }),
-      player('knight', '中单', '奥莉安娜', 'Orianna', '推线团战 · 大招位置', { engage: '指令：冲击波拉回集中目标', protect: '指令：保护套住被突进的队友', escape: '用指令：冲击波调整位置后后撤' }),
-      player('JackeyLove', 'ADC', '烬', 'Jhin', '远程狙击 · 残局收割', { engage: '完美审判远程狙击暴露目标', protect: '保留束缚手雷保护自身安全', escape: '用队友位置作掩护，装填后后撤' }),
-      player('yuyanjia', '辅助', '腕豪', 'Sett', '对线压制 · 开团保护', { engage: '叹为观止抱回敌方关键人物', protect: '刻意挥拳击退突进者', escape: '强手裂颅晕眩后拉开距离' })
+      player('369', '上单', '杰斯', 'Jayce', '线上压制 · 传送支援', { engage: '开启闪电冲刺，电能震荡接加速之门消耗', protect: '切换锤形态，雷霆一击击退突进', escape: '开启加速之门，切换锤形态快速撤离' }, [{champion:'杰斯',championId:'Jayce'},{champion:'鳄鱼',championId:'Renekton'},{champion:'纳尔',championId:'Gnar'},{champion:'卢锡安',championId:'Lucian'}]),
+      player('Karsa', '打野', '潘森', 'Pantheon', '前期节奏 · 入侵反蹲', { engage: '贯星长枪起跳，接盾跃晕住目标', protect: '保留神枪盾阵格挡敌方爆发', escape: '用盾跃跳离战场，脱离集火范围' }, [{champion:'潘森',championId:'Pantheon'},{champion:'豹女',championId:'Nidalee'},{champion:'盲僧',championId:'LeeSin'},{champion:'男枪',championId:'Graves'}]),
+      player('knight', '中单', '奥莉安娜', 'Orianna', '推线团战 · 大招位置', { engage: '指令：冲击波拉回集中目标', protect: '指令：保护套住被突进的队友', escape: '用指令：冲击波调整位置后后撤' }, [{champion:'奥莉安娜',championId:'Orianna'},{champion:'塞拉斯',championId:'Sylas'},{champion:'妖姬',championId:'Leblanc'},{champion:'卡牌',championId:'TwistedFate'}]),
+      player('JackeyLove', 'ADC', '烬', 'Jhin', '远程狙击 · 残局收割', { engage: '完美审判远程狙击暴露目标', protect: '保留束缚手雷保护自身安全', escape: '用队友位置作掩护，装填后后撤' }, [{champion:'烬',championId:'Jhin'},{champion:'卡莎',championId:'Kaisa'},{champion:' ez',championId:'Ezreal'},{champion:'寒冰',championId:'Ashe'}]),
+      player('yuyanjia', '辅助', '腕豪', 'Sett', '对线压制 · 开团保护', { engage: '叹为观止抱回敌方关键人物', protect: '刻意挥拳击退突进者', escape: '强手裂颅晕眩后拉开距离' }, [{champion:'腕豪',championId:'Sett'},{champion:'锤石',championId:'Thresh'},{champion:'洛',championId:'Rakan'},{champion:'蕾欧娜',championId:'Leona'}])
     ],
     enemies: [player('Bin', '上单', '悟空', 'MonkeyKing'), player('SofM', '打野', '李青', 'LeeSin'), player('Angel', '中单', '阿兹尔', 'Azir'), player('huanfeng', 'ADC', '伊泽瑞尔', 'Ezreal'), player('SwordArt', '辅助', '洛', 'Rakan')],
     threats: ['Bin 的悟空配合 SofM 有极快的上路启动速度，369 需要保持安全距离。', 'Angel 的沙皇在中路有极强的推线和区域控制，游走前先确认他的位置。', 'huanfeng 的伊泽瑞尔poke距离很远，团战前需要维持血量优势。'],

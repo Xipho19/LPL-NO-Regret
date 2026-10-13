@@ -139,6 +139,13 @@ export function nextGame(run) {
   next.history = [];
   return next;
 }
+export function getChampionForGame(run, playerIndex) {
+  const chapter = getChapter(run.chapterId);
+  const p = chapter.players[playerIndex];
+  if (!p.heroPool || p.heroPool.length <= 1) return { champion: p.champion, championId: p.championId };
+  const idx = (run.gameNumber - 1) % p.heroPool.length;
+  return p.heroPool[idx];
+}
 export function rewind(run, nodeIndex = run.history.length - 1) {
   if (!run.finished || !run.history.length) throw new Error('Rewind is available after a completed match');
   if (!Number.isInteger(nodeIndex) || nodeIndex < 0 || nodeIndex >= run.history.length) throw new Error('Invalid rewind node');
