@@ -201,7 +201,7 @@ function render(focus = false) {
   else if (scene === 'catalog' && showGrid) { app.innerHTML = shell(gridView()); }
   else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
   app.classList.toggle('catalog-scene', scene === 'catalog');
-  if (scene === 'catalog') {
+  if (scene === 'catalog' && !showGrid) {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
     app.insertAdjacentHTML('beforeend', `<div class="mobile-entry"><span>${c.team} · ${p.name}<small>${p.champion} / ${p.position}</small></span><div class="mobile-entry-actions">${run && !run.finished ? '<button class="secondary" data-action="continue">继续已保存的对局</button>' : ''}<button class="primary" data-action="${open?'briefing':'unlock'}">${open?`以 ${p.name} 身份进入`:'观看广告体验本章'}</button></div></div>`);
   }
