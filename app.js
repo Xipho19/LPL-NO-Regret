@@ -34,7 +34,7 @@ let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x &
 let unlockedAchievements = Array.isArray(saved.achievements) ? saved.achievements : [];
 
 const ACHIEVEMENTS = [
-  { id:'first_win', icon:'trophy', name:'你做到了', desc:'赢下任意一局比赛' },
+  { id:'first_win', icon:'trophy', logo:'./assets/ach-first-win.jpg', name:'你做到了', desc:'赢下任意一局比赛' },
   { id:'rng_first', icon:'flag', logo:'./assets/logo-rng.png', name:'救赎开始', desc:'用 RNG 任意选手赢下 2018 八强战' },
   { id:'rng_all', icon:'star', logo:'./assets/logo-rng.png', name:'全员无憾', desc:'用 RNG 全部五名选手各赢一局' },
   { id:'tes_first', icon:'zap', logo:'./assets/logo-tes.png', name:'破浪前行', desc:'用 TES 任意选手赢下 2020 半决赛' },
@@ -43,9 +43,9 @@ const ACHIEVEMENTS = [
   { id:'jdg_all', icon:'star', logo:'./assets/logo-jdg.png', name:'黄金之路', desc:'用 JDG 全部五名选手各赢一局' },
   { id:'blg_first', icon:'crown', logo:'./assets/logo-blg.png', name:'新王加冕', desc:'用 BLG 任意选手赢下 2024 决赛' },
   { id:'blg_all', icon:'star', logo:'./assets/logo-blg.png', name:'翻过那座山', desc:'用 BLG 全部五名选手各赢一局' },
-  { id:'all_chapters', icon:'trophy', name:'联赛霸主', desc:'四个章节都赢过至少一次' },
-  { id:'all_players', icon:'flag', name:'活着的传奇', desc:'用全部 20 名选手各赢一局' },
-  { id:'ten_games', icon:'trophy', name:'百折不挠', desc:'累计完成 10 局比赛' },
+  { id:'all_chapters', icon:'trophy', logo:'./assets/ach-league-champ.png', name:'联赛霸主', desc:'四个章节都赢过至少一次' },
+  { id:'all_players', icon:'flag', logo:'./assets/ach-legend.png', name:'活着的传奇', desc:'用全部 20 名选手各赢一局' },
+  { id:'ten_games', icon:'trophy', logo:'./assets/ach-undefeated.png', name:'永不言败', desc:'累计完成 10 局比赛' },
 ];
 
 function checkAchievements() {
