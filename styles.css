@@ -73,5 +73,6 @@ dialog{width:min(540px,calc(100% - 30px));max-height:calc(100dvh - 40px);padding
 .grid-card p{font-size:11px;color:var(--muted);margin-bottom:auto;margin-top:4px}
 .grid-score{font:700 36px 'Space Grotesk',monospace;margin-top:14px}
 .grid-hist{font-size:10px;color:#8c987f;margin-top:6px}
+.grid-lock{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.7);color:#ffd700;padding:4px 10px;border-radius:4px;font-size:11px;z-index:2}
 @media(max-width:640px){.grid-cards{grid-template-columns:1fr}.grid-card{min-height:140px}.grid-card-inner{padding:16px}.grid-card h2{font-size:18px}.grid-score{font-size:28px}}
 @media(max-width:640px){.home-content h1{font-size:38px}.home-content p{font-size:12px}}
