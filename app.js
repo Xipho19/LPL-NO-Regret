@@ -336,7 +336,7 @@ app.addEventListener('click', event=>{
   if(action==='start-game'){scene='catalog';showGrid=true;render(true);}
   if(action==='back-grid'){scene='catalog';showGrid=true;render(true);}
   if(action==='nav'){scene=button.dataset.view;if(scene==='catalog')showGrid=true;render(true);}
-  if(action==='chapter'){const id=button.dataset.id;if(['rng2018','jdg2023'].includes(id)&&!localStorage.getItem('ad_'+id)){if(confirm('📺 观看一段广告即可解锁此章节\n\n（点击确定模拟观看）')){localStorage.setItem('ad_'+id,'1');}else{return;}}chapterId=id;playerIndex=chapterId==='blg2024'?2:3;showGrid=false;render();}
+  if(action==='chapter'){chapterId=button.dataset.id;playerIndex=chapterId==='blg2024'?2:3;showGrid=false;render();}
   if(action==='player'){playerIndex=Number(button.dataset.index);render();}
   if(action==='briefing')briefing();
   if(action==='unlock')reward('chapter');
