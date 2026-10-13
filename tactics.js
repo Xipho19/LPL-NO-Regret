@@ -90,7 +90,7 @@ export function tacticalReading(run, index) {
   const gain = after.kills[0] - b.kills[0], loss = after.kills[1] - b.kills[1];
   const event = h.actionIndex === 0 ? `你选择${h.action}，视野从 ${b.vision} 提升到 ${after.vision}，队伍接应从 ${b.cohesion} 提升到 ${after.cohesion}。${[3,6].includes(index) ? '对手趁你方整理阵型交换地图空间，本轮扣除 500 机会成本；没有结算敌方大龙击杀。' : '队伍保留了下一次同步行动的条件。'}`
     : h.actionIndex === 1 ? ch.supported ? `你以${h.action}发起行动，已有信息与接应支撑队伍跟进；本轮新增 ${gain} 次团队击杀${after.towers[0]>b.towers[0] ? '，并转化为一座防御塔' : ''}。` : `你以${h.action}抢先接触，但${b.vision<ch.visionNeed?'入口信息不足':'队友接应不足'}，行动未形成有效联动，对手本轮新增 ${loss} 次击杀。`
-    : h.result === 'trade' ? `你选择${h.action}，用正面协同交换资源。经济到账，但接应降至 ${after.cohesion}、节奏降至 ${after.tempo}，下一轮不能沿用之前的进场判断。` : `你选择${h.action}，与团队支援范围脱节；对手本轮新增 ${loss} 次击杀，你方需要重建入口信息。`;
+    : h.result === 'trade' ? `你选择${h.action}，用正面协同交换资源。经济到账，但接应降至 ${after.cohesion}、节奏降至 ${after.tempo}，下一轮不能沿用之前的进场判断。` : `你选择${h.action}，与团队支援范围脱节；对手本轮新增 ${loss} 次击杀，你方在河道视野上落后了，需要重新做视野才能安全推进。`;
   const c2 = c, phases = getPhases(c2);
   return {
     context: `${phases[index].name}：${pressure[index]}。${p.name} · ${p.champion}：${event}`,
