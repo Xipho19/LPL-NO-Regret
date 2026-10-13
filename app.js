@@ -102,7 +102,7 @@ function cue() {
     osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .12); osc.onended = () => ctx.close();
   } catch { /* Sound is optional. */ }
 }
-const championImg = (p, c, cls = '') => { const cdn = `https://ddragon.leagueoflegends.com/cdn/${c.assetPatch}/img/champion/${p.championId}.png`; const fallback = `https://ddragon.leagueoflegends.com/cdn/14.18.1/img/champion/${p.championId}.png`; return `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="${cdn}" onerror="this.onerror=null;this.src='${fallback}'" alt="${esc(p.champion)} · ${c.patch}版本头像" loading="lazy"></span>`; };
+const championImg = (p, c, cls = '') => { const local = `assets/${c.assetPatch}/${p.championId}.png`; return `<span class="champion-img ${cls}" data-fallback="${esc(p.champion.slice(0, 1))}"><img src="${local}" onerror="this.style.display='none'" alt="${esc(p.champion)}" loading="lazy"></span>`; };
 const tag = (text, cls = '') => `<span class="tag ${cls}">${text}</span>`;
 function shell(content) {
   const nav = (id, name, glyph) => `<button class="nav-item ${scene === id || (id === 'catalog' && ['play','review'].includes(scene)) ? 'active' : ''}" data-action="nav" data-view="${id}">${icon(glyph)}<span>${name}</span>${id === 'catalog' ? '<span class="nav-count">04</span>' : ''}</button>`;
@@ -127,7 +127,7 @@ function gridView() {
 }
 
 function homeView() {
-  return `<section class="home-screen"><div class="home-bg"></div><div class="home-particles"><div class="p1"></div><div class="p2"></div><div class="p3"></div><div class="p4"></div></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE · 遗憾档案馆</span><h1>LPL：不再遗憾</h1><div class="home-divider"></div><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始改写 ${icon('arrow')}</button><div class="home-chapter-preview"><span>2018 RNG</span><span>2020 TES</span><span>2023 JDG</span><span>2024 BLG</span></div><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
+  return `<section class="home-screen"><div class="home-bg"></div><div class="home-particles"><div class="p1"></div><div class="p2"></div><div class="p3"></div><div class="p4"></div></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE · 遗憾档案馆</span><h1>LPL：不留遗憾</h1><div class="home-divider"></div><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始改写 ${icon('arrow')}</button><div class="home-chapter-preview"><span>2018 RNG</span><span>2020 TES</span><span>2023 JDG</span><span>2024 BLG</span></div><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
 }
 
 function catalog() {
@@ -220,7 +220,7 @@ function reviewView() {
   const et = endingType(run);
   const score = seriesScore(run, c);
   return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : '游戏推演结局 · 第1局为真实BP，后续局次为架空推演')}</div>
-  <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><a href="${c.source}" target="_blank" rel="noopener noreferrer">查看当局比赛记录 ↗</a></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${score} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
+  <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><small>比赛数据来源：gol.gg</small></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${score} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
   <details class="basic-events"><summary>展开 8 次选择与数值结算</summary><div class="review-timeline">${run.history.map((h,i)=>`<div class="review-event"><time>${h.time}</time><span class="review-dot ${h.result}"></span><div><strong>${h.phase}</strong><p>${esc(h.action)}</p><small>${esc(basic.events[i])}</small></div></div>`).join('')}</div></details></section>
 ${detailed ? deepReviewView() : '<section class="deep-preview"><h2>深度复盘会告诉你什么？</h2><p>胜负根因 → 关键转折 → 两种替代选择的终局验证 → 一条最少改动的获胜路线。</p><p>还会判断：只回溯最后一步，究竟能不能挽回本局。</p></section>'}
 <section class="review-actions"><div><h3>故事，仍然由你决定。</h3><p>免费重开始终可用，广告不会改变角色属性。</p></div><div class="review-action-buttons"><button class="secondary" data-action="restart">${icon('rewind')}免费重新开局</button>${!run.won?`<button class="primary" data-action="reward-rewind">${icon('play')}${rewindReady?'选择回溯节点（已解锁）':'观看广告，回溯任意节点'}</button>`:''}<button class="secondary" data-action="${detailed?'deep-open':'reward-deep'}">${icon(detailed?'check':'play')}${detailed?'已展开深度复盘':'观看广告，解锁深度复盘'}</button></div><small class="ad-disclosure">激励广告为开发版模拟；关闭不发奖励，完成后才解锁。</small></section><button class="text-button return-archive" data-action="back-grid">${icon('back')}返回档案馆，选择另一场比赛</button>`;
@@ -286,23 +286,15 @@ function startRun() {
 }
 
 // Replace this provider with a real SDK. Reward is granted ONLY by its completed result.
-class DemoAdProvider {
+class LampsAdProvider {
   show(placement) {
-    const names = { rewind: ['选择你的转折点','完成后可从本局全部决策节点中选择一处，回到该次选择之前。'], deep: ['看懂这局为什么输赢','完成后解锁胜负根因、关键转折、替代分支验证与最少改动获胜路线。'], chapter: ['再打开一份遗憾档案','完成后解锁一次完整章节体验，比赛中不再插广告。'] };
-    const [name, detail] = names[placement];
-    return new Promise(resolve=>{
-      let settled=false;
-      const finish = earned => { if(settled)return;settled=true;modal.removeEventListener('close',onClose);modal.removeEventListener('cancel',onCancel);modal.close();resolve({completed:earned}); };
-      const onClose=()=>finish(false);
-      const onCancel=()=>finish(false);
-      showModal(name, `<div class="demo-ad"><span>广告测试位 / 非真实商业广告</span>${icon('play')}<h3>把故事，留给下一种可能。</h3><p>${detail}</p></div><p class="modal-footnote">这是可测试的开发版广告流程，没有广告扣费、追踪或真实广告请求。</p>`, `<button class="secondary" id="ad-cancel">关闭，不领取</button><button class="primary" id="ad-complete">模拟观看完成 ${icon('check')}</button>`);
-      modal.addEventListener('close',onClose);modal.addEventListener('cancel',onCancel);
-      modal.querySelector('#ad-cancel').onclick=()=>finish(false);
-      modal.querySelector('#ad-complete').onclick=()=>finish(true);
-    });
+    if (window.LampsPlatform && typeof window.LampsPlatform.showRewardedVideo === 'function') {
+      return window.LampsPlatform.showRewardedVideo({ source: placement }).then(res => ({ completed: res.ok, message: res.message }));
+    }
+    return Promise.resolve({ completed: false, message: '广告不可用' });
   }
 }
-const adProvider = new DemoAdProvider();
+const adProvider = new LampsAdProvider();
 let adPending = false;
 async function reward(placement) {
   if(adPending)return;
@@ -329,11 +321,11 @@ function help() {
   showModal('把遗憾，交给下一次选择', `<div class="help-content"><h3>01 · 先选一场，再选一个人</h3><p>锁定真实比赛的首发与英雄。你只控制所选选手，其他九名选手保留当局身份。</p><h3>02 · 读信息，作决定</h3><p>视野与队友接应决定主动进攻能否兑现。持续独自行事会丢失接应；保持阵型也会让出一部分进攻机会。</p><h3>03 · 不靠广告赢比赛</h3><p>免费首章、基础复盘与免费重开始终可用。仅有失败回溯、深度复盘和额外章节三个自愿激励点位，开发版均为模拟。</p><h3>真实与推演</h3><p>参赛名单、英雄、版本、历史结果有比赛来源；开局介入后的时钟、经济、击杀和直播均为简化规则推演，不是录像逐帧复刻，也不是选手真实语音。</p></div>`, '<button class="primary" data-modal="close">明白了</button>');
 }
 function sources() {
-  showModal('历史资料与素材', `<div class="help-content"><p>每个章节绑定自己的年份、参赛名单、英雄和版本，禁止跨章节共用现役选手照片。</p>${CHAPTERS.map(c=>`<h3>${c.year} · ${c.team} vs ${c.opponent} · G${c.game}</h3><p>版本 ${c.patch}${c.historicalDuration ? '，真实本局时长 ' + c.historicalDuration : ''}。<a href="${c.source}" target="_blank" rel="noopener noreferrer">Games of Legends 当局记录 ↗</a></p>`).join('')}<h3>图片使用状态</h3><p>英雄头像来自 Riot Data Dragon 对应版本，本地无图时自动从 CDN 加载。</p><p>选手席背景为历史定妆照，阵容以当局首发为准。</p><h3>推演范围</h3><p>当前为规则驱动的文字决策原型，尚非完整伤害、装备、兵线与寻路模拟器。未冒充历史现场或官方授权游戏。</p></div>`, '<button class="primary" data-modal="close">返回游戏</button>');
+  showModal('历史资料与素材', `<div class="help-content"><p>每个章节绑定自己的年份、参赛名单、英雄和版本，禁止跨章节共用现役选手照片。</p>${CHAPTERS.map(c=>`<h3>${c.year} · ${c.team} vs ${c.opponent} · G${c.game}</h3><p>版本 ${c.patch}${c.historicalDuration ? '，真实本局时长 ' + c.historicalDuration : ''}。比赛记录来源：gol.gg</p>`).join('')}<h3>图片使用状态</h3><p>英雄头像来自 Riot Data Dragon 对应版本，本地无图时自动从 CDN 加载。</p><p>选手席背景为历史定妆照，阵容以当局首发为准。</p><h3>推演范围</h3><p>当前为规则驱动的文字决策原型，尚非完整伤害、装备、兵线与寻路模拟器。未冒充历史现场或官方授权游戏。</p></div>`, '<button class="primary" data-modal="close">返回游戏</button>');
 }
 function chapterInfo() {
   const c = getChapter(chapterId);
-  showModal(`${c.year} · ${c.team} vs ${c.opponent}`, `<p class="modal-lead">${c.event} · 第五局 · 版本 ${c.patch}</p><p>${c.description}</p><h3>双方当局首发</h3><div class="roster-table">${c.players.map((p,i)=>`<div><span>${p.position}</span><strong>${p.name}<small>${p.champion}</small></strong><strong>${c.enemies[i].name}<small>${c.enemies[i].champion}</small></strong></div>`).join('')}</div><details class="history-spoiler"><summary>展开真实历史赛果</summary><p>${c.historicalResult} 当局时长 ${c.historicalDuration}。</p></details><a href="${c.source}" target="_blank" rel="noopener noreferrer">核对当局比赛记录 ↗</a>`, '<button class="primary" data-modal="close">返回选手席</button>');
+  showModal(`${c.year} · ${c.team} vs ${c.opponent}`, `<p class="modal-lead">${c.event} · 第五局 · 版本 ${c.patch}</p><p>${c.description}</p><h3>双方当局首发</h3><div class="roster-table">${c.players.map((p,i)=>`<div><span>${p.position}</span><strong>${p.name}<small>${p.champion}</small></strong><strong>${c.enemies[i].name}<small>${c.enemies[i].champion}</small></strong></div>`).join('')}</div><details class="history-spoiler"><summary>展开真实历史赛果</summary><p>${c.historicalResult} 当局时长 ${c.historicalDuration}。</p></details><small>比赛数据来源：gol.gg</small>`, '<button class="primary" data-modal="close">返回选手席</button>');
 }
 
 app.addEventListener('click', event=>{
