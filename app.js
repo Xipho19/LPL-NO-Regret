@@ -161,9 +161,11 @@ function intermissionView() {
 }
 function matchView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES, phase = phases[run.step];
-  const gc = getChampionForGame(run, run.playerIndex);
-  p.champion = gc.champion; p.championId = gc.championId;
-  c.enemies.forEach((e,i)=>{ const eg = getChampionForGame({...run, playerIndex:i}, i); e.champion = eg.champion; e.championId = eg.championId; });
+  // 双方英雄去重
+  const used = new Set();
+  c.players.forEach((pp,i)=>{ const g = getChampionForGame(run, i); pp.champion = g.champion; pp.championId = g.championId; used.add(g.championId); });
+  c.enemies.forEach((e,i)=>{ let g = getChampionForGame(run, i); let pool = e.heroPool || [{champion:e.champion,championId:e.championId}]; let idx = (run.gameNumber - 1) % pool.length; while(used.has(pool[idx].championId) && used.size < 10) { idx = (idx+1) % pool.length; } e.champion = pool[idx].champion; e.championId = pool[idx].championId; used.add(e.championId); });
+  p.champion = c.players[run.playerIndex].champion; p.championId = c.players[run.playerIndex].championId;
   const choice = choicesFor(run);
   const vision = run.vision >= 3 ? '河道视野较完整' : run.vision >= 1 ? '部分区域可见' : '河道信息不足';
   const formation = run.cohesion >= 3 ? '队友接应良好' : run.cohesion >= 1 ? '需要确认队友距离' : '阵型出现脱节';
