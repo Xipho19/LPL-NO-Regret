@@ -122,7 +122,7 @@ function gridView() {
 }
 
 function homeView() {
-  return `<section class="home-screen"><div class="home-bg"></div><div class="home-particles"></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE · 遗憾档案馆</span><h1>LPL：不再遗憾</h1><div class="home-divider"></div><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始改写 ${icon('arrow')}</button><div class="home-chapter-preview"><span>2018 RNG</span><span>2020 TES</span><span>2023 JDG</span><span>2024 BLG</span></div><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
+  return `<section class="home-screen"><div class="home-bg"></div><div class="home-particles"><div class="p1"></div><div class="p2"></div><div class="p3"></div><div class="p4"></div></div><div class="home-content"><span class="home-eyebrow">THE SECOND CHANCE · 遗憾档案馆</span><h1>LPL：不再遗憾</h1><div class="home-divider"></div><p>回到那些年，你放不下的那场比赛。<br>真实阵容，你的决定，另一种结局。</p><button class="home-start" data-action="start-game">开始改写 ${icon('arrow')}</button><div class="home-chapter-preview"><span>2018 RNG</span><span>2020 TES</span><span>2023 JDG</span><span>2024 BLG</span></div><small class="home-note">本地存档 · 无需登录 · 关键决策不限时</small></div></section>`;
 }
 
 function catalog() {
