@@ -254,7 +254,7 @@ function render(focus = false) {
   }
   if (scene === 'play') app.insertAdjacentHTML('beforeend', '<button class="decision-jump secondary" data-action="decision-jump">前往当前决策 ↓</button>');
   app.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;img.parentElement.classList.add('missing');},{once:true}));
-  if (focus) { document.querySelector('#main').focus({ preventScroll: true }); window.scrollTo({top:0,behavior:'instant'}); }
+  if (focus) { const m=document.querySelector('#main'); if(m) m.focus({ preventScroll: true }); window.scrollTo({top:0,behavior:'instant'}); }
 }
 function showModal(title, body, footer = '') {
   if (modal.open) modal.close();
