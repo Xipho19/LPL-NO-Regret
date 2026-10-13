@@ -15,11 +15,11 @@ export function choicesFor(run) {
   const chapter = getChapter(run.chapterId), p = chapter.players[run.playerIndex], phases = getPhases(chapter);
   const time = phases[run.step].seconds;
   return ACTIONS[p.position][run.step].map((label, index) => {
-    let note = ['降低暴露风险，为下一轮行动留出空间。', '争取主动，需要队友位置与视野支持。', '改变资源分配，但可能失去团队接应。'][index];
+    let note = ['降低暴露风险，为下一轮行动留出空间。', '争取主动，需要队友位置与视野支持。', '高风险操作：35% 概率成功拿大优势，65% 失败送掉节奏。'][index];
     if (run.step === 5 || run.step === 6) {
       if (index === 0) note = p.kit.protect + '；等待对方先暴露意图。';
       if (index === 1) note = p.kit.engage + '；大招需要处于可用状态。';
-      if (index === 2) note = '路线更激进，对手可以转火或反打。';
+      if (index === 2) note = '关键操作窗口：35% 概率打掉对方核心赢下团战，65% 自己先被秒。';
     }
     const usesUlt = index === 1 && (run.step === 5 || run.step === 6);
     return { label, note, usesUlt, disabled: usesUlt && run.ultReadyAt > time };
@@ -53,13 +53,25 @@ export function advance(run, actionIndex) {
     if (supported) next.kills[0] += 2; else next.kills[1] += 2;
   } else {
     const farm = [1, 2, 3, 7].includes(run.step);
-    gold = farm ? 260 : -900;
-    next.cohesion = clamp(run.cohesion - 1, 0, 5);
-    next.tempo = clamp(run.tempo - 1, -3, 5);
-    next.vision = clamp(run.vision - 1, 0, 5);
-    outcome = farm ? '你保住了一部分个人发育，但正面暂时少了你的支援。对手利用人数差向前压进，团队需要重新寻找集合位置。' : '你与队友之间出现了距离。对手选择转火落单位置，队伍只能后撤，河道控制权随之丢失。';
-    result = farm ? 'trade' : 'risk';
-    if (!farm) next.kills[1] += 2;
+    // 高风险操作：35% 概率成功（高回报），65% 失败（惩罚）
+    const gamble = Math.random() < 0.35;
+    if (gamble) {
+      gold = farm ? 900 : 1200;
+      next.cohesion = clamp(run.cohesion + 1, 0, 5);
+      next.tempo = clamp(run.tempo + 2, -3, 5);
+      next.vision = clamp(run.vision - 1, 0, 5);
+      next.kills[0] += farm ? 2 : 3;
+      outcome = farm ? '你冒险压线寻找机会，抓到对手走位失误，一套打退对方并拿到线杀。这次赌博成功了，经济和线权都到手。' : '你抓住对手技能真空期果断上前！关键输出拉满，对方ADC被瞬间融化，团战打赢了。这波冒险值了。';
+      result = 'good';
+    } else {
+      gold = farm ? -200 : -900;
+      next.cohesion = clamp(run.cohesion - 1, 0, 5);
+      next.tempo = clamp(run.tempo - 1, -3, 5);
+      next.vision = clamp(run.vision - 1, 0, 5);
+      next.kills[1] += farm ? 1 : 2;
+      outcome = farm ? '你冒险压线，但对手早有埋伏。被抓掉一波，经济反而落后了。' : '你冲得太深了，对手集火你先被秒。团战少了核心输出，队伍只能后撤。';
+      result = 'risk';
+    }
   }
   if (run.rulesVersion === 2) gold = choice.baseGold;
   if (choice.usesUlt) next.ultReadyAt = phase.seconds + 120;
