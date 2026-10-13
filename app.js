@@ -1,4 +1,4 @@
-import { CHAPTERS, PHASES } from './data.js?v=5';
+import { CHAPTERS, PHASES } from './data.js?v=6';
 import { createRun, getChapter, choicesFor, advance, rewind, validateRun, nextGame, getChampionForGame } from './engine.js';
 import { basicReview, deepReview, signed, stateText } from './review.js';
 import { actionCommentary } from './commentary.js';
@@ -163,6 +163,7 @@ function matchView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES, phase = phases[run.step];
   const gc = getChampionForGame(run, run.playerIndex);
   p.champion = gc.champion; p.championId = gc.championId;
+  c.enemies.forEach((e,i)=>{ const eg = getChampionForGame({...run, playerIndex:i}, i); e.champion = eg.champion; e.championId = eg.championId; });
   const choice = choicesFor(run);
   const vision = run.vision >= 3 ? '河道视野较完整' : run.vision >= 1 ? '部分区域可见' : '河道信息不足';
   const formation = run.cohesion >= 3 ? '队友接应良好' : run.cohesion >= 1 ? '需要确认队友距离' : '阵型出现脱节';
