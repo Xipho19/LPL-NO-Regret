@@ -42,7 +42,7 @@ dialog{width:min(540px,calc(100% - 30px));max-height:calc(100dvh - 40px);padding
 .home-eyebrow{font:10px 'Space Grotesk',monospace;letter-spacing:6px;color:var(--accent);display:block;margin-bottom:20px}
 .home-content h1{font:800 72px 'Space Grotesk',var(--font);letter-spacing:-2px;margin-bottom:8px;line-height:1;background:linear-gradient(180deg,#f5e6a8 0%,#d4a843 40%,#8b6914 50%,#d4a843 60%,#f5e6a8 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))}
 .lpl-tag{display:none}
-.home-divider{width:60px;height:2px;background:var(--lime);margin:20px auto;box-shadow:0 0 10px var(--lime)}
+.home-divider{display:none}
 .home-content p{color:#c8d4bc;font-size:14px;line-height:1.9;margin-bottom:36px}
 .home-start{background:linear-gradient(180deg,#f5e6a8 0%,#d4a843 50%,#b8941f 100%);color:#1a1a1a;border:1px solid #f5e6a8;padding:18px 56px;border-radius:6px;font-size:16px;font-weight:800;display:inline-flex;align-items:center;gap:10px;transition:all .2s;cursor:pointer;animation:pulse 2.5s ease-in-out infinite;box-shadow:0 4px 20px rgba(212,168,67,.4),inset 0 1px 0 rgba(255,255,255,.4)}
 .home-start:hover{background:linear-gradient(180deg,#fff0b8 0%,#e8b84a 50%,#c8a025 100%);box-shadow:0 6px 30px rgba(212,168,67,.6),inset 0 1px 0 rgba(255,255,255,.5);transform:translateY(-1px)}
