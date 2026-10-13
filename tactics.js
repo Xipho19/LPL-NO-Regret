@@ -69,7 +69,7 @@ export function tacticalChoices(run) {
     labels = [`稳步推进，等对手失误`, `集体压上，强拆高地`, `独自前压逼水晶，35% 一波结束`];
     notes = [
       `稳推：慢慢磨，不给机会。经济+${safeGold}。`,
-      `强推：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported':'能推掉。':'可能被反打。'}`,
+      `强推：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'能推掉。':'可能被反打。'}`,
       `赌博一波：35% 推掉水晶赢下比赛，65% 被反一波翻盘。`
     ];
   }
