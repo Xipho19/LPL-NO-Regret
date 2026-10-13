@@ -10,6 +10,7 @@ const esc = text => String(text).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt
 const icons = {
   archive: '<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M9 13h6M7 3h10"/>',
   journey: '<path d="M4 19V5m0 14h16M8 15l4-5 4 2 4-7"/>',
+  trophy: '<path d="M8 21h8m-4-4v4M7 4h10v5a5 5 0 01-10 0V4zM7 6H4a2 2 0 002 5h1m8-5h3a2 2 0 01-2 5h-1"/>',
   book: '<path d="M12 6v15M3 4c3-1 6 0 9 2 3-2 6-3 9-2v15c-3-1-6 0-9 2-3-2-6-3-9-2z"/>',
   arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
   back: '<path d="M19 12H5m6-6-6 6 6 6"/>',
@@ -99,11 +100,11 @@ function shell(content) {
   return `<aside class="sidebar">
     <a href="#" class="brand" data-action="home" aria-label="不再遗憾首页"><span class="brand-mark">↶</span><span>不再遗憾<small>THE SECOND CHANCE</small></span></a>
     <div class="sidebar-label">你的平行赛场</div>
-    <nav aria-label="主要导航">${nav('catalog','遗憾档案馆','archive')}${nav('journey','我的改写','journey')}<button class="nav-item" data-action="help">${icon('book')}<span>游玩指南</span></button></nav>
+    <nav aria-label="主要导航">${nav('catalog','遗憾档案馆','archive')}${nav('journey','我的改写','journey')}${nav('achievements','成就馆','trophy')}<button class="nav-item" data-action="help">${icon('book')}<span>游玩指南</span></button></nav>
     <div class="sidebar-note"><span class="tiny-dot"></span><span>故事的另一种可能<br><small>真实阵容，属于你的决定。</small></span></div>
     <div class="sidebar-bottom"><span class="version">PLAYABLE BUILD · 0.1</span><button class="text-button" data-action="sources">${icon('info')}历史资料与素材</button></div>
   </aside>
-  <div class="workspace"><header class="topbar"><div class="breadcrumb">平行赛场 <span>/</span> ${scene === 'journey' ? '我的改写' : scene === 'play' ? '比赛进行中' : scene === 'review' ? '赛后复盘' : '遗憾档案馆'}</div><div class="top-actions"><button class="sound-button ${sound ? 'on' : ''}" data-action="sound" aria-pressed="${sound}" aria-label="${sound ? '关闭' : '开启'}提示音">${icon('sound')}<span>提示音${sound ? '开' : '关'}</span></button><span class="local-label"><span class="tiny-dot"></span>本地存档</span></div></header>
+  <div class="workspace"><header class="topbar"><div class="breadcrumb">平行赛场 <span>/</span> ${scene === 'journey' ? '我的改写' : scene === 'achievements' ? '成就馆' : scene === 'play' ? '比赛进行中' : scene === 'review' ? '赛后复盘' : '遗憾档案馆'}</div><div class="top-actions"><button class="sound-button ${sound ? 'on' : ''}" data-action="sound" aria-pressed="${sound}" aria-label="${sound ? '关闭' : '开启'}提示音">${icon('sound')}<span>提示音${sound ? '开' : '关'}</span></button><span class="local-label"><span class="tiny-dot"></span>本地存档</span></div></header>
   <main id="main" tabindex="-1">${content}</main><footer class="page-footer"><span>献给每一个，还记得那场比赛的人。</span><span>真实历史 × 战术推演</span></footer></div>`;
 }
 
@@ -230,14 +231,19 @@ function deepReviewView() {
 
 function journeyView() {
   const wins = completed.filter(x=>x.won).length;
-  const achGrid = `<section class="achievements"><div class="eyebrow">TROPHIES / 成就</div><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);return `<div class="ach-card ${un?'unlocked':'locked'}">${un?icon(a.icon,'ach-icon'):'<span class="ach-icon ach-lock">🔒</span>'}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div></section>`;
-  return `<section class="page-heading"><div><div class="eyebrow">YOUR JOURNEY / 我的改写</div><h1>每一个选择，都留下回声<span class="orange">。</span></h1><p>记录保存在这台设备的浏览器中。</p></div></section><div class="journey-stats"><div><strong>${completed.length}</strong><span>完成对局</span></div><div><strong>${wins}</strong><span>改写结局</span></div><div><strong>${new Set(completed.map(x=>x.player)).size}</strong><span>体验选手</span></div><div><strong>${unlockedAchievements.length}/${ACHIEVEMENTS.length}</strong><span>成就</span></div></div>${achGrid}${completed.length ? `<div class="journey-list">${completed.slice().reverse().map(x=>{const c=getChapter(x.chapterId);return `<article class="journey-record"><span class="record-year">${c.year}</span><div><h3>${c.team} vs ${c.opponent}</h3><p>${esc(x.player)} · ${c.event}</p></div>${tag(x.won?'改写终局':'未竟之梦',x.won?'success':'')}<span class="record-date">${new Date(x.date).toLocaleDateString('zh-CN')}</span></article>`;}).join('')}</div>` : `<div class="empty-state">${icon('archive')}<h2>你的第一场改写，还没开始。</h2><p>选一个你念念不忘的瞬间，回到选手席。</p><button class="primary" data-action="home">前往档案馆 ${icon('arrow')}</button></div>`}`;
+  return `<section class="page-heading"><div><div class="eyebrow">YOUR JOURNEY / 我的改写</div><h1>每一个选择，都留下回声<span class="orange">。</span></h1><p>记录保存在这台设备的浏览器中。</p></div></section><div class="journey-stats"><div><strong>${completed.length}</strong><span>完成对局</span></div><div><strong>${wins}</strong><span>改写结局</span></div><div><strong>${new Set(completed.map(x=>x.player)).size}</strong><span>体验选手</span></div></div>${completed.length ? `<div class="journey-list">${completed.slice().reverse().map(x=>{const c=getChapter(x.chapterId);return `<article class="journey-record"><span class="record-year">${c.year}</span><div><h3>${c.team} vs ${c.opponent}</h3><p>${esc(x.player)} · ${c.event}</p></div>${tag(x.won?'改写终局':'未竟之梦',x.won?'success':'')}<span class="record-date">${new Date(x.date).toLocaleDateString('zh-CN')}</span></article>`;}).join('')}</div>` : `<div class="empty-state">${icon('archive')}<h2>你的第一场改写，还没开始。</h2><p>选一个你念念不忘的瞬间，回到选手席。</p><button class="primary" data-action="home">前往档案馆 ${icon('arrow')}</button></div>`}`;
+}
+
+function achievementsView() {
+  const pct = Math.round(unlockedAchievements.length / ACHIEVEMENTS.length * 100);
+  return `<section class="page-heading"><div><div class="eyebrow">TROPHIES / 成就馆</div><h1>你改写的每一笔，都算数<span class="orange">。</span></h1><p>已解锁 ${unlockedAchievements.length} / ${ACHIEVEMENTS.length}（${pct}%）</p></div></section><div class="ach-grid">${ACHIEVEMENTS.map(a=>{const un=unlockedAchievements.includes(a.id);return `<div class="ach-card ${un?'unlocked':'locked'}">${un?icon(a.icon,'ach-icon'):'<span class="ach-icon ach-lock">🔒</span>'}<h3>${a.name}</h3><p>${a.desc}</p></div>`}).join('')}</div>`;
+}
 }
 
 function render(focus = false) {
   if (scene === 'home') { app.innerHTML = homeView(); }
   else if (scene === 'catalog' && showGrid) { app.innerHTML = shell(gridView()); }
-  else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : journeyView());
+  else app.innerHTML = shell(scene === 'catalog' ? catalog() : scene === 'play' ? (run && run.intermission ? intermissionView() : matchView()) : scene === 'review' ? reviewView() : scene === 'achievements' ? achievementsView() : journeyView());
   app.classList.toggle('catalog-scene', scene === 'catalog');
   if (scene === 'catalog' && !showGrid) {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
