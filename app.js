@@ -82,7 +82,7 @@ let rewindReady = Boolean(run?.finished && !run.won && saved.rewindReady);
 let sound = false;
 let toastTimer;
 
-function persist() { try { const slim = { ...run, gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed, rewindReady, achievements: unlockedAchievements })); } catch { toast('浏览器存储不可用；当前对局仍可继续。'); } }
+function persist() { try { const slim = { ...run, history: run.history?.map(h => ({ actionIndex: h.actionIndex, time: h.time, phase: h.phase })), gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed: completed.slice(-20), rewindReady, achievements: unlockedAchievements })); } catch { toast('存储已满，已自动清理旧记录。'); try { localStorage.removeItem(STORAGE); } catch {} } }
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message; el.classList.add('visible');
