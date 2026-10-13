@@ -1,4 +1,4 @@
-import { CHAPTERS, PHASES } from './data.js?v=3';
+import { CHAPTERS, PHASES } from './data.js?v=4';
 import { createRun, getChapter, choicesFor, advance, rewind, validateRun, nextGame } from './engine.js';
 import { basicReview, deepReview, signed, stateText } from './review.js';
 import { actionCommentary } from './commentary.js';
@@ -255,7 +255,7 @@ function render(focus = false) {
   app.classList.toggle('catalog-scene', scene === 'catalog');
   if (scene === 'catalog' && !showGrid) {
     const c = getChapter(chapterId), p = c.players[playerIndex], open = c.unlocked || permit === c.id;
-    app.insertAdjacentHTML('beforeend', `<div class="mobile-entry"><span>${c.team} · ${p.name}<small>${p.champion} / ${p.position}</small></span><div class="mobile-entry-actions">${run && !run.finished ? '<button class="secondary" data-action="continue">继续已保存的对局</button>' : ''}<button class="primary" data-action="${open?'briefing':'unlock'}">${open?`以 ${p.name} 身份进入`:'观看广告体验本章'}</button></div></div>`);
+    app.insertAdjacentHTML('beforeend', `<div class="mobile-entry"><span>${c.team} · ${p.name}<small>${p.champion} / ${p.position}</small></span><div class="mobile-entry-actions">${run && !run.finished ? '<button class="secondary" data-action="continue">继续已保存的对局</button>' : ''}<button class="primary" data-action="${open?'briefing':'unlock'}">${open?`以 ${p.name} 身份进入`:'观看广告后解锁'}</button></div></div>`);
   }
   if (scene === 'play') app.insertAdjacentHTML('beforeend', '<button class="decision-jump secondary" data-action="decision-jump">前往当前决策 ↓</button>');
   app.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;img.parentElement.classList.add('missing');},{once:true}));
