@@ -8,34 +8,79 @@ export function tacticalChoices(run) {
   const visionNeed = [4, 6].includes(i) ? 3 : 2;
   const supported = run.vision >= visionNeed && run.cohesion >= 2;
   const bonus = specialties[p.position] === i ? 150 : 0;
-  const labels = [...ACTIONS[p.position][i]];
-  if (i === 5 || i === 6) { labels[0] = `${p.kit.protect}，与队伍同步`; labels[1] = `${p.kit.engage}，争取主动`; }
+  const phases = getPhases(c), ph = phases[i];
+  const kind = ph.kind;
   const hold = i === 3 || i === 6;
   const safeGold = i < 5 ? (hold ? -360 : 140) : hold ? (run.cohesion >= 2 ? 150 : -320) : (run.cohesion >= 2 ? 650 : 180);
-  // 当前局势摘要
-  const econ = run.gold >= 0 ? `经济领先${(run.gold/1000).toFixed(1)}k` : `经济落后${(Math.abs(run.gold)/1000).toFixed(1)}k`;
-  const kd = `击杀${run.kills[0]}:${run.kills[1]}`;
-  const situ = `当前${econ}，${kd}。`;
+
+  // 根据局势类型生成匹配的选项
+  const position = p.position;
+  let labels, notes;
+  if (kind === 'setup') {
+    labels = [`跟随队伍落位，确认防守入口`, `提前布置视野，抢占先手位置`, `独自深入野区，提前反蹲`];
+    notes = [
+      `保守开局：和队伍一起落位，不冒被入侵风险。经济+${safeGold}，视野和接应提升。`,
+      `主动开局：提前站好位置，需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'条件已具备。':'条件不足，可能被抓。'}`,
+      `高风险：35% 概率反蹲成功拿一血，65% 被入侵送掉开局节奏。`
+    ];
+  } else if (kind === 'lane') {
+    labels = [`稳线发育，等待队友支援`, `主动换血，压制对手`, `打得凶一点，35% 单杀成功`];
+    notes = [
+      `保守对线：稳住补刀，不冒险。经济+${safeGold}，视野提升。`,
+      `主动对线：压制对手，需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'压制有效。':'可能被反蹲。'}`,
+      `单杀赌博：35% 概率单杀拿300经济，65% 被打野抓掉。`
+    ];
+  } else if (kind === 'rotate') {
+    labels = [`推完线再支援，不冒被蹲风险`, `走河道近路，抢先到场`, `放弃兵线直接游走，35% 抓到人`];
+    notes = [
+      `安全支援：推完线再走，不被蹲。经济+${safeGold}。`,
+      `快速支援：近路到场，需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'抢先到位。':'可能半路被抓。'}`,
+      `赌博游走：35% 概率抓到人拿击杀，65% 亏线又被反蹲。`
+    ];
+  } else if (kind === 'trade') {
+    labels = [`放掉这个资源，换另一侧塔/资源`, `集合打这个资源，需要队友到位`, `不等队友，强行抢资源，35% 成功`];
+    notes = [
+      `资源交换：放掉这个，换另一边。经济+${safeGold}，但对手拿了这个。`,
+      `集合打资源：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'能拿下。':'可能被抢。'}`,
+      `赌博抢资源：35% 成功拿到，65% 被抢还送人头。`
+    ];
+  } else if (kind === 'vision') {
+    labels = [`和队友一起排视野，安全推进`, `先做视野再靠近，逐步压缩空间`, `独自探草，35% 没被蹲`];
+    notes = [
+      `保守排眼：和队友一起，安全。经济+${safeGold}，视野提升。`,
+      `逐步推进：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'视野干净。':'草里有人。'}`,
+      `赌博探草：35% 安全通过，65% 被蹲先被秒。`
+    ];
+  } else if (kind === 'fight') {
+    labels = [`${p.kit.protect}，保后排接团`, `${p.kit.engage}，找机会开团`, `不等队友直接上，35% 打掉对方核心`];
+    notes = [
+      `保守接团：保护后排，等对手先交技能。经济+${safeGold}。`,
+      `主动开团：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'开团时机好。':'队友跟不上。'}`,
+      `赌博进场：35% 成功切到对方后排，65% 自己先被集火秒掉。`
+    ];
+  } else if (kind === 'decisive') {
+    labels = [`等对手先交技能再反打`, `${p.kit.engage}，主动找关键目标`, `强行开对方后排，35% 一波团灭`];
+    notes = [
+      `后手反打：等对手交完技能再上，最稳。经济+${safeGold}。`,
+      `主动找机会：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported?'能找到破绽。':'可能空大。'}`,
+      `赌博开团：35% 一波团灭对手赢下比赛，65% 被反一波。`
+    ];
+  } else {
+    labels = [`稳步推进，等对手失误`, `集体压上，强拆高地`, `独自前压逼水晶，35% 一波结束`];
+    notes = [
+      `稳推：慢慢磨，不给机会。经济+${safeGold}。`,
+      `强推：需要视野${visionNeed}接应2（当前${run.vision}/${run.cohesion}）。${supported':'能推掉。':'可能被反打。'}`,
+      `赌博一波：35% 推掉水晶赢下比赛，65% 被反一波翻盘。`
+    ];
+  }
+
   return labels.map((label, a) => ({
     label, usesUlt: a === 1 && [5, 6].includes(i),
-    disabled: a === 1 && [5, 6].includes(i) && run.ultReadyAt > getPhases(c)[i].seconds,
+    disabled: a === 1 && [5, 6].includes(i) && run.ultReadyAt > phases[i].seconds,
     supported, visionNeed,
-    baseGold: a === 0 ? safeGold : a === 1 ? (supported ? 850 + bonus : -650) : [1, 2, 3, 7].includes(i) ? 540 : -900,
+    baseGold: a === 0 ? safeGold : a === 1 ? (supported ? 850 + bonus : -650) : 540,
     gamble: a === 2 ? 0.35 : null,
-    note: a === 0 ? `${situ}补充视野与接应；${hold ? '让出当前资源窗口，经济收益减少 500。' : i < 5 ? '经济收益较小，保留下一轮联动条件。' : '接应达到 2 才能兑现完整反打收益。'}`
-      : a === 1 ? `${situ}需要视野 ${visionNeed}、接应 2（当前 ${run.vision}/${run.cohesion}）；${supported ? '已具备条件，行动消耗 1 级视野。' : '条件不足，可能被反打。'}${bonus ? `这是${p.position}的职责窗口，成功额外收益 150。` : ''}`
-      : (() => {
-          const lbl = label;
-          let gambleDesc;
-          if (/深入|孤身|独自|直接|突进|越过|强行|包抄|前压|先手|开团|追击|越塔|开龙/.test(lbl)) {
-            gambleDesc = `${situ}高风险操作"${lbl}"：35% 成功率——成功打掉对方核心/拿资源，65% 失败自己先被秒。`;
-          } else if (/发育|带线|补刀|回城|刷野|清兵|清线/.test(lbl)) {
-            gambleDesc = `${situ}发育赌博"${lbl}"：35% 概率偷到额外经济/线杀，65% 被抓掉一波。`;
-          } else {
-            gambleDesc = `${situ}冒险选择"${lbl}"：35% 成功拿优势，65% 失败送节奏。`;
-          }
-          return gambleDesc;
-        })()
+    note: notes[a]
   }));
 }
 export function tacticalReading(run, index) {
