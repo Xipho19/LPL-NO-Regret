@@ -1040,7 +1040,11 @@ function render(focus = false) {
         }
         const div = document.createElement('div');
         div.className = 'log-row live-feed-row';
-        div.innerHTML = `<time>${getPhases(getChapter(run.chapterId))[run.step].time}</time><div><span class="log-kind">主播</span><p>${msgs[i]}</p></div>`;
+        const phSeconds = getPhases(getChapter(run.chapterId))[run.step].seconds;
+        const msgSeconds = phSeconds + i * 20;
+        const mm = String(Math.floor(msgSeconds/60)).padStart(2,'0');
+        const ss = String(msgSeconds%60).padStart(2,'0');
+        div.innerHTML = `<time>${mm}:${ss}</time><div><span class="log-kind">主播</span><p>${msgs[i]}</p></div>`;
         container.appendChild(div);
         feed.scrollTop = feed.scrollHeight;
         i++;
