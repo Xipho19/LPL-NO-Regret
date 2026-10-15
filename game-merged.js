@@ -202,89 +202,47 @@ function advance(run, actionIndex) {
   const before = structuredClone(run);
   delete before.history;
   let gold = 0, outcome = '', result = 'neutral';
-  const early = run.step < 5;
-  if (actionIndex === 0) {
-    // A: 90% 成功，稳健路线，只加经济不加评分
-    const success = Math.random() < 0.9;
-    if (success) {
-      gold = early ? 150 : 200;
-      outcome = '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。';
-      result = 'stable';
-    } else {
-      gold = -100;
-      outcome = '虽然稳健，但对手抓住你过于保守的破绽，拿下了一波资源。';
-      result = 'risk';
-    }
-  } else if (actionIndex === 1) {
-    // B: 50% 成功，常规操作
-    const success = Math.random() < 0.5;
-    if (success) {
-      gold = early ? 500 : 800;
-      next.tempo = clamp(run.tempo + 1, 0);
-      next.vision = clamp(run.vision - 1, 0);
-      outcome = '你主动寻找机会，队友配合到位，争到了地图主动权。';
-      result = 'good';
-      next.kills[0] += 2;
-    } else {
-      gold = early ? -400 : -600;
-      next.tempo = clamp(run.tempo - 1, 0);
-      next.cohesion = clamp(run.cohesion - 1, 0);
-      outcome = '主动出击但时机不对，对手反打成功，队伍节奏被打断。';
-      result = 'risk';
-      next.kills[1] += 2;
-    }
-  } else {
-    // C: 30% 成功，高风险操作
-    const success = Math.random() < 0.3;
-    if (success) {
-      gold = early ? 900 : 1200;
-      next.cohesion = clamp(run.cohesion + 2, 0);
-      next.tempo = clamp(run.tempo + 2, 0);
-      next.laning = clamp(run.laning + 2, 0);
-      outcome = '你抓住对手致命失误！关键操作拉满，这波冒险直接打崩对面节奏。';
-      result = 'good';
-      next.kills[0] += 3;
-    } else {
-      gold = early ? -600 : -900;
-      next.laning = clamp(run.laning - 2, 0);
-      next.tempo = clamp(run.tempo - (early ? 1 : 2), 0);
-      next.cohesion = clamp(run.cohesion - 1, 0);
-      outcome = '你冲得太深，对手集火你先被秒。团战少了核心，队伍只能后撤。';
-      result = 'risk';
-      next.kills[1] += 2;
-    }
-  }
-  if (run.rulesVersion === 2) {
-    if (choice.gamble != null) {
-      const win = Math.random() < choice.gamble;
-      // 根据节点类型决定加哪个评分维度
-      const statMap = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'tempo', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
-      const winStat = statMap[kind] || 'tempo';
-      if (win) {
+  const statMap = { setup: 'tempo', lane: 'laning', rotate: 'cohesion', trade: 'tempo', vision: 'vision', fight: 'cohesion', decisive: 'tempo', finish: 'cohesion' };
+  const winStat = statMap[kind] || 'tempo';
+  const statName = winStat === 'tempo' ? '节奏' : winStat === 'laning' ? '对线' : winStat === 'cohesion' ? '配合' : '视野';
+
+  if (choice.gamble != null) {
+    const win = Math.random() < choice.gamble;
+    if (win) {
+      if (choice.gamble >= 0.8) {
+        // A: 90%成功，只加经济
         gold = choice.baseGold;
-        if (choice.gamble < 0.8) {
-          next[winStat] = clamp(run[winStat] + (choice.gamble > 0.5 ? 1 : 2), 0);
-          if (choice.gamble < 0.5) {
-            if (winStat !== 'cohesion') next.cohesion = clamp(run.cohesion + 1, 0);
-            if (winStat !== 'tempo') next.tempo = clamp(run.tempo + 1, 0);
-          }
-        }
-        outcome = choice.gamble >= 0.8 ? '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。' : `这波${winStat === 'tempo' ? '节奏' : winStat === 'laning' ? '对线' : winStat === 'cohesion' ? '配合' : '视野'}拿到优势，局面打开了。`;
-        result = choice.gamble >= 0.8 ? 'stable' : 'good';
-        next.kills[0] += choice.gamble > 0.5 ? 1 : 3;
+        result = 'stable';
+        outcome = '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。';
+      } else if (choice.gamble > 0.5) {
+        // B: 50%成功
+        gold = choice.baseGold;
+        next[winStat] = clamp(run[winStat] + 1, 0);
+        result = 'good';
+        outcome = `你主动寻找机会，队友配合到位，${statName}拿到优势。`;
+        next.kills[0] += 1;
       } else {
-        gold = choice.baseGold > 0 ? -choice.baseGold * 0.8 : choice.baseGold;
-        if (choice.gamble < 0.8) {
-          next[winStat] = clamp(run[winStat] - 1, 0);
-          next.vision = clamp(run.vision - 1, 0);
-        }
-        outcome = '时机不对，对手反打成功，队伍节奏被打断。';
-        result = 'risk';
-        next.kills[1] += 2;
+        // C: 30%成功
+        gold = choice.baseGold;
+        next[winStat] = clamp(run[winStat] + (winStat === 'cohesion' ? 3 : 2), 0);
+        if (winStat !== 'cohesion') next.cohesion = clamp(run.cohesion + 1, 0);
+        result = 'good';
+        outcome = `你抓住对手致命失误！${statName}拉满，这波冒险直接打崩对面节奏。`;
+        next.kills[0] += 3;
       }
     } else {
-      gold = choice.baseGold;
+      // 失败
+      gold = choice.gamble >= 0.8 ? -100 : (choice.gamble > 0.5 ? -400 : -600);
+      if (choice.gamble < 0.8) {
+        next[winStat] = clamp(run[winStat] - (choice.gamble > 0.5 ? 1 : 2), 0);
+        if (choice.gamble < 0.5) next.vision = clamp(run.vision - 1, 0);
+      }
+      result = choice.gamble >= 0.8 ? 'risk' : 'risk';
+      outcome = choice.gamble >= 0.8 ? '虽然稳健，但对手抓住你过于保守的破绽，拿下了一波资源。' : '时机不对，对手反打成功，队伍节奏被打断。';
+      next.kills[1] += choice.gamble > 0.5 ? 1 : 2;
     }
+  } else {
+    gold = choice.baseGold;
   }
   if (choice.usesUlt) next.ultReadyAt = phase.seconds + 120;
   if (result === 'risk') {
@@ -866,7 +824,7 @@ function liveFeed(kind, chapter, run) {
       behind: ['大龙血量开始下降了！','对方在打大龙！','我方根本不敢过去抢！','大龙被对方稳稳拿下！','这波打完对方可以直接一波！','我方现在只能背水一战！','水晶岌岌可危！','这局要没了...']
     },
     finish: {
-      ahead: ['兵线压到高地塔下了！','高地塔已经被推掉了！','对方防守队员节节败退！','水晶血量在下降！','这一波就能结束一切！','我方已经在拆水晶了！','胜利就在眼前！','恭喜！'],
+      ahead: ['兵线已经带到高地前了！','我方拿下了大龙buff！','对方所有人都缩在高地上！','这波推进势在必得！','高地塔就在眼前！','对方防守已经松了！','准备推高地了！','这一波，拿下比赛！'],
       even: ['兵线压到高地塔下了！','对方防守队员已经就位！','你方正在等兵线到位！','高地塔血量在下降！','推还是不推？','这一波就能结束一切！','所有人都在高地下面等着！','水晶就在眼前！'],
       behind: ['兵线压到我方高地塔下了！','我方防守队员已经就位！','对方正在等兵线到位！','高地塔血量在下降！','守不守得住？','这一波守不住就结束了！','所有人都在高地上面等着！','水晶岌岌可危！']
     }
@@ -875,7 +833,12 @@ function liveFeed(kind, chapter, run) {
   return pool[state] || pool.even;
 }
 function matchView() {
-  const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES, phase = phases[run.step];
+  const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES;
+  if (run.finished || run.step >= phases.length) {
+    const last = run.history.at(-1);
+    return `<div class="match-layout"><section class="broadcast"><div class="panel-title"><div>${icon('archive')}<h2>比赛直播</h2></div><span>你的视角 · ${p.name}</span></div><div class="broadcast-feed" style="max-height:55vh;overflow-y:auto"><div class="log-row"><time></time><div><span class="log-kind accent">对局结束</span><p>${run.won ? `${c.team} 推掉了对方水晶！让我们恭喜 ${c.team}！` : `水晶告破，${c.opponent} 拿下了这一局。`}</p></div></div><div class="log-row"><time></time><div><span class="log-kind">主播</span><p>正在生成复盘数据...</p></div></div></div></section></div>`;
+  }
+  const phase = phases[run.step];
   // 双方英雄去重
   const used = new Set();
   c.players.forEach((pp,i)=>{ const g = getChampionForGame(run, i); pp.champion = g.champion; pp.championId = g.championId; used.add(g.championId); });
@@ -886,6 +849,31 @@ function matchView() {
   const formation = run.cohesion >= 3 ? '队友接应良好' : run.cohesion >= 1 ? '需要确认队友距离' : '阵型出现脱节';
   const gold = `${run.gold >= 0 ? '+' : '−'}${(Math.abs(run.gold)/1000).toFixed(2)}k`;
   const last = run.history.at(-1);
+  // 根据局势动态调整关键节点文案
+  const score = (run.gold / 1000) * 0.25 + run.vision * 0.15 + run.cohesion * 0.20 + run.tempo * 0.20 + run.laning * 0.20;
+  const state = score > 2.5 ? 'ahead' : score < 1.5 ? 'behind' : 'even';
+  let phaseCopy = phase.copy, phaseSignal = phase.signal;
+  if (phase.kind === 'finish') {
+    if (state === 'ahead') {
+      phaseCopy = `你拿下了大龙 buff。兵线压到 ${c.opponent} 高地塔下。我方英雄装备已经成型，但 ${c.opponent} 在高地上架好了防守。这波推高是捧杯还是被反一波？`;
+      phaseSignal = `队友 ping 高地塔，等你最后开团。`;
+    } else if (state === 'behind') {
+      phaseCopy = `${c.opponent} 拿下了大龙 buff。兵线压到我方高地塔下。对方英雄装备已经成型，我方只能在高地上防守。这波守不住就结束了！`;
+      phaseSignal = `队友 ping 高地塔，请求你守最后一波。`;
+    }
+  }
+  if (phase.kind === 'decisive') {
+    if (state === 'ahead') {
+      phaseCopy = `${c.opponent} 大龙血量在下降！我方已经逼到龙坑口了。对方不敢过来抢。这波是稳稳拿龙还是直接开团？`;
+    } else if (state === 'behind') {
+      phaseCopy = `${c.opponent} 先手动龙了。我方根本不敢过去抢。这波大龙要是丢了就真的没了！`;
+    }
+  }
+  // 劣势时，最后两个节点的选项改成防守向
+  let displayChoices = choice;
+  if (state === 'behind' && (phase.kind === 'finish' || phase.kind === 'decisive')) {
+    displayChoices = choice.map((ch, i) => ({...ch, label: ['退守高地，守最后一波', '集结队友，背水一战', '拼死一搏，找机会反打'][i] || ch.label}));
+  }
   return `<div class="match-heading"><button class="text-button" data-action="leave">${icon('back')} 暂存并返回</button><div class="live-label"><span class="tiny-dot"></span>文字直播 <span>·</span> 游戏推演</div><span class="subtle">${c.year} ${c.event} / G${run.gameNumber}</span></div>
   <section class="scoreboard"><div class="score-team"><strong>${c.team}</strong><small>你的队伍</small></div><div class="score-center"><span class="score-context">系列赛比分 · ${c.stage}</span><strong>${run.seriesScore[0]} <span>:</span> ${run.seriesScore[1]}</strong></div><div class="score-team opponent"><strong>${c.opponent}</strong><small>对手</small></div></section>
   <section class="team-composition"><div class="comp-side">${c.players.map(pl=>`<div class="comp-champ">${championImg(pl,c)}<small>${pl.champion}</small></div>`).join('')}</div><div class="comp-vs">VS</div><div class="comp-side opp">${c.enemies.map(e=>`<div class="comp-champ">${championImg(e,c)}<small>${e.champion}</small></div>`).join('')}</div></section>
@@ -895,9 +883,9 @@ function matchView() {
     <div class="broadcast-feed" aria-label="比赛直播记录">${run.history.length>1 ? `<details class="past-feed"><summary>查看之前的 ${run.history.length-1} 次决策</summary>${run.history.slice(0,-1).map((h,i)=>`<div class="log-row"><time>${h.time}</time><div><span class="log-kind">你的选择 / ${h.phase}</span>${settledAction(i)}</div></div>`).join('')}</details>` : ''}
     ${last ? '' : `<div class="log-row"><time></time><div><span class="log-kind">主播开场</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}
     <div id="live-feed-container"></div>
-    <div class="log-row active-log" id="active-log" style="display:none"><time></time><div><span class="log-kind accent">${phase.name} / 关键节点</span><p>${phase.copy}</p></div></div><div class="team-signal" id="team-signal" style="display:none">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phase.signal}</p></div></div>
+    <div class="log-row active-log" id="active-log" style="display:none"><time></time><div><span class="log-kind accent">${phase.name} / 关键节点</span><p>${phaseCopy}</p></div></div><div class="team-signal" id="team-signal" style="display:none">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phaseSignal}</p></div></div>
     <div class="known-info" id="known-info" style="display:none">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div>
-    <div class="decision" id="decision-panel" style="display:none"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${choice.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
+    <div class="decision" id="decision-panel" style="display:none"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${displayChoices.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
   </section><aside class="match-sidebar"><section class="identity"><div style="display:flex;justify-content:space-between;align-items:center"><div class="side-overline">YOUR SEAT / 你的选手席</div><button class="ad-boost-btn" data-action="ad-boost">📺 广告强化 +1</button></div><div class="identity-main">${championImg(p,c)}<div><h2>${p.name}</h2><span>${c.team} · ${p.position}</span></div></div><div class="hero-name">${p.champion}<span>PATCH ${c.patch}</span></div><p>${p.task}</p><div class="stat-row"><span>经济</span><strong class="${run.gold>=0?'ready':'danger'}">${signed(run.gold)}</strong></div><div class="stat-row"><span>视野</span><strong>${run.vision}</strong></div><div class="stat-row"><span>配合</span><strong>${run.cohesion}</strong></div><div class="stat-row"><span>节奏</span><strong>${run.tempo}</strong></div><div class="stat-row"><span>对线</span><strong>${run.laning}</strong></div><div class="skill-row"><span>闪现</span><strong class="${run.flashReadyAt > phase.seconds ? 'muted' : 'ready'}">${run.flashReadyAt > phase.seconds ? `${run.flashReadyAt-phase.seconds} 秒` : '可用'}</strong></div><div class="skill-row"><span>大招</span><strong class="${phase.seconds<550 || run.ultReadyAt > phase.seconds ? 'muted' : 'ready'}">${phase.seconds<550 ? '未解锁 / 推演阶段' : run.ultReadyAt > phase.seconds ? `${run.ultReadyAt-phase.seconds} 秒` : '可用'}</strong></div></section>
   <div class="tactical-note">${icon('info')}<p>${c.threats[run.step % c.threats.length]}</p></div></aside></div>`;
 }
@@ -935,7 +923,7 @@ function reviewView() {
   const basic = basicReview(run);
   const et = endingType(run);
   const score = seriesScore(run, c);
-  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph">${icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : '游戏推演结局 · 第1局为真实BP，后续局次为架空推演')}</div>
+  return `<div class="review-header"><div class="eyebrow">ANOTHER ENDING / 你的平行结局</div><span class="ending-glyph" style="padding:0;border:none;background:transparent">${run.won?'<img src="assets/trophy.png" style="width:60px;height:auto;display:block">':icon(et.icon)}</span>${tag(et.label, run.won?'success':'')}<h1>${et.title}</h1><p>${et.desc}</p><div class="ending-score"><span>${c.team}</span><strong>${score}</strong><span>${c.opponent}</span></div>${tag(c.game===5 ? '游戏推演结局 · 架空分支起点 00:00' : '游戏推演结局 · 第1局为真实BP，后续局次为架空推演')}</div>
   <section class="review-summary"><div class="section-heading"><div><span class="section-index">01</span><h2>免费的基础复盘</h2></div><span class="subtle">${p.name} / ${p.champion}</span></div><div class="history-compare"><div><span class="side-overline">真实历史</span><h3>${c.historicalScore}</h3><p>${c.historicalResult}</p><small>比赛数据来源：历史赛事记录</small></div><div><span class="side-overline">你的改写</span><h3>${c.team} ${score} ${c.opponent}</h3><p>${esc(basic.summary)}</p><small>架空分支起点：00:00 你介入之后，全部赛况均为规则推演，不代表真实比赛过程。</small></div></div>
   <details class="basic-events"><summary>展开 8 次选择与数值结算</summary><div class="review-timeline">${run.history.map((h,i)=>`<div class="review-event"><time>${h.time}</time><span class="review-dot ${h.result}"></span><div><strong>${h.phase}</strong><p>${esc(h.action)}</p><small>${esc(basic.events[i])}</small></div></div>`).join('')}</div></details></section>
 ${detailed ? deepReviewView() : '<section class="deep-preview"><h2>深度复盘会告诉你什么？</h2><p>胜负根因 → 关键转折 → 两种替代选择的终局验证 → 一条最少改动的获胜路线。</p><p>还会判断：只回溯最后一步，究竟能不能挽回本局。</p></section>'}
