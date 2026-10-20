@@ -169,6 +169,11 @@ const ACTIONS = {
 const getChapter = id => CHAPTERS.find(c => c.id === id) || CHAPTERS[0];
 const getPhases = c => c.phases || PHASES;
 const clamp = (x, min, max = Infinity) => Math.max(min, Math.min(max, x));
+const WIN_SCORE = 2.5;
+const runScore = s => (s.gold / 1000) * 0.25 + s.vision * 0.15 + s.cohesion * 0.20 + s.tempo * 0.20 + s.laning * 0.20;
+// Old full-history records have no roll; infer the branch they settled on.
+// New records always store the actual roll, which makes replay exact.
+const recordRoll = record => Number.isFinite(record?.roll) ? record.roll : record?.result === 'risk' ? 0.99 : record?.result ? 0.1 : null;
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 function createRun(chapterId, playerIndex, rulesVersion = 1) {
   const chapter = getChapter(chapterId);
@@ -193,7 +198,7 @@ function choicesFor(run) {
     return { label, note, usesUlt, disabled: usesUlt && run.ultReadyAt > time };
   });
 }
-function advance(run, actionIndex) {
+function advance(run, actionIndex, roll) {
   if (run.finished) throw new Error('Match already finished');
   const choice = choicesFor(run)[actionIndex];
   if (!choice || choice.disabled) throw new Error('Action unavailable');
@@ -206,15 +211,19 @@ function advance(run, actionIndex) {
   const winStat = statMap[kind] || 'tempo';
   const statName = winStat === 'tempo' ? '节奏' : winStat === 'laning' ? '对线' : winStat === 'cohesion' ? '配合' : '视野';
 
+  let usedRoll;
   if (choice.gamble != null) {
-    const win = Math.random() < choice.gamble;
+    // 用显式档位判断，避免 50% 的 B 被浮点严格比较误判成 C。
+    const tier = choice.gamble >= 0.8 ? 'A' : choice.gamble >= 0.5 ? 'B' : 'C';
+    usedRoll = Number.isFinite(roll) ? clamp(roll, 0, 0.999999) : Math.random();
+    const win = usedRoll < choice.gamble;
     if (win) {
-      if (choice.gamble >= 0.8) {
+      if (tier === 'A') {
         // A: 90%成功，只加经济
         gold = choice.baseGold;
         result = 'stable';
         outcome = '你保持稳健站位，安全积累了经济。但过于保守，队伍没有拿到评分优势。';
-      } else if (choice.gamble > 0.5) {
+      } else if (tier === 'B') {
         // B: 50%成功
         gold = choice.baseGold;
         next[winStat] = clamp(run[winStat] + 1, 0);
@@ -231,15 +240,15 @@ function advance(run, actionIndex) {
         next.kills[0] += 3;
       }
     } else {
-      // 失败
-      gold = choice.gamble >= 0.8 ? -100 : (choice.gamble > 0.5 ? -400 : -600);
-      if (choice.gamble < 0.8) {
-        next[winStat] = clamp(run[winStat] - (choice.gamble > 0.5 ? 1 : 2), 0);
-        if (choice.gamble < 0.5) next.vision = clamp(run.vision - 1, 0);
+      // 失败：A 只亏经济；B 亏经济并降 1 级属性；C 再多降 1 级属性并扣视野。
+      gold = tier === 'A' ? -100 : tier === 'B' ? -400 : -600;
+      if (tier !== 'A') {
+        next[winStat] = clamp(run[winStat] - (tier === 'B' ? 1 : 2), 0);
+        if (tier === 'C') next.vision = clamp(run.vision - 1, 0);
       }
-      result = choice.gamble >= 0.8 ? 'risk' : 'risk';
-      outcome = choice.gamble >= 0.8 ? '虽然稳健，但对手抓住你过于保守的破绽，拿下了一波资源。' : '时机不对，对手反打成功，队伍节奏被打断。';
-      next.kills[1] += choice.gamble > 0.5 ? 1 : 2;
+      result = 'risk';
+      outcome = tier === 'A' ? '虽然稳健，但对手抓住你过于保守的破绽，拿下了一波资源。' : '时机不对，对手反打成功，队伍节奏被打断。';
+      next.kills[1] += tier === 'C' ? 2 : 1;
     }
   } else {
     gold = choice.baseGold;
@@ -254,16 +263,11 @@ function advance(run, actionIndex) {
   next.gold += gold;
   if (run.step >= 3 && result === 'good') next.towers[0] = Math.min(11, next.towers[0] + 1);
   if (run.step >= 3 && result === 'risk') next.towers[1] = Math.min(11, next.towers[1] + 1);
-  next.history.push({ step: run.step, time: phase.time, phase: phase.name, actionIndex, action: choice.label, note: choice.note, outcome, result, gold, before });
+  next.history.push({ step: run.step, time: phase.time, phase: phase.name, actionIndex, action: choice.label, note: choice.note, outcome, result, gold, roll: usedRoll, before });
   next.step += 1;
   if (next.step === getPhases(getChapter(next.chapterId)).length) {
     // 新评分公式：经济25% + 视野15% + 配合20% + 节奏20% + 对线20%
-    const score = (next.gold / 1000) * 0.25 
-                + next.vision * 0.15 
-                + next.cohesion * 0.20 
-                + next.tempo * 0.20 
-                + next.laning * 0.20;
-    const gameWon = score > 2.5;
+    const gameWon = runScore(next) > WIN_SCORE;
     const chapter = getChapter(next.chapterId);
     if (chapter.seriesTotal) {
       next.seriesScore = [next.seriesScore[0] + (gameWon ? 1 : 0), next.seriesScore[1] + (gameWon ? 0 : 1)];
@@ -314,15 +318,44 @@ function validateRun(run) {
     if (!run || typeof run !== 'object' || !CHAPTERS.some(c => c.id === run.chapterId)) return false;
     let replay = createRun(run.chapterId, run.playerIndex, run.rulesVersion ?? 1);
     if (!Array.isArray(run.history) || run.history.length > getPhases(getChapter(run.chapterId)).length) return false;
-    for (const record of run.history) replay = advance(replay, record.actionIndex);
+    for (const record of run.history) replay = advance(replay, record.actionIndex, recordRoll(record));
     return JSON.stringify(canonical(replay)) === JSON.stringify(canonical(run));
   } catch { return false; }
+}
+// Slim saves only keep actionIndex/time/phase/roll. Replaying with the recorded
+// rolls rebuilds full history (including before-snapshots) and rejects tampering.
+function restoreRun(saved) {
+  try {
+    if (!saved || typeof saved !== 'object' || !CHAPTERS.some(c => c.id === saved.chapterId)) return null;
+    if (!Number.isInteger(saved.playerIndex) || !Array.isArray(saved.history)) return null;
+    const gameNumber = Number.isInteger(saved.gameNumber) ? saved.gameNumber : 1;
+    let replay = createRun(saved.chapterId, saved.playerIndex, saved.rulesVersion ?? 1);
+    replay.gameNumber = gameNumber;
+    const priorGames = Array.isArray(saved.gameHistory) ? saved.gameHistory.filter(g => Number.isInteger(g?.game) && g.game < gameNumber) : [];
+    replay.gameHistory = structuredClone(priorGames);
+    const series = (getChapter(saved.chapterId).startingScore || [0, 0]).slice(0, 2);
+    for (const g of priorGames) series[g.won ? 0 : 1] += 1;
+    replay.seriesScore = series;
+    if (typeof saved.intermission === 'boolean') replay.intermission = saved.intermission;
+    for (const record of saved.history) {
+      if (!Number.isInteger(record?.actionIndex) || !Number.isFinite(record?.roll)) return null;
+      replay = advance(replay, record.actionIndex, record.roll);
+      const settled = replay.history.at(-1);
+      if (settled.time !== record.time || settled.phase !== record.phase) return null;
+    }
+    for (const field of ['step', 'vision', 'tempo', 'cohesion', 'laning', 'gold', 'kills', 'towers', 'finished', 'won', 'intermission', 'seriesScore', 'gameNumber', 'flashReadyAt', 'ultReadyAt']) {
+      if (field in saved && JSON.stringify(saved[field]) !== JSON.stringify(replay[field])) return null;
+    }
+    return replay;
+  } catch { return null; }
 }
 
 /* === tactics.js === */
 
 const specialties = { 上单: 3, 打野: 4, 中单: 2, ADC: 5, 辅助: 6 };
 const pressure = ['入口尚未确认', '兵线与河道需要取舍', '支援窗口正在收窄', '对手正在交换地图资源', '资源区入口承压', '正面接触开始', '对手重新争夺河道', '推进窗口即将结束'];
+// Choice notes carry colored spans for the buttons; review text needs plain text.
+const plainText = text => String(text).replace(/<[^>]*>/g, '');
 function tacticalChoices(run) {
   const c = CHAPTERS.find(c => c.id === run.chapterId), p = c.players[run.playerIndex], i = run.step;
   const visionNeed = [4, 6].includes(i) ? 3 : 2;
@@ -436,27 +469,29 @@ function tacticalReading(run, index) {
   const c2 = c, phases = getPhases(c2);
   return {
     context: `${phases[index].name}：${pressure[index]}。${p.name} · ${p.champion}：${event}`,
-    reason: `${ch.note} 本次基础经济 ${ch.baseGold >= 0 ? '+' : ''}${ch.baseGold}。${h.result==='risk' && b.flashReadyAt>phases[index].seconds ? '闪现未转好，额外损失 300。' : ''}`,
-    next: index === 7 ? `终局检查：经济 ${after.gold}/1800，接应 ${after.cohesion}/2，节奏 ${after.tempo}/1。${after.won?'推进条件全部满足。':'需要从更早的取舍中补足未达标条件。'}` : `下一轮 ${phases[index+1].time}：${pressure[index+1]}。${tacticalChoices(after)[1].note} ${[3,6].includes(index+1)?'继续等待会付出 500 机会成本，需比较当前窗口与准备收益。':''}`
+    reason: `${plainText(ch.note)} 本次基础经济 ${ch.baseGold >= 0 ? '+' : ''}${ch.baseGold}。${h.result==='risk' && b.flashReadyAt>phases[index].seconds ? '闪现未转好，额外损失 300。' : ''}`,
+    next: index === 7 ? `终局检查：评分 ${runScore(after).toFixed(2)}，胜负线 2.5。${after.won?'已越过胜负线。':`还差 ${scoreGap(after).toFixed(2)}，需要从更早的取舍中补足。`}` : `下一轮 ${phases[index+1].time}：${pressure[index+1]}。${plainText(tacticalChoices(after)[1].note)} ${[3,6].includes(index+1)?'继续等待会付出 500 机会成本，需比较当前窗口与准备收益。':''}`
   };
 }
 
 /* === review.js === */
 
 const signed = n => `${n >= 0 ? '+' : '−'}${Math.abs(n).toLocaleString('zh-CN')}`;
-const stateText = s => `经济差 ${signed(s.gold)}；视野 ${s.vision}/5；接应 ${s.cohesion}/5；节奏 ${s.tempo}`;
+const stateText = s => `经济差 ${signed(s.gold)}；视野 ${s.vision}；接应 ${s.cohesion}；节奏 ${s.tempo}；对线 ${s.laning}；评分 ${runScore(s).toFixed(2)}`;
 const cache = new WeakMap();
-const gaps = s => [s.gold < 1800 && `经济还差 ${1800 - s.gold}`, s.cohesion < 2 && `接应还差 ${2 - s.cohesion} 级`, s.tempo < 1 && `节奏还差 ${1 - s.tempo} 级`].filter(Boolean);
+const scoreGap = s => Math.max(0, WIN_SCORE - runScore(s));
 function statesFor(run) {
   const states = [createRun(run.chapterId, run.playerIndex, run.rulesVersion ?? 1)];
-  for (const h of run.history) states.push(advance(states.at(-1), h.actionIndex));
+  for (const h of run.history) states.push(advance(states.at(-1), h.actionIndex, recordRoll(h)));
   return states;
 }
 function basicReview(run) {
   const risk = run.history.filter(h => h.result === 'risk').length;
   const good = run.history.filter(h => h.result === 'good').length;
+  const score = runScore(run);
+  const line = `经济差 ${signed(run.gold)}，视野 ${run.vision}，接应 ${run.cohesion}，节奏 ${run.tempo}，对线 ${run.laning}`;
   return {
-    summary: run.won ? `终局经济差 ${signed(run.gold)}，接应 ${run.cohesion}/5，节奏 ${run.tempo}；三项推进条件均达标。` : `终局未达标：${gaps(run).join('、')}。本局有 ${risk} 次高风险行动、${good} 次有接应的主动行动。`,
+    summary: run.won ? `终局评分 ${score.toFixed(2)}，高于 2.5 的胜负线；${line}。` : `终局评分 ${score.toFixed(2)}，距 2.5 的胜负线还差 ${scoreGap(run).toFixed(2)}；${line}。本局有 ${risk} 次高风险行动、${good} 次有接应的主动行动。`,
     events: run.history.map((h, i) => {
       const after = run.history[i + 1]?.before || run;
       return `经济变化 ${signed(h.gold)} · 接应 ${h.before.cohesion} → ${after.cohesion} · 视野 ${h.before.vision} → ${after.vision}`;
@@ -474,7 +509,8 @@ function minimumRepair(run) {
     const original = run.history[s.step].actionIndex;
     const order = [original, ...[0, 1, 2].filter(a => a !== original)];
     const choices = choicesFor(s);
-    for (const a of order) if (!choices[a].disabled) visit(advance(s, a), changes + Number(a !== original));
+    const roll = recordRoll(run.history[s.step]);
+    for (const a of order) if (!choices[a].disabled) visit(advance(s, a, roll), changes + Number(a !== original));
   }
   visit(createRun(run.chapterId, run.playerIndex, run.rulesVersion ?? 1), 0);
   return { count, run: best };
@@ -523,12 +559,13 @@ function deepReview(run) {
     const alternatives = choicesFor(before).map((choice, a) => {
       if (a === h.actionIndex) return null;
       if (choice.disabled) return { action: choice.label, unavailable: true };
-      let branch = advance(before, a);
+      const roll = recordRoll(run.history[i]);
+      let branch = advance(before, a, roll);
       const immediate = branch;
       for (let j = i + 1; j < run.history.length; j++) {
         const action = run.history[j].actionIndex;
         if (choicesFor(branch)[action].disabled) return { action: choice.label, unavailable: true };
-        branch = advance(branch, action);
+        branch = advance(branch, action, recordRoll(run.history[j]));
       }
       return { action: choice.label, immediate, final: branch, delta: branch.gold - run.gold };
     }).filter(Boolean);
@@ -536,9 +573,10 @@ function deepReview(run) {
   });
   const unsupported = run.history.find(h => h.actionIndex === 1 && h.result === 'risk');
   const splits = run.history.filter(h => h.actionIndex === 2);
+  const finalScore = runScore(run);
   const root = run.won
-    ? `胜利靠的是三项条件共同成立：经济比推进要求多 ${run.gold - 1800}，接应 ${run.cohesion}/5，节奏 ${run.tempo}。${run.history.some(h => h.result === 'good') ? '有准备的主动行动把先前的信息和接应转成了经济与节奏。' : '本局没有依靠主动抓机会，前期建立条件、后期反打同样完成了推进。'}`
-    : `直接原因是${gaps(run).join('、')}。${unsupported ? `更早的根由出现在 ${unsupported.time}：在视野 ${unsupported.before.vision}、接应 ${unsupported.before.cohesion} 的状态下主动接触，准备条件不够，随后必须先修复局势。` : splits.length ? `整局有 ${splits.length} 次选择牺牲接应，其中 ${splits.filter(h => h.result === 'trade').length} 次虽然获得经济，却持续压低协同与节奏，不能只用经济收益评价这些决定。` : '需要比较各节点对终局经济和协同的累积影响。'}`;
+    ? `终局评分 ${finalScore.toFixed(2)}，高于 2.5 的胜负线；经济差 ${signed(run.gold)}，视野 ${run.vision}，接应 ${run.cohesion}，节奏 ${run.tempo}，对线 ${run.laning}。${run.history.some(h => h.result === 'good') ? '有准备的主动行动把先前的信息和接应转成了经济与节奏。' : '本局没有依靠主动抓机会，前期建立条件、后期反打同样完成了推进。'}`
+    : `直接原因是终局评分 ${finalScore.toFixed(2)}，低于 2.5 的胜负线 ${scoreGap(run).toFixed(2)}。${unsupported ? `更早的根由出现在 ${unsupported.time}：在视野 ${unsupported.before.vision}、接应 ${unsupported.before.cohesion} 的状态下主动接触，准备条件不够，随后必须先修复局势。` : splits.length ? `整局有 ${splits.length} 次选择牺牲接应，其中 ${splits.filter(h => h.result === 'trade').length} 次虽然获得经济，却持续压低协同与节奏，不能只用经济收益评价这些决定。` : '需要比较各节点对终局经济和协同的累积影响。'}`;
   const last = nodes.at(-1);
   const canLastSave = last.alternatives.some(a => a.final?.won);
   const changes = repair.run.history.flatMap((h, i) => h.actionIndex === run.history[i].actionIndex ? [] : [{ time: h.time, phase: h.phase, from: run.history[i].action, to: h.action }]);
@@ -608,8 +646,8 @@ function actionCommentary(run, index) {
   const impact = `本次经济 ${signed(h.gold)}，${c.team} ${economy}；击杀 ${after.kills[0]}:${after.kills[1]}，防御塔 ${after.towers[0]}:${after.towers[1]}，节奏 ${b.tempo} → ${after.tempo}。${skills}`;
   let next;
   if(index===7) {
-    const gaps=[after.gold<1800&&`经济差还需增加 ${1800-after.gold}`,after.cohesion<2&&`接应还差 ${2-after.cohesion}`,after.tempo<1&&`节奏还差 ${1-after.tempo}`].filter(Boolean);
-    next = gaps.length ? `终局未完成推进条件：${gaps.join('、')}。这不是单看最后一次交战即可判断的结局。` : '经济差、接应与节奏均达到推进要求，本局获胜；各节点如何累积到这里，可以在赛后复盘继续查看。';
+    const score = runScore(after), gap = scoreGap(after);
+    next = gap > 0 ? `终局评分 ${score.toFixed(2)}，距 2.5 的胜负线还差 ${gap.toFixed(2)}。这不是单看最后一次交战即可判断的结局。` : `终局评分 ${score.toFixed(2)}，越过 2.5 的胜负线，本局获胜；各节点如何累积到这里，可以在赛后复盘继续查看。`;
   } else {
     const need = [after.vision<2&&'视野',after.cohesion<2&&'接应'].filter(Boolean);
     next = `下一轮 ${PHASES[index+1].time}「${PHASES[index+1].name}」：${need.length ? `${need.join('与')}仍低于 2，直接选择主动路线尚不具备联动条件，先修复准备更有依据。` : `目前具备主动联动门槛，但下一次主动行动会消耗视野；也可保留条件，${index<4?'继续准备后续接触':'等待保护或反打收益'}。`}`;
@@ -647,7 +685,7 @@ const icons = {
 const icon = (name, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.info}</svg>`;
 const load = () => { try { return JSON.parse(localStorage.getItem(STORAGE)) || {}; } catch { return {}; } };
 const saved = load();
-let run = validateRun(saved.run) ? saved.run : null;
+let run = restoreRun(saved.run);
 let completed = Array.isArray(saved.completed) ? saved.completed.filter(x => x && CHAPTERS.some(c => c.id === x.chapterId) && typeof x.won === 'boolean' && typeof x.player === 'string').slice(-100) : [];
 let unlockedAchievements = Array.isArray(saved.achievements) ? saved.achievements : [];
 
@@ -700,7 +738,7 @@ let rewindReady = Boolean(run?.finished && !run.won && saved.rewindReady);
 let sound = false;
 let toastTimer;
 
-function persist() { try { const slim = { ...run, history: run.history?.map(h => ({ actionIndex: h.actionIndex, time: h.time, phase: h.phase })), gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed: completed.slice(-20), rewindReady, achievements: unlockedAchievements })); } catch { toast('存储已满，已自动清理旧记录。'); try { localStorage.removeItem(STORAGE); } catch {} } }
+function persist() { try { const slim = { ...run, history: run.history?.map(h => ({ actionIndex: h.actionIndex, time: h.time, phase: h.phase, roll: h.roll })), gameHistory: run.gameHistory?.map(g => ({ game: g.game, won: g.won, gold: g.gold })) }; localStorage.setItem(STORAGE, JSON.stringify({ run: slim, completed: completed.slice(-20), rewindReady, achievements: unlockedAchievements })); } catch { toast('存储已满，已自动清理旧记录。'); try { localStorage.removeItem(STORAGE); } catch {} } }
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message; el.classList.add('visible');
@@ -783,8 +821,8 @@ function liveFeed(kind, chapter, run) {
   // 判断当前局势：优势 / 均势 / 劣势（和胜负判定用同一个公式）
   let state = 'even';
   if (run) {
-    const score = (run.gold / 1000) * 0.25 + run.vision * 0.15 + run.cohesion * 0.20 + run.tempo * 0.20 + run.laning * 0.20;
-    if (score > 2.5) state = 'ahead';
+    const score = runScore(run);
+    if (score > WIN_SCORE) state = 'ahead';
     else if (score < 1.5) state = 'behind';
   }
   const feeds = {
@@ -850,8 +888,8 @@ function matchView() {
   const gold = `${run.gold >= 0 ? '+' : '−'}${(Math.abs(run.gold)/1000).toFixed(2)}k`;
   const last = run.history.at(-1);
   // 根据局势动态调整关键节点文案
-  const score = (run.gold / 1000) * 0.25 + run.vision * 0.15 + run.cohesion * 0.20 + run.tempo * 0.20 + run.laning * 0.20;
-  const state = score > 2.5 ? 'ahead' : score < 1.5 ? 'behind' : 'even';
+  const score = runScore(run);
+  const state = score > WIN_SCORE ? 'ahead' : score < 1.5 ? 'behind' : 'even';
   let phaseCopy = phase.copy, phaseSignal = phase.signal;
   if (phase.kind === 'finish') {
     if (state === 'ahead') {
@@ -904,11 +942,10 @@ function endingType(run) {
   if (c.seriesTotal) return { kind: 'regret', label: '系列赛落败', icon: 'flag',
     title: `系列赛 ${run.seriesScore[0]}:${run.seriesScore[1]}，你们没能翻盘。`,
     desc: `第 1 局为真实 BP，后续局次为架空推演。${run.seriesScore[0] > 0 ? '你改写了其中一些局次，但整体仍未能晋级。' : '每一局都在重新开局，却始终没有找到赢的方法。'}` };
-  const checks = [run.gold >= 1800, run.cohesion >= 2, run.tempo >= 1];
-  const satisfied = checks.filter(Boolean).length;
-  if (satisfied >= 2) return { kind: 'near', label: '改变关键节点', icon: 'flag',
+  const score = runScore(run);
+  if (score >= WIN_SCORE - 0.3) return { kind: 'near', label: '改变关键节点', icon: 'flag',
     title: '你改写了局势，但还差一步。',
-    desc: '你在多个关键节点拿到了优势，经济或阵型一度接近赢下比赛，但最后的收尾没有兑现。这不是历史上的那个失误，而是新的缺口。' };
+    desc: `你在多个关键节点拿到了优势，终局评分 ${score.toFixed(2)}，距 2.5 的胜负线只差 ${scoreGap(run).toFixed(2)}。这不是历史上的那个失误，而是新的缺口。` };
   return { kind: 'regret', label: '另一种遗憾', icon: 'flag',
     title: '避开了老路，却走进了另一道坎。',
     desc: '你做了不同的选择，比赛走向了另一条分支，但同样没有转化为胜势。有些差距，换一条路也未必能绕开。' };
@@ -938,9 +975,9 @@ function deepReviewView() {
   return `<section id="deep-review" class="deep-review" aria-label="深度复盘报告"><div class="section-heading"><div><span class="section-index">02</span><h2>你的整局因果报告</h2></div>${tag('广告奖励已解锁','success')}</div>
     <article class="repair-card priority-review"><h3>${run.won?'最值得保留的一步':'先看这一处，能否改变结局'}</h3>${turns.length?`<p><strong>${turns[0].time} · ${turns[0].phase}</strong></p><p>你选择了「${esc(turns[0].action)}」。${esc(turns[0].cause)}</p><p>只把这一项换成「${esc(turns[0].best.action)}」，其余选择不变：${esc(result(turns[0].best.final))}。</p>`:''}<p>${run.won?'原路线已经获胜，替代结果用于检验收益与风险。':r.minimumChanges===1?'本局只需改变一项选择即可挽回。':`单点改善不等于挽回本局，至少要改变 ${r.minimumChanges} 项；具体路线在下方。`}</p></article>
     <article class="deep-diagnosis"><span class="side-overline">WHY / 胜负根因</span><h3>${run.won?'优势如何走到终局':'问题从哪里开始'}</h3><p>${esc(r.root)}</p><div class="rewind-verdict"><strong>最后一步还有没有救？</strong><p>${esc(r.rewindVerdict)}</p></div></article>
-    <h3 class="deep-heading">关键转折 · 按单点替换对结局的影响排列</h3><p class="deep-caption">只改这一项，其余选择保持原样。经济改善不一定足以获胜，仍需同时满足接应与节奏条件。</p>
+    <h3 class="deep-heading">关键转折 · 按单点替换对结局的影响排列</h3><p class="deep-caption">只改这一项，其余选择保持原样。评分由经济、视野、接应、节奏、对线加权，经济改善不一定足以越过 2.5。</p>
     <div class="turn-grid">${turns.map(n=>`<article class="turn-card"><span>${n.time} / ${n.phase}</span><h3>${esc(n.action)}</h3><p>${esc(n.cause)}</p><div class="turn-counter"><strong>如果改为：${esc(n.best.action)}</strong><p>${esc(result(n.best.final))}</p><small>终局经济比原路线 ${signed(n.best.delta)}</small></div></article>`).join('')}</div>
-    <article class="repair-card"><h3>${run.won?'保住胜利的路线检查':'一条最少改动的获胜路线'}</h3><p>${run.won?'你的原路线已经满足获胜条件，不需要为了“更激进”而改变决定。':`在当前规则中，至少需要改变 ${r.minimumChanges} 项选择。以下是一条经过整局重算的路线，并非唯一解。`}</p>${r.changes.length?`<ol>${r.changes.map(x=>`<li><strong>${x.time} · ${x.phase}</strong><span>原选择：${esc(x.from)}</span><span class="ready">改为：${esc(x.to)}</span></li>`).join('')}</ol>`:''}<p class="repair-result">改写终局：${esc(result(r.repair))}</p><p>下一局练习：按当前选项检查所需视野与接应；资源窗口中等待也有代价。终局需经济差 ≥ +1,800、接应 ≥ 2、节奏 ≥ 1。</p></article>
+    <article class="repair-card"><h3>${run.won?'保住胜利的路线检查':'一条最少改动的获胜路线'}</h3><p>${run.won?'你的原路线已经满足获胜条件，不需要为了“更激进”而改变决定。':`在当前规则中，至少需要改变 ${r.minimumChanges} 项选择。以下是一条经过整局重算的路线，并非唯一解。`}</p>${r.changes.length?`<ol>${r.changes.map(x=>`<li><strong>${x.time} · ${x.phase}</strong><span>原选择：${esc(x.from)}</span><span class="ready">改为：${esc(x.to)}</span></li>`).join('')}</ol>`:''}<p class="repair-result">改写终局：${esc(result(r.repair))}</p><p>下一局练习：经济、视野、接应、节奏、对线按 25%/15%/20%/20%/20% 加权，终局评分需高于 2.5。资源窗口中等待也有代价。</p></article>
     <article class="matchup-review"><h3>把原因放回你的选手席</h3><p>${esc(r.role)}</p><p>${esc(r.matchup)}</p></article>
     <h3 class="deep-heading">逐节点拆解 · 当时的条件、代价与替代结果</h3><p class="deep-caption">展开任意节点，查看两条替代分支。每次对照仅改变该节点，不自动修正后续操作。</p>
     <div class="node-reviews">${r.nodes.map(n=>`<details class="node-review"><summary><time>${n.time}</time><strong>${n.phase}</strong><span>${esc(n.action)}</span></summary><div class="node-body"><p class="node-state">行动前：${esc(stateText(n.before))}<br>行动后：${esc(stateText(n.after))}</p><h4>为什么会这样结算</h4><p>${esc(n.cause)}</p><h4>这一阶段真正要解决的问题</h4><p>${esc(n.lesson)}</p><div class="counter-grid">${n.alternatives.map(a=>`<article><h4>改为：${esc(a.action)}</h4>${a.unavailable?'<p>该选择或后续原操作受技能冷却限制，无法完成固定后续路线的对照。</p>':`<p>当次经济变化 ${signed(a.immediate.gold-n.before.gold)}</p><p>当次结算后：${esc(stateText(a.immediate))}</p><strong class="${a.final.won?'ready':'danger'}">${a.final.won?'最终获胜':'最终仍未获胜'}</strong><p>${esc(stateText(a.final))}</p><small>终局经济比原路线 ${signed(a.delta)}</small>`}</article>`).join('')}</div></div></details>`).join('')}</div>
