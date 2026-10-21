@@ -890,14 +890,12 @@ function matchView() {
   // 根据局势动态调整关键节点文案
   const score = runScore(run);
   const state = score > WIN_SCORE ? 'ahead' : score < 1.5 ? 'behind' : 'even';
-  let phaseCopy = phase.copy, phaseSignal = phase.signal;
+  let phaseCopy = phase.copy;
   if (phase.kind === 'finish') {
     if (state === 'ahead') {
       phaseCopy = `你拿下了大龙 buff。兵线压到 ${c.opponent} 高地塔下。我方英雄装备已经成型，但 ${c.opponent} 在高地上架好了防守。这波推高是捧杯还是被反一波？`;
-      phaseSignal = `队友 ping 高地塔，等你最后开团。`;
     } else if (state === 'behind') {
       phaseCopy = `${c.opponent} 拿下了大龙 buff。兵线压到我方高地塔下。对方英雄装备已经成型，我方只能在高地上防守。这波守不住就结束了！`;
-      phaseSignal = `队友 ping 高地塔，请求你守最后一波。`;
     }
   }
   if (phase.kind === 'decisive') {
@@ -921,9 +919,7 @@ function matchView() {
     <div class="broadcast-feed" aria-label="比赛直播记录">${run.history.length>1 ? `<details class="past-feed"><summary>查看之前的 ${run.history.length-1} 次决策</summary>${run.history.slice(0,-1).map((h,i)=>`<div class="log-row"><time>${h.time}</time><div><span class="log-kind">你的选择 / ${h.phase}</span>${settledAction(i)}</div></div>`).join('')}</details>` : ''}
     ${last ? '' : `<div class="log-row"><time></time><div><span class="log-kind">主播开场</span><p>${c.game === 5 ? '双方带着 2:2 的比分进入第五局。' : `系列赛比分 ${c.startingScore[0]}:${c.startingScore[1]}，这是第 ${c.game} 局。`}你已经坐上选手席，之后的赛况将因你的决定发生改变。</p></div></div>`}
     <div id="live-feed-container"></div>
-    <div class="log-row active-log" id="active-log" style="display:none"><time></time><div><span class="log-kind accent">${phase.name} / 关键节点</span><p>${phaseCopy}</p></div></div><div class="team-signal" id="team-signal" style="display:none">${icon('flag')}<div><span>队内沟通 · 游戏模拟（非真实语音记录）</span><p>${phaseSignal}</p></div></div>
-    <div class="known-info" id="known-info" style="display:none">${icon('eye')}<span>${vision} <i>·</i> ${formation}</span></div>
-    <div class="decision" id="decision-panel" style="display:none"><div class="decision-heading"><span class="decision-dot"></span><h3>现在，你会怎么做？</h3><span>${String(run.step+1).padStart(2,'0')} / 08</span></div><p class="decision-hint">没有倒计时。想清楚再行动，每个选择都有代价。</p><div class="choices">${displayChoices.map((ch,i)=>`<button class="choice" data-action="choose" data-index="${i}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[i]}</span><span><strong>${ch.label}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button>`).join('')}</div></div>
+    <div id="active-log" data-name="${esc(phase.name)}" data-copy="${esc(phaseCopy)}" data-vision="${esc(vision)}" data-formation="${esc(formation)}" data-step="${String(run.step+1).padStart(2,'0')}" data-choices="${esc(JSON.stringify(displayChoices))}" style="display:none"></div>
   </section><aside class="match-sidebar"><section class="identity"><div style="display:flex;justify-content:space-between;align-items:center"><div class="side-overline">YOUR SEAT / 你的选手席</div><button class="ad-boost-btn" data-action="ad-boost">📺 广告强化 +1</button></div><div class="identity-main">${championImg(p,c)}<div><h2>${p.name}</h2><span>${c.team} · ${p.position}</span></div></div><div class="hero-name">${p.champion}<span>PATCH ${c.patch}</span></div><p>${p.task}</p><div class="stat-row"><span>经济</span><strong class="${run.gold>=0?'ready':'danger'}">${signed(run.gold)}</strong></div><div class="stat-row"><span>视野</span><strong>${run.vision}</strong></div><div class="stat-row"><span>配合</span><strong>${run.cohesion}</strong></div><div class="stat-row"><span>节奏</span><strong>${run.tempo}</strong></div><div class="stat-row"><span>对线</span><strong>${run.laning}</strong></div><div class="skill-row"><span>闪现</span><strong class="${run.flashReadyAt > phase.seconds ? 'muted' : 'ready'}">${run.flashReadyAt > phase.seconds ? `${run.flashReadyAt-phase.seconds} 秒` : '可用'}</strong></div><div class="skill-row"><span>大招</span><strong class="${phase.seconds<550 || run.ultReadyAt > phase.seconds ? 'muted' : 'ready'}">${phase.seconds<550 ? '未解锁 / 推演阶段' : run.ultReadyAt > phase.seconds ? `${run.ultReadyAt-phase.seconds} 秒` : '可用'}</strong></div></section>
   <div class="tactical-note">${icon('info')}<p>${c.threats[run.step % c.threats.length]}</p></div></aside></div>`;
 }
@@ -1017,9 +1013,6 @@ function render(focus = false) {
   if (scene === 'play' && !run?.intermission) {
     const container = document.getElementById('live-feed-container');
     const activeLog = document.getElementById('active-log');
-    const teamSignal = document.getElementById('team-signal');
-    const knownInfo = document.getElementById('known-info');
-    const decisionPanel = document.getElementById('decision-panel');
     const feed = document.querySelector('.broadcast-feed');
     if (container && feed) {
       let msgs;
@@ -1062,13 +1055,66 @@ function render(focus = false) {
       liveTimer = setInterval(() => {
         if (i >= msgs.length) {
           clearInterval(liveTimer); liveTimer = null;
-          if (!run.finished) {
-            if (activeLog) activeLog.style.display = '';
-            if (teamSignal) teamSignal.style.display = '';
-            if (knownInfo) knownInfo.style.display = '';
-            if (decisionPanel) decisionPanel.style.display = '';
+          if (run.finished) {
+            setTimeout(()=>feed.scrollTop = feed.scrollHeight, 100);
+            return;
           }
-          setTimeout(()=>feed.scrollTop = feed.scrollHeight, 100);
+          const copyText = activeLog?.dataset.copy || '';
+          const sentences = copyText.match(/[^。！？!?]+[。！？!?]?/g)?.map(s => s.trim()).filter(Boolean) || [];
+          let choices = [];
+          try { choices = JSON.parse(activeLog?.dataset.choices || '[]'); } catch { choices = []; }
+          const scrollFeed = () => { feed.scrollTop = feed.scrollHeight; };
+          const streamChoices = () => {
+            if (!choices.length) return;
+            let c = 0;
+            liveTimer = setInterval(() => {
+              const ch = choices[c];
+              const row = document.createElement('div');
+              row.className = 'log-row live-feed-row';
+              row.innerHTML = `<time></time><div><button class="choice" data-action="choose" data-index="${c}" ${ch.disabled ? 'disabled' : ''}><span class="choice-letter">${'ABC'[c]}</span><span><strong>${esc(ch.label)}</strong><small>${ch.disabled ? '大招冷却中，暂不可执行' : ch.note}</small></span>${icon('arrow')}</button></div>`;
+              container.appendChild(row);
+              scrollFeed();
+              c++;
+              if (c >= choices.length) {
+                clearInterval(liveTimer); liveTimer = null;
+              }
+            }, 700);
+          };
+          const reveal = () => {
+            const vision = activeLog?.dataset.vision || '';
+            const formation = activeLog?.dataset.formation || '';
+            if (vision || formation) {
+              const row = document.createElement('div');
+              row.className = 'log-row live-feed-row';
+              row.innerHTML = `<time></time><div><span class="log-kind">已知信息</span><p>${esc([vision, formation].filter(Boolean).join(' · '))}</p></div>`;
+              container.appendChild(row);
+            }
+            const prompt = document.createElement('div');
+            prompt.className = 'log-row live-feed-row';
+            prompt.innerHTML = `<time></time><div><span class="log-kind accent">你的抉择 · ${esc(activeLog?.dataset.step || '')} / 08</span><p>现在，你会怎么做？没有倒计时，每个选择都有代价。</p></div>`;
+            container.appendChild(prompt);
+            scrollFeed();
+            streamChoices();
+          };
+          if (!sentences.length) { reveal(); return; }
+          const heading = document.createElement('div');
+          heading.className = 'log-row live-feed-row';
+          heading.innerHTML = `<time></time><div><span class="log-kind accent">${esc(activeLog?.dataset.name || '关键节点')} / 关键节点</span></div>`;
+          container.appendChild(heading);
+          scrollFeed();
+          let s = 0;
+          liveTimer = setInterval(() => {
+            const div = document.createElement('div');
+            div.className = 'log-row live-feed-row';
+            div.innerHTML = `<time></time><div><span class="log-kind accent">关键节点</span><p>${esc(sentences[s])}</p></div>`;
+            container.appendChild(div);
+            scrollFeed();
+            s++;
+            if (s >= sentences.length) {
+              clearInterval(liveTimer); liveTimer = null;
+              reveal();
+            }
+          }, 1000);
           return;
         }
         const div = document.createElement('div');
