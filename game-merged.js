@@ -16,14 +16,14 @@ const CHAPTERS = [
     threats: ['注意波比的坚定风采，位移进场需要留意其位置。', '霞能够用暴风羽刃规避第一轮进攻，别把所有技能同时交出。', '加里奥可以通过英雄登场支援队友，追击前需要考虑其反打。'],
     source: '',
     phases: [
-      { time: '00:00', seconds: 0, name: '决胜局开局', location: '己方野区入口', copy: '伦敦决赛第五局，2:2 载入。Bin 贾克斯走上，Xun 嘉文四世的开野路线决定前期节奏。Zeus 古拉加斯在上方等待——T1 一级可能在河道做入侵视野。你决定第一轮落位。', signal: '队友 ping 蓝buff入口，问你要不要先帮打。', kind: 'setup' },
-      { time: '04:00', seconds: 240, name: '上路对线', location: '上路河道', copy: 'Bin 贾克斯正在和 Zeus 古拉加斯对线。Zeus 已经把兵线推过来了——Oner 赵信可能在附近蹲伏。Bin 的血量还有 70%，这波来不来上？', signal: '队友 ping 上路河道，Zeus 往那边靠了。', kind: 'lane' },
-      { time: '08:00', seconds: 480, name: '中路第一次联动', location: '中路河道入口', copy: 'knight 阿狸推完线消失了——她要么游走下路，要么在蹲 Faker。Faker 加里奥也不见了，他的大招全图支援随时可能落地。中野这波是谁在找谁？', signal: '队友 ping 下路三角草，问你要不要跟。', kind: 'rotate' },
+      { time: '00:00', seconds: 0, name: '决胜局开局', location: '己方野区入口', copy: '伦敦决赛第五局，2:2 载入。Bin 贾克斯走上，Xun 嘉文四世的开野路线决定前期节奏。Zeus 古拉加斯在上方等待——T1 一级可能在河道做入侵视野。队伍需要决定第一轮落位。', signal: '队友 ping 蓝buff入口，询问是否先帮打。', kind: 'setup' },
+      { time: '04:00', seconds: 240, name: '上路对线', location: '上路河道', copy: 'Bin 贾克斯正在和 Zeus 古拉加斯对线。Oner 赵信可能在附近蹲伏，上路的兵线位置还没有完全确定。这波队伍来不来上？', signal: '队友 ping 上路河道，Zeus 往那边靠了。', kind: 'lane' },
+      { time: '08:00', seconds: 480, name: '中路第一次联动', location: '中路河道入口', copy: 'knight 的阿狸推完线消失了——阿狸要么游走下路，要么在蹲 Faker。Faker 加里奥也不见了，他的大招全图支援随时可能落地。中野这波是谁在找谁？', signal: '队友 ping 下路三角草，询问是否跟进。', kind: 'rotate' },
       { time: '12:00', seconds: 720, name: '峡谷先锋', location: '上半区先锋坑', copy: '峡谷先锋刷新了。T1 下路 Gumayusi 霞已经推过线来支援。Keria 波比在先锋坑口做视野——他的坚定风采可以把人撞走。先打先锋还是先打人？', signal: '队友 ping 先锋坑，上路已经就位。', kind: 'trade' },
-      { time: '18:00', seconds: 1080, name: '小龙团', location: '龙坑入口', copy: '火龙刷新。Elk 卡莎刚出完羊刀，装备开始成型。但 Keria 波比已经在龙坑旁边放好了视野——T1 想接这波团。Faker 加里奥的大招位置是关键。', signal: '队友 ping 龙坑，ADC 还在收线。', kind: 'vision' },
+      { time: '18:00', seconds: 1080, name: '小龙团', location: '龙坑入口', copy: '火龙刷新。Elk 卡莎的装备正在成型。但 Keria 波比已经在龙坑旁边放好了视野——T1 想接这波团。Faker 加里奥的大招位置是关键。', signal: '队友 ping 龙坑，下路兵线还没处理完。', kind: 'vision' },
       { time: '23:00', seconds: 1380, name: '大龙前对峙', location: '大龙坑外', copy: '大龙还有 1 分钟刷新。Faker 加里奥站在中路侧翼，Oner 赵信在龙坑口做视野。Keria 波比不见了——他大概率在某个草里蹲着等机会。这波视野怎么补？', signal: '队友 ping 河道草，请求一起排。', kind: 'fight' },
-      { time: '28:00', seconds: 1680, name: '大龙决胜团', location: '大龙坑', copy: 'T1 先手动龙了。Zeus 古拉加斯在前面顶酒桶，Oner 赵信准备开团。Faker 加里奥的大招还没交——你猜他会落向哪里？这波是抢龙还是接团？', signal: '队友 ping 大龙血量，问你能不能进。', kind: 'decisive' },
-      { time: '33:00', seconds: 1980, name: '冠军点推进', location: '中路高地', copy: '你拿下了大龙 buff。兵线压到 T1 高地塔下。Elk 卡莎的装备已经完全成型，但 Faker 加里奥和 Gumayusi 霞在高地上架好了防守。这波推高是捧杯还是被反一波？', signal: '队友 ping 高地塔，等你最后开团。', kind: 'finish' }
+      { time: '28:00', seconds: 1680, name: '大龙决胜团', location: '大龙坑', copy: 'T1 先手动龙了。Zeus 古拉加斯在前面顶酒桶，Oner 赵信准备开团。Faker 加里奥的大招还没交——他会落向哪里？这波是抢龙还是接团？', signal: '队友 ping 大龙血量，询问是否能进。', kind: 'decisive' },
+      { time: '33:00', seconds: 1980, name: '冠军点推进', location: '中路高地', copy: '队伍拿下了大龙 buff。兵线压到 T1 高地塔下。Elk 卡莎的装备已经完全成型，但 Faker 加里奥和 Gumayusi 霞在高地上架好了防守。这波推高是捧杯还是被反一波？', signal: '队友 ping 高地塔，等待最后开团。', kind: 'finish' }
     ]
   },
   {
@@ -40,14 +40,14 @@ const CHAPTERS = [
     threats: ['乐芙兰有很强的侧翼威胁，不要把敌方中单消失视为安全。', '奥拉夫开启诸神黄昏时不能依赖控制技能阻止他。', '布隆的坚不可摧会影响正面输出，需要调整集火角度。'],
     source: '',
     phases: [
-      { time: '00:00', seconds: 0, name: '釜山决胜局', location: '己方下半区', copy: '釜山，八强赛第五局，2:2。Mlxg 魔腾的开野路线是 RNG 的招牌——他总是能在 3 分钟内找到节奏。Jankos 奥拉夫的开野方向尚未确认，G2 可能一级在河道做入侵。', signal: '队友 ping 对方红buff，问你要不要先蹲。', kind: 'setup' },
-      { time: '04:00', seconds: 240, name: '下路推线', location: '下路', copy: 'Uzi 希维尔已经把兵线推过去了。Ming 锤石的死亡判决还没命中过——Wadid 布隆一直站在兵线后面保护。Hjarnan 烬的子弹在第四发时伤害最高，你需要在他装填时找机会。', signal: '队友 ping 下路塔，问你能不能压。', kind: 'lane' },
-      { time: '08:00', seconds: 480, name: '中路压力', location: '中路河道', copy: 'Perkz 乐芙兰在中路把 xiaohu 瑞兹压在塔下。乐芙兰已经消失了 15 秒——她要么去下路 gank Uzi，要么在蹲 Mlxg。这波中野谁在找谁？', signal: '队友 ping 中路信号，Perkz 不见了。', kind: 'rotate' },
-      { time: '13:00', seconds: 780, name: '第一条小龙', location: '龙坑入口', copy: '风龙刷新。Uzi 希维尔的推塔节奏很快，但 Jankos 奥拉夫已经在龙坑旁边站视野了。Wunder 亚托克斯在上路推塔——拿龙还是放龙换塔？', signal: '队友 ping 龙坑，ADC 已经到了。', kind: 'trade' },
+      { time: '00:00', seconds: 0, name: '釜山决胜局', location: '己方下半区', copy: '釜山，八强赛第五局，2:2。Mlxg 魔腾的开野路线是 RNG 的招牌——他总能在前期找到节奏。Jankos 奥拉夫的开野方向尚未确认，G2 可能一级在河道做入侵。', signal: '队友 ping 对方红buff，询问是否先蹲。', kind: 'setup' },
+      { time: '04:00', seconds: 240, name: '下路推线', location: '下路', copy: '下路兵线已经推到河道附近。Ming 锤石的死亡判决还没命中过——Wadid 布隆一直站在兵线后面保护。Hjarnan 烬的子弹在第四发时伤害最高，队伍需要在他装填时找机会。', signal: '队友 ping 下路塔，询问是否压线。', kind: 'lane' },
+      { time: '08:00', seconds: 480, name: '中路压力', location: '中路河道', copy: 'Perkz 乐芙兰和 xiaohu 瑞兹在中路拉扯。乐芙兰已经消失了 15 秒——乐芙兰要么去下路 gank Uzi，要么在蹲 Mlxg。这波中野谁在找谁？', signal: '队友 ping 中路信号，Perkz 不见了。', kind: 'rotate' },
+      { time: '13:00', seconds: 780, name: '第一条小龙', location: '龙坑入口', copy: '风龙刷新。Uzi 希维尔的推线速度很快，但 Jankos 奥拉夫已经在龙坑旁边站视野了。Wunder 亚托克斯在上路推塔——拿龙还是放龙换塔？', signal: '队友 ping 龙坑，ADC 已经到了。', kind: 'trade' },
       { time: '19:00', seconds: 1140, name: '峡谷先锋', location: '上半区先锋坑', copy: 'Letme 赛恩在上路带线。G2 全员靠近先锋坑——Wunder 亚托克斯从上路消失了。这波先锋团接不接？乐芙兰的侧翼位置是最大的未知数。', signal: '队友 ping 河道草，请求排眼。', kind: 'vision' },
-      { time: '24:00', seconds: 1440, name: '大龙前', location: '大龙坑外', copy: '大龙即将刷新。Jankos 奥拉夫在野区入侵——他的诸神黄昏不怕你的控制。Perkz 乐芙兰又不见了。这波视野差怎么补？谁去探那个黑暗的草丛？', signal: '队友 ping 河道入口，问你要不要一起探。', kind: 'fight' },
-      { time: '30:00', seconds: 1800, name: '大龙团', location: '大龙坑', copy: 'G2 先手动龙了。Jankos 奥拉夫在龙坑里，Wunder 亚托克斯从侧翼绕后。Perkz 乐芙兰的位置还是没看到。Uzi 希维尔在后排——你的站位决定这波团怎么保他。', signal: '队友 ping 大龙血量，问你能不能进。', kind: 'decisive' },
-      { time: '36:00', seconds: 2160, name: '四强门槛', location: '中路高地', copy: '你拿下了大龙 buff。兵线压到 G2 高地塔下。Uzi 希维尔的弹射在狭窄地形里伤害极高，但 Wadid 布隆的坚不可摧可以挡。这波推高是进四强还是梦碎釜山？', signal: '队友 ping 高地塔，等你最后开团。', kind: 'finish' }
+      { time: '24:00', seconds: 1440, name: '大龙前', location: '大龙坑外', copy: '大龙即将刷新。Jankos 奥拉夫在野区入侵——他的诸神黄昏不怕控制。Perkz 乐芙兰又不见了。这波视野差怎么补？谁去探那个黑暗的草丛？', signal: '队友 ping 河道入口，询问是否一起探。', kind: 'fight' },
+      { time: '30:00', seconds: 1800, name: '大龙团', location: '大龙坑', copy: 'G2 先手动龙了。Jankos 奥拉夫在龙坑里，Wunder 亚托克斯从侧翼绕后。Perkz 乐芙兰的位置还是没看到。希维尔在后排——这波团要先保住输出位置，还是先处理侧翼？', signal: '队友 ping 大龙血量，询问是否能进。', kind: 'decisive' },
+      { time: '36:00', seconds: 2160, name: '四强门槛', location: '中路高地', copy: '队伍拿下了大龙 buff。兵线压到 G2 高地塔下。Uzi 希维尔的弹射在狭窄地形里伤害极高，但 Wadid 布隆的坚不可摧可以挡。这波推高是进四强还是梦碎釜山？', signal: '队友 ping 高地塔，等待最后开团。', kind: 'finish' }
     ]
   },
   {
@@ -64,14 +64,14 @@ const CHAPTERS = [
     threats: ['Bin 的悟空配合 SofM 有极快的上路启动速度，369 需要保持安全距离。', 'Angel 的沙皇在中路有极强的推线和区域控制，游走前先确认他的位置。', 'huanfeng 的伊泽瑞尔poke距离很远，团战前需要维持血量优势。'],
     source: '',
     phases: [
-      { time: '00:00', seconds: 0, name: '开局入侵路线', location: '己方下半区野区入口', copy: 'Karsa 潘森一级入侵是 TES 的招牌开局。SofM 李青的开野路线尚未确认——他可能在红buff野区反蹲，也可能直接放下半区。你决定第一轮往哪边走。', signal: '队友标记对方红buff入口，问你要不要跟。', kind: 'setup' },
-      { time: '03:15', seconds: 195, name: '上路第一波', location: '上路河道入口', copy: '369 杰斯已经把 Bin 悟空压在塔下。SofM 李青在下半区消失了 20 秒——他是在刷野，还是偷偷摸上来了？上路这波你必须做出判断。', signal: '队友 ping 了河道入口，请求你靠近。', kind: 'lane' },
-      { time: '06:40', seconds: 400, name: '下河蟹争夺', location: '下半区河道', copy: 'JackeyLove 烬和 yuyanjia 腕豪已经把线推过去。SwordArt 洛往河道走了——他在和你抢下河蟹，还是在等 SofM 李青就位？这波 2v2 接不接由你定。', signal: '队友标记河蟹位置，等你到场。', kind: 'rotate' },
-      { time: '10:20', seconds: 620, name: '第一条小龙', location: '龙坑入口', copy: '火龙即将刷新。TES 前期有阵容强势期，但 SofM 李青已经在旁边露过头了。Angel 沙皇刚推完中线——他随时可以支援龙坑。拿龙还是放龙换先锋？', signal: '队友标记龙坑，问你这波接不接。', kind: 'trade' },
-      { time: '15:00', seconds: 900, name: '一血塔与资源互换', location: '上路一塔', copy: '369 杰斯已经把上路一塔磨到半血。SN 下路 huanfeng 伊泽瑞尔在推你的下路一塔。推上塔换掉下塔，还是全员转下保塔？时间差只有 20 秒。', signal: '队友 ping 上路塔，对方辅助在下路消失了。', kind: 'vision' },
+      { time: '00:00', seconds: 0, name: '开局入侵路线', location: '己方下半区野区入口', copy: 'Karsa 潘森一级入侵是 TES 的招牌开局。SofM 李青的开野路线尚未确认——他可能在红buff野区反蹲，也可能直接放下半区。队伍需要决定第一轮往哪边走。', signal: '队友标记对方红buff入口，询问是否跟进。', kind: 'setup' },
+      { time: '03:15', seconds: 195, name: '上路第一波', location: '上路河道入口', copy: '369 杰斯正在和 Bin 悟空对线。SofM 李青在下半区消失了 20 秒——他是在刷野，还是偷偷摸上来了？上路这波队伍必须做出判断。', signal: '队友 ping 了河道入口，请求靠近。', kind: 'lane' },
+      { time: '06:40', seconds: 400, name: '下河蟹争夺', location: '下半区河道', copy: 'JackeyLove 烬和 yuyanjia 腕豪正在下路处理兵线。SwordArt 洛往河道走了——他在和队伍抢下河蟹，还是在等 SofM 李青就位？这波 2v2 接不接，由队伍决定。', signal: '队友标记河蟹位置，等待到场。', kind: 'rotate' },
+      { time: '10:20', seconds: 620, name: '第一条小龙', location: '龙坑入口', copy: '火龙即将刷新。TES 前期有阵容强势期，但 SofM 李青已经在旁边露过头了。Angel 沙皇刚推完中线——他随时可以支援龙坑。拿龙还是放龙换先锋？', signal: '队友标记龙坑，询问是否接团。', kind: 'trade' },
+      { time: '15:00', seconds: 900, name: '一血塔与资源互换', location: '上路一塔', copy: '上路一塔和下路一塔都在被推。推上塔换掉下塔，还是全员转下保塔？时间差只有 20 秒。', signal: '队友 ping 上路塔，对方辅助在下路消失了。', kind: 'vision' },
       { time: '20:30', seconds: 1230, name: '大龙刷新前', location: '上半区河道', copy: '大龙还有 30 秒刷新。SofM 李青在视野里消失了——他大概率在藏。Angel 沙皇站在中路侧翼，随时可以大招推人。这波视野怎么做？', signal: '队友标记河道草丛，请求一起排眼。', kind: 'fight' },
-      { time: '25:00', seconds: 1500, name: '大龙团战', location: '大龙坑外', copy: 'SN 主动开龙了。SofM 李青在龙坑内，Bin 悟空从侧翼绕后。你的位置决定这波团怎么接——是正面逼龙，还是等他们打完龙再收割？', signal: '队友 ping 大龙血量，问你能不能进。', kind: 'decisive' },
-      { time: '30:00', seconds: 1800, name: '高地推进', location: '中路高地前', copy: '你拿下了大龙 buff。兵线到了高地塔下。但 Angel 沙皇的沙兵阵地和 huanfeng 伊泽瑞尔的 poke 已经在高地上架好了。这波推进是一波结束，还是被反一波？', signal: '队友标记高地塔，等你最后决定。', kind: 'finish' }
+      { time: '25:00', seconds: 1500, name: '大龙团战', location: '大龙坑外', copy: 'SN 主动开龙了。SofM 李青在龙坑内，Bin 悟空从侧翼绕后。队伍的位置决定这波团怎么接——是正面逼龙，还是等他们打完龙再收割？', signal: '队友 ping 大龙血量，询问是否能进。', kind: 'decisive' },
+      { time: '30:00', seconds: 1800, name: '高地推进', location: '中路高地前', copy: '队伍拿下了大龙 buff。兵线到了高地塔下。但 Angel 沙皇的沙兵阵地和 huanfeng 伊泽瑞尔的 poke 已经在高地上架好了。这波推进是一波结束，还是被反一波？', signal: '队友标记高地塔，等待最后决定。', kind: 'finish' }
     ]
   },
   {
@@ -88,28 +88,28 @@ const CHAPTERS = [
     threats: ['Zeus 的亚托克斯在对线期压制力极强，369 需要稳住塔下。', 'Faker 的发条团战大招位置极为关键，注意分散站位不被拉满。', 'Keria 的巴德有全图大招，任何位置的开战都可能被反手大招反制。'],
     source: '',
     phases: [
-      { time: '00:00', seconds: 0, name: '开野路线', location: '己方上半区野区', copy: 'Kanavi 蔚一级入侵是 JDG 的常规起手。Oner 芮尔大概率从下半区开野，但 Keria 巴德可能一级就去上半区做视野。你决定第一轮刷野路线。', signal: '队友 ping 对方红buff，问你要不要一起进。', kind: 'setup' },
-      { time: '04:00', seconds: 240, name: '上路对线压力', location: '上路河道', copy: '369 兰博在和 Zeus 亚托克斯对线。Zeus 已经把兵线推过来了——他在等 Oner 芮尔 gank。369 的血量只有 60%，你这波来不来上？', signal: '队友 ping 上路河道，Zeus 往那边靠了。', kind: 'lane' },
-      { time: '08:00', seconds: 480, name: '中路第一次联动', location: '中路河道入口', copy: 'knight 阿卡丽推完线消失了——她要么去游走下路，要么在蹲 Faker。Faker 发条也不见了。中野这波是谁在找谁？你的路线决定这次联动的结果。', signal: '队友 ping 下路三角草，问你要不要跟。', kind: 'rotate' },
-      { time: '12:00', seconds: 720, name: '峡谷先锋', location: '上半区先锋坑', copy: '峡谷先锋刷新了。JDG 上路有优势，369 兰博可以先到。但 Oner 芮尔已经在先锋坑旁边站视野了——他在等 Keria 巴德到场。先打先锋还是先打人？', signal: '队友 ping 先锋坑，上路已经就位。', kind: 'trade' },
-      { time: '17:00', seconds: 1020, name: '第二条小龙团', location: '龙坑入口', copy: '水龙刷新。Ruler 霞刚补完女神泪，还没到强势期。Keria 巴德已经在野区放了一个通道——他可能从任何位置绕后。这波团接不接？', signal: '队友 ping 龙坑，ADC 还在中路收线。', kind: 'vision' },
+      { time: '00:00', seconds: 0, name: '开野路线', location: '己方上半区野区', copy: 'Kanavi 蔚一级入侵是 JDG 的常规起手。Oner 芮尔大概率从下半区开野，但 Keria 巴德可能一级就去上半区做视野。队伍需要决定第一轮刷野路线。', signal: '队友 ping 对方红buff，询问是否一起进。', kind: 'setup' },
+      { time: '04:00', seconds: 240, name: '上路对线压力', location: '上路河道', copy: '369 兰博正在和 Zeus 亚托克斯对线。Oner 芮尔的位置还没确认，上路的兵线位置仍然可能变化。这波队伍来不来上？', signal: '队友 ping 上路河道，Zeus 往那边靠了。', kind: 'lane' },
+      { time: '08:00', seconds: 480, name: '中路第一次联动', location: '中路河道入口', copy: 'knight 的阿卡丽推完线消失了——阿卡丽要么去游走下路，要么在蹲 Faker。Faker 发条也不见了。中野这波是谁在找谁？队伍路线决定这次联动的结果。', signal: '队友 ping 下路三角草，询问是否跟进。', kind: 'rotate' },
+      { time: '12:00', seconds: 720, name: '峡谷先锋', location: '上半区先锋坑', copy: '峡谷先锋刷新了。JDG 上路能先动，369 兰博可以先到。但 Oner 芮尔已经在先锋坑旁边站视野了——他在等 Keria 巴德到场。先打先锋还是先打人？', signal: '队友 ping 先锋坑，上路已经就位。', kind: 'trade' },
+      { time: '17:00', seconds: 1020, name: '第二条小龙团', location: '龙坑入口', copy: '水龙刷新。Ruler 霞还在等装备成型。Keria 巴德已经在野区放了一个通道——他可能从任何位置绕后。这波团接不接？', signal: '队友 ping 龙坑，中路兵线还没处理完。', kind: 'vision' },
       { time: '22:00', seconds: 1320, name: '大龙前对峙', location: '大龙坑外', copy: '大龙还有 1 分钟刷新。Faker 发条站在中路侧翼，Oner 芮尔在龙坑口做视野。Keria 巴德不见了——他大概率在某个草里蹲着等机会。这波视野差怎么补？', signal: '队友 ping 河道草，请求一起排。', kind: 'fight' },
-      { time: '27:00', seconds: 1620, name: '大龙决胜团', location: '大龙坑', copy: 'T1 先手动龙了。Zeus 亚托克斯在前面顶，Oner 芮尔准备开团。Faker 发条的球在后排——你猜他会拉谁？这波是抢龙还是接团？', signal: '队友 ping 大龙血量，问你能不能进。', kind: 'decisive' },
-      { time: '32:00', seconds: 1920, name: '高地推进', location: '中路高地', copy: '你拿下了大龙 buff。兵线压到高地塔下。Ruler 霞的装备已经成型，但 Faker 发条和 Gumayusi 烬在高地上架好了防守。这波推高是一波结束，还是被 T1 反打？', signal: '队友 ping 高地塔，等你最后开团。', kind: 'finish' }
+      { time: '27:00', seconds: 1620, name: '大龙决胜团', location: '大龙坑', copy: 'T1 先手动龙了。Zeus 亚托克斯在前面顶，Oner 芮尔准备开团。Faker 发条的球在后排——他会拉谁？这波是抢龙还是接团？', signal: '队友 ping 大龙血量，询问是否能进。', kind: 'decisive' },
+      { time: '32:00', seconds: 1920, name: '高地推进', location: '中路高地', copy: '队伍拿下了大龙 buff。兵线压到高地塔下。Ruler 霞的装备已经成型，但 Faker 发条和 Gumayusi 烬在高地上架好了防守。这波推高是一波结束，还是被 T1 反打？', signal: '队友 ping 高地塔，等待最后开团。', kind: 'finish' }
     ]
   }
 ];
 
 // Every live event after the 00:00 entry is fictional simulation, not a VOD transcript.
 const PHASES = [
-  { time: '00:00', seconds: 0, name: '开局落位', location: '己方野区入口', copy: '决胜局载入。双方都还没有暴露完整开局路线。你可以决定第一轮落位，但无法看到战争迷雾后的对手。', signal: '队友发出防守信号，等待你的落位。', kind: 'setup' },
-  { time: '04:20', seconds: 260, name: '第一轮线权', location: '线上与河道入口', copy: '兵线交汇，河道外的敌方打野尚未露面。向前一步可以争取主动，也可能让你失去安全距离。', signal: '打野标记河道入口，请求留意支援。', kind: 'lane' },
-  { time: '09:10', seconds: 550, name: '第一次联动', location: '下半区河道', copy: '双方开始靠近下半区。敌方中单离开了最后可见的位置。一次快速联动的机会出现，但你并不知道所有人的位置。', signal: '队友请求靠近；撤退信号同样有效。', kind: 'rotate' },
-  { time: '14:30', seconds: 870, name: '换线与取舍', location: '边线与中路', copy: '比赛进入转线阶段。防御塔、兵线和中立资源无法同时兼顾，你需要为下一轮碰撞留下空间。', signal: '队友标记中路，等待你的换线回应。', kind: 'trade' },
+  { time: '00:00', seconds: 0, name: '开局落位', location: '己方野区入口', copy: '决胜局载入。双方都还没有暴露完整开局路线。队伍需要决定第一轮落位，但无法看到战争迷雾后的对手。', signal: '队友发出防守信号，等待落位。', kind: 'setup' },
+  { time: '04:20', seconds: 260, name: '第一轮线权', location: '线上与河道入口', copy: '兵线交汇，河道外的敌方打野尚未露面。向前一步可以争取主动，也可能让队伍失去安全距离。', signal: '打野标记河道入口，请求留意支援。', kind: 'lane' },
+  { time: '09:10', seconds: 550, name: '第一次联动', location: '下半区河道', copy: '双方开始靠近下半区。敌方中单离开了最后可见的位置。一次快速联动的机会出现，但队伍并不知道所有人的位置。', signal: '队友请求靠近；撤退信号同样有效。', kind: 'rotate' },
+  { time: '14:30', seconds: 870, name: '换线与取舍', location: '边线与中路', copy: '比赛进入转线阶段。防御塔、兵线和中立资源无法同时兼顾，队伍需要为下一轮碰撞留下空间。', signal: '队友标记中路，等待换线回应。', kind: 'trade' },
   { time: '20:40', seconds: 1240, name: '大龙区域', location: '上半区河道', copy: '大龙已经出生。对手开始争夺河道位置，黑暗的入口并不意味着里面没有人。视野和阵型将决定谁先拥有选择权。', signal: '辅助标记河道草丛，请求协同排眼。', kind: 'vision' },
-  { time: '25:10', seconds: 1510, name: '正面交锋', location: '中路河道侧翼', copy: '前排发生接触，双方后排仍在寻找输出位置。你拥有一个行动窗口，贸然前压也可能把自己暴露给第二轮控制。', signal: '队友标记敌方前排；侧翼仍需警戒。', kind: 'fight' },
+  { time: '25:10', seconds: 1510, name: '正面交锋', location: '中路河道侧翼', copy: '前排发生接触，双方后排仍在寻找输出位置。队伍拥有一个行动窗口，贸然前压也可能把队伍暴露给第二轮控制。', signal: '队友标记敌方前排；侧翼仍需警戒。', kind: 'fight' },
   { time: '29:40', seconds: 1780, name: '胜负手', location: '大龙坑外', copy: '对手重新靠近大龙区域。可以制造进攻机会，也可以让他们先暴露意图。此前积累的视野和技能储备现在开始兑现。', signal: '队友请求同步行动，避免各自进场。', kind: 'decisive' },
-  { time: '34:20', seconds: 2060, name: '最后的推进', location: '中路高地前', copy: '兵线来到高地附近。最后一次决定，关系到你能否把局势优势转化为水晶的碎裂声。', signal: '队友标记防御塔，等待最终行动。', kind: 'finish' }
+  { time: '34:20', seconds: 2060, name: '最后的推进', location: '中路高地前', copy: '兵线来到高地附近。最后一次决定，关系到队伍能否把局势优势转化为水晶的碎裂声。', signal: '队友标记防御塔，等待最终行动。', kind: 'finish' }
 ];
 
 const ACTIONS = {
@@ -381,43 +381,43 @@ function tacticalChoices(run) {
   const CUSTOM_CHOICES = {
     blg2024: [
       ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
-      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
-      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['让线上稳住，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['先处理兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
       ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
-      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等ADC，直接开龙逼团'],
-      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等队友，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '单人探草，冒险找人开团'],
       ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
-      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '单人前压，强开水晶'],
     ],
     rng2018: [
       ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
-      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
-      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['让线上稳住，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['先处理兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
       ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
-      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等上单，直接开龙逼团'],
-      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['放掉先锋，换小龙/塔', '集合队友，稳稳拿下先锋', '不等队友，强行抢先锋'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '单人探草，冒险找人开团'],
       ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
-      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '单人前压，强开水晶'],
     ],
     tes2020: [
       ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
-      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
-      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['让线上稳住，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['先处理兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
       ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
-      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等上单，直接开龙逼团'],
-      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['放掉上路一塔，全员转下保塔', '推掉上路一塔，换掉下路一塔', '不等队友，强行越塔推进'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '单人探草，冒险找人开团'],
       ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
-      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '单人前压，强开水晶'],
     ],
     jdg2023: [
       ['稳健开局，正常落位', '提前站位，防一级入侵', '主动入侵，反打一波'],
-      ['稳在塔下，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
-      ['稳住兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
+      ['让线上稳住，等队友支援', '呼叫队友，蹲伏反打', '直接越塔，强压对手'],
+      ['先处理兵线，不冒风险', '游走支援，找边路机会', '强行开团，赌一波gank'],
       ['放掉这个资源，换另一侧', '集合队友，稳稳拿下', '不等队友，强行抢资源'],
-      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等ADC，直接开龙逼团'],
-      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '独自探草，冒险找人开团'],
+      ['放掉小龙，换先锋/塔', '接团，等队友到位再开', '不等队友，直接开龙逼团'],
+      ['和队友一起，慢慢排视野', '先做视野再靠近，稳扎稳打', '单人探草，冒险找人开团'],
       ['等对手先交技能再反打', '先进场，拼一波操作', '直接切后排，赌一波团战'],
-      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '独自前压，强开水晶'],
+      ['稳步推进，等兵线到位', '集体压上，强拆防御塔', '单人前压，强开水晶'],
     ],
   };
 
@@ -442,6 +442,14 @@ function tacticalChoices(run) {
     } else {
       labels = [`稳步推进，等对手失误`, `集体压上，强拆高地`, `独自前压逼水晶，尝试一波结束`];
     }
+  }
+  // 胜负手选项要贴合所选位置：ADC 不切后排，辅助先手开团。
+  if (i === 6) {
+    labels = [
+      '等对手先交技能再反打',
+      p.position === 'ADC' ? '先找输出位置，拼一波操作' : p.position === '辅助' ? '找机会先手，拼一波操作' : '先进场，拼一波操作',
+      p.position === 'ADC' ? '跟进输出，赌一波团战' : p.position === '辅助' ? '先手开团，赌一波团战' : '直接切后排，赌一波团战'
+    ];
   }
   const notes = [
     `${successColor('90% 成功：经济+150')}\n${failColor('10% 失败：经济-100')}`,
@@ -584,7 +592,7 @@ function deepReview(run) {
     root, nodes, changes, repair: repair.run, minimumChanges: repair.count,
     rewindVerdict: run.won ? '本局已经胜利。下面的对照用于检查替代选择是否会保住优势。' : canLastSave ? '只改变最后一项选择，存在获胜分支。可选择最后节点回溯，具体结果见下方对照；也可选择更早的节点重新推演。' : '只改变最后一项选择，两条替代分支仍会失败。建议从下方最少改动路线中的最早节点回溯，再调整后续选择；此前的局势可以保留。',
     role: `${p.name} · ${p.champion}：${roleLessons[p.position]} 当局英雄职责：${p.task} 可用思路：${p.kit.protect}；${p.kit.engage}。`,
-    matchup: c.id === 'blg2024' ? '阵容阅读：Keria 的波比会限制位移进场，Gumayusi 的霞有规避首轮进攻的手段，Faker 的加里奥可以支援反打。你需要先确认相关位置与技能，再考虑主动接触。' : '阵容阅读：Perkz 的乐芙兰可以威胁侧翼，Jankos 的奥拉夫开启大招后不能依赖控制阻止，Wadid 的布隆会影响正面输出。选位置和组织接应时，需要考虑这些应对方式。',
+    matchup: `阵容阅读：${c.threats.join('')} 选位置和组织接应时，需要考虑这些应对方式。`,
     scope: '分支数值由本局规则重新计算：单点对照固定其余选择，改写路线则寻找获胜所需的最少改动。这是当前游戏模型的结果，不代表真实比赛胜率。阵容阅读为战术参考，当前引擎尚未计算射程、伤害和敌方技能冷却，不能据此断言某位选手导致真实失利。'
   };
   cache.set(run, report);
@@ -815,7 +823,7 @@ function intermissionView() {
   return `<div class="review-header" style="padding-top:40px"><div class="eyebrow">GAME ${lastGame.game} 结束</div><span class="ending-glyph" style="${lastGame.won?'':'border-color:var(--red)'}">${icon(lastGame.won?'trophy':'flag')}</span><h1>第 ${lastGame.game} 局，${lastGame.won ? '你们拿下了。' : '你们输了。'}</h1><p>${lastGame.won ? '系列赛比分改写。对手回到更衣室调整，你们也需要复盘这一局的关键选择。' : '对手抓住了机会。休息一下，下一局重新来过。'}</p><div class="ending-score"><span>${c.team}</span><strong>${a} : ${b}</strong><span>${c.opponent}</span></div>${tag(lastGame.won?'你领先':'对手领先')}</div>
   <section class="review-actions" style="text-align:center"><div><h3>第 ${run.gameNumber + 1} 局即将开始</h3><p>系列赛是 BO5，先赢三局。当前比分 ${a}:${b}，${a > b ? '你领先，再赢一局就拿到赛点。' : a < b ? '对手领先，再输一局就被淘汰。' : '平局，下一局谁赢谁领先。'}</p><p style="color:var(--muted);font-size:11px;margin-top:8px">后续局次为架空推演，英雄将根据选手擅长与团队需求调整。</p></div><div class="review-action-buttons" style="justify-content:center"><button class="primary" data-action="next-game">进入第 ${run.gameNumber + 1} 局 ${icon('arrow')}</button></div></section>`;
 }
-function liveFeed(kind, chapter, run) {
+function liveFeed(kind, chapter, run, phaseName = '') {
   const myTeam = chapter ? chapter.team : '我方';
   const oppTeam = chapter ? chapter.opponent : '对方';
   // 判断当前局势：优势 / 均势 / 劣势（和胜负判定用同一个公式）
@@ -827,24 +835,39 @@ function liveFeed(kind, chapter, run) {
   }
   const feeds = {
     setup: {
-      ahead: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','上路已经开始激烈对线了！'],
-      even: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','上路已经开始激烈对线了！'],
-      behind: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','上路已经开始激烈对线了！']
+      ahead: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','各路已经开始对线了！'],
+      even: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','各路已经开始对线了！'],
+      behind: ['比赛即将开始！','双方选手已经在召唤师峡谷集结完毕！','现场观众欢呼声响彻整个场馆！',`蓝色方${myTeam}！红色方${oppTeam}！`,'兵线出发！比赛正式开始！','双方打野同时开始刷野！','辅助在河道布置了第一个视野！','各路已经开始对线了！']
     },
     lane: {
-      ahead: ['上路兵线交汇了！',`${myTeam}上单已经开始压线了！`,'对方上单只能龟在塔下补刀！','打野已经帮上路拿到一血了！','中单推完线就来上路游走！','对方打野根本不敢来上路！','上路经济差距已经拉开了！','这对线压制力太强了！'],
+      ahead: ['上路兵线交汇了！',`${myTeam}上单已经开始压线了！`,'对方上单只能龟在塔下补刀！','打野正在往上路靠！','中单推完线正在往上路游走！','对方打野的动向还没确认！','上路经济差距已经拉开了！','这对线压制力太强了！'],
       even: ['上路兵线交汇了！','上路双方正在激烈对线！','双方补刀数几乎持平！','打野在下半区出现了！','中单推完线消失在视野中！','对方打野也在往中路靠！','这波中野博弈太关键了！','双方都在等对方先露破绽！'],
-      behind: ['上路兵线交汇了！',`${oppTeam}上单已经开始压线了！`,'我方上单被压在塔下补刀！','对方打野已经在上路蹲到了！','我方上单血量已经不健康了！','对方中单也来上路游走了！','上路要被越塔了！','这对线劣势太大了！']
+      behind: ['上路兵线交汇了！',`${oppTeam}上单已经开始压线了！`,'我方上单被压在塔下补刀！','对方打野正在上路蹲伏！','我方上单血量已经不健康了！','对方中单正在往上路游走！','上路要被越塔了！','这对线劣势太大了！']
+    },
+    laneBot: {
+      ahead: ['下路兵线交汇了！',`${myTeam}下路双人组已经开始压线了！`,'对方下路只能龟在塔下补刀！','打野正在往下路靠！','中单推完线正在往下路游走！','对方打野的动向还没确认！','下路经济差距已经拉开了！','这对线压制力太强了！'],
+      even: ['下路兵线交汇了！','下路双方正在激烈对线！','双方补刀数几乎持平！','打野在下半区出现了！','中单推完线消失在视野中！','对方打野也在往中路靠！','这波中野博弈太关键了！','双方都在等对方先露破绽！'],
+      behind: ['下路兵线交汇了！',`${oppTeam}下路已经开始压线了！`,'我方下路被压在塔下补刀！','对方打野正在下路蹲伏！','我方下路血量已经不健康了！','对方中单正在往下路游走！','下路要被越塔了！','这对线劣势太大了！']
     },
     rotate: {
-      ahead: ['中单消失了！他在往哪走？','辅助在三角草做了视野！','我方下路双人组已经压到塔下了！','对方打野根本不敢出现在视野里！','我方中单游走拿到了击杀！','这波支援太及时了！','主动权完全在我方手里！','对方现在只能被动防守！'],
+      ahead: ['中单消失了！他在往哪走？','辅助在三角草做了视野！','我方下路双人组已经压到塔下了！','对方打野暂时没有露头！','我方中单正在往下路游走！','这波支援正在路上！','主动权完全在我方手里！','对方现在只能被动防守！'],
       even: ['中单消失了！他在往哪走？','辅助在三角草做了视野！','下路双人组开始压线了！','对方打野在你方上半区露头了！','双方中单都在找游走机会！','这波支援窗口稍纵即逝！','谁先动谁就能拿到主动权！','局势一触即发！'],
-      behind: ['中单消失了！他在往哪走？','辅助在三角草做了视野！','对方下路双人组已经压到塔下了！','我方打野在野区被抓了！','对方中单游走拿到了击杀！','我方现在完全被动！','对方节奏已经起来了！','这局要翻了吗？']
+      behind: ['中单消失了！他在往哪走？','辅助在三角草做了视野！','对方下路双人组已经压到塔下了！','我方打野在野区被缠住了！','对方中单正在往下路游走！','我方现在完全被动！','对方节奏已经起来了！','这局要翻了吗？']
     },
     trade: {
-      ahead: ['峡谷先锋刷新了！',`${myTeam}已经先到位置了！`,'对方根本不敢过来争！','先锋稳稳收入囊中！','这波资源团又是我方拿下！','经济差距进一步扩大！','对方现在只能放资源！','这优势太大了！'],
-      even: ['峡谷先锋刷新了！','双方辅助都在往资源区靠！','上单还在处理兵线！','谁能先到位谁就掌握主动！','这波资源团太关键了！','双方都在等队友集结！','经济差距就在这一波拉开！','能不能接？怎么接？'],
-      behind: ['峡谷先锋刷新了！',`${oppTeam}已经先到位置了！`,'我方根本不敢过去争！','先锋被对方稳稳拿下！','这波资源团又丢了！','经济差距越来越大！','对方现在想拿什么就拿什么！','这局要走远了...']
+      ahead: ['峡谷先锋刷新了！',`${myTeam}已经先到位置了！`,'对方还在犹豫要不要接！','先锋血量已经见底了！','这波拿下就能推塔！','经济差距进一步扩大！','对方现在只能放资源！','这优势太大了！'],
+      even: ['峡谷先锋刷新了！','双方辅助都在往资源区靠！','边线还在处理兵线！','谁能先到位谁就掌握主动！','这波资源团太关键了！','双方都在等队友集结！','经济差距就在这一波拉开！','能不能接？怎么接？'],
+      behind: ['峡谷先锋刷新了！',`${oppTeam}已经先到位置了！`,'我方位置还没完全到位！','先锋血量已经见底了！','这波要是被拿下，对方就能推塔！','经济差距越来越大！','对方现在想拿什么就拿什么！','这局要走远了...']
+    },
+    tradeDragon: {
+      ahead: ['小龙刷新了！',`${myTeam}已经先到位置了！`,'对方还在犹豫要不要接！','小龙血量已经见底了！','这波拿下就能扩大优势！','经济差距进一步扩大！','对方现在只能放资源！','这优势太大了！'],
+      even: ['小龙刷新了！','双方辅助都在往龙坑靠！','下路还在处理兵线！','谁能先到位谁就掌握主动！','这波资源团太关键了！','双方都在等队友集结！','经济差距就在这一波拉开！','能不能接？怎么接？'],
+      behind: ['小龙刷新了！',`${oppTeam}已经先到位置了！`,'我方位置还没完全到位！','小龙血量已经见底了！','这波要是被拿下，对方会继续扩大优势！','经济差距越来越大！','对方现在想拿什么就拿什么！','这局要走远了...']
+    },
+    tower: {
+      ahead: ['上路一塔已经磨到半血！','我方兵线正在往塔下压！','对方下路也在推我们的下路一塔！','双方都在抢时间差！','这波换塔我们更快！','经济差距正在拉开！','对方回防慢了一步！','就看谁先推掉！'],
+      even: ['上路一塔血量在下降！','对方下路一塔也在被推！','双方都在抢时间差！','回防还是换塔？','这波资源互换很关键！','谁能多推一座塔谁就领先！','兵线位置决定结果！','时间差只有 20 秒！'],
+      behind: ['上路一塔还没推掉！','对方下路已经推到我们的塔下了！','我方回防慢了一步！','这波换塔要亏！','经济差距要被拉开！','对方推进速度更快！','再不回防下路就没了！','这波必须做取舍！']
     },
     vision: {
       ahead: ['辅助在河道入口放了真眼！','我方队伍完全掌控了视野！','对方打野在野区被看得清清楚楚！','我方入侵野区完全不担心被蹲！','对方野区一片漆黑！','视野优势太大了！','对方现在完全不知道我们在干嘛！','这视野压制太狠了！'],
@@ -852,23 +875,154 @@ function liveFeed(kind, chapter, run) {
       behind: ['辅助在河道入口放了真眼！','我方野区完全没有视野！','对方打野在我方野区自由出入！','我方现在做视野就要被抓！','对方视野完全覆盖了我方野区！','这视野差距太大了！','我方现在完全是盲人打球！','根本不知道对面人在哪！']
     },
     fight: {
-      ahead: ['双方在资源区集结了！','我方已经先到位了！','辅助直接开团！','团战爆发！','我方打出完美团战！','0换3！大获全胜！','这波团打赢了比赛基本就稳了！','对方现在完全接不了团！'],
+      ahead: ['双方在资源区集结了！','我方已经先到位了！','辅助正在找开团角度！','对方阵型开始收缩！','我方前排已经顶了上去！','这波团我们占住了位置！','对方现在很难接团！','就看第一波技能了！'],
       even: ['双方在资源区集结了！','辅助在找开团角度！','ADC正在后排找输出位置！','对方上单打野顶在最前面！','技能都在CD！谁先出手？','团战一触即发！','这波团打赢了就能终结比赛！','所有人都绷紧了神经！'],
-      behind: ['双方在资源区集结了！','对方已经先到位了！','我方现在根本接不了团！','辅助想开团但根本找不到角度！','对方先手开团了！','团战溃败！','这波团输了比赛基本就没了！','我方现在只能撤退！']
+      behind: ['双方在资源区集结了！','对方已经先到位了！','我方现在很难接团！','辅助找不到开团角度！','对方正在逼近入口！','这波团必须先稳住阵型！','再退就要让出资源了！','我方现在只能背水一战！']
     },
     decisive: {
-      ahead: ['大龙血量开始下降了！','我方在打大龙！','对方根本不敢过来抢！','大龙稳稳拿下！','这波打完可以直接一波了！','兵线已经带过去了！','水晶就在眼前！','这局稳了！'],
+      ahead: ['大龙血量开始下降了！','我方在打大龙！','对方根本不敢过来抢！','大龙血量已经见底了！','这波拿下就能直接一波！','兵线已经带过去了！','水晶就在眼前！','这局稳了！'],
       even: ['大龙血量开始下降了！','双方都在等对方先交技能！','辅助的开团技能已经好了！','后排在找安全输出位置！','这就是决胜团！','一波定胜负！','所有人都在等那个关键闪现！','谁失误谁就回家！'],
-      behind: ['大龙血量开始下降了！','对方在打大龙！','我方根本不敢过去抢！','大龙被对方稳稳拿下！','这波打完对方可以直接一波！','我方现在只能背水一战！','水晶岌岌可危！','这局要没了...']
+      behind: ['大龙血量开始下降了！','对方在打大龙！','我方根本不敢过去抢！','大龙血量已经见底了！','这波要是被拿下，对方可以直接一波！','我方现在只能背水一战！','水晶岌岌可危！','这局要没了...']
     },
     finish: {
-      ahead: ['兵线已经带到高地前了！','我方拿下了大龙buff！','对方所有人都缩在高地上！','这波推进势在必得！','高地塔就在眼前！','对方防守已经松了！','准备推高地了！','这一波，拿下比赛！'],
+      ahead: ['兵线已经带到高地前了！','我方拿下了大龙buff！','对方所有人都缩在高地上！','这波推进势在必得！','高地塔就在眼前！','对方防守已经松了！','准备推高地了！','这一波，有机会结束比赛！'],
       even: ['兵线压到高地塔下了！','对方防守队员已经就位！','你方正在等兵线到位！','高地塔血量在下降！','推还是不推？','这一波就能结束一切！','所有人都在高地下面等着！','水晶就在眼前！'],
       behind: ['兵线压到我方高地塔下了！','我方防守队员已经就位！','对方正在等兵线到位！','高地塔血量在下降！','守不守得住？','这一波守不住就结束了！','所有人都在高地上面等着！','水晶岌岌可危！']
     }
   };
   let pool = feeds[kind] || feeds.setup;
+  if (kind === 'lane' && phaseName.includes('下路')) pool = feeds.laneBot;
+  if (kind === 'trade' && phaseName.includes('小龙')) pool = feeds.tradeDragon;
+  if (kind === 'vision' && phaseName.includes('塔')) pool = feeds.tower;
   return pool[state] || pool.even;
+}
+function resultNarrative(run, h) {
+  const c = getChapter(run.chapterId), p = c.players[run.playerIndex];
+  const phases = getPhases(c), phase = phases[h.step] || phases[0];
+  const kind = phase.kind, a = h.actionIndex, fail = h.result === 'risk';
+  const my = c.players, op = c.enemies, team = c.team, opp = c.opponent;
+  const top = my[0], jungle = my[1], mid = my[2], adc = my[3], support = my[4];
+  const oTop = op[0], oJungle = op[1], oMid = op[2], oADC = op[3], oSupport = op[4];
+  const laneBot = phase.name.includes('下路');
+  const myLaner = laneBot ? adc : top, oppLaner = laneBot ? oADC : oTop;
+  const laneName = laneBot ? '下路' : '上路';
+  const objective = phase.name.includes('小龙') ? '小龙' : '峡谷先锋';
+  const towerPhase = phase.name.includes('塔');
+
+  if (kind === 'setup') {
+    if (a === 0) return fail
+      ? `${team} 落位稍慢，${oJungle.name} 在河道抓到空隙，反掉了 ${jungle.name} 的第一组野怪。`
+      : `${team} 稳健落位，${jungle.name} 的${jungle.champion}按计划开野，${opp} 的一级入侵没有找到机会。`;
+    if (a === 1) return fail
+      ? `${team} 提前站位被 ${opp} 读到，${oJungle.name} 避开正面，绕后换掉了 ${team} 的野区资源。`
+      : `${team} 提前站位，${opp} 的一级入侵被逼退，${jungle.name} 拿到了更舒服的开野路线。`;
+    return fail
+      ? `${team} 的入侵被 ${opp} 视野提前发现，${oJungle.name} 和 ${oTop.name} 包夹，${team} 被迫交出闪现撤退。`
+      : `${team} 主动入侵，${jungle.name} 在对方红buff抓到 ${oJungle.name}，反掉野区并拿到一血。`;
+  }
+  if (kind === 'lane') {
+    if (a === 0) return fail
+      ? `${myLaner.name} 想稳线，但 ${oppLaner.name} 抢到一波炮车线，${myLaner.champion}被迫后撤。`
+      : `${myLaner.name} 稳住兵线，${myLaner.champion}没有给 ${oppLaner.name} 消耗机会，${team} 把线权留在安全位置。`;
+    if (a === 1) return fail
+      ? `${team} 的反蹲被 ${opp} 识破，${oppLaner.name} 先手换血，${myLaner.name} 只能交技能保命。`
+      : `${team} 呼叫队友，${myLaner.name} 和 ${jungle.name} 在${laneName}反打，${oppLaner.name} 被逼退。`;
+    return fail
+      ? `${myLaner.name} 越塔过深，${oJungle.name} 及时赶到，${myLaner.champion}被塔和防守反打留下。`
+      : `${myLaner.name} 直接越塔，${myLaner.champion}在塔下强杀 ${oppLaner.name}，${laneName}彻底打开局面。`;
+  }
+  if (kind === 'rotate') {
+    if (a === 0) return fail
+      ? `${mid.name} 处理兵线稍慢，${oMid.name} 先一步消失，${team} 的边路被迫收缩。`
+      : `${mid.name} 推完线留在安全位置，${team} 没有被 ${oMid.name} 的游走找到机会。`;
+    if (a === 1) return fail
+      ? `${mid.name} 的游走路线被 ${opp} 看到，${oMid.name} 反蹲成功，${team} 的支援被打断。`
+      : `${mid.name} 走河道支援，${mid.champion}先到场，${team} 在下路形成了人数优势。`;
+    return fail
+      ? `${mid.name} 强行游走没有找到机会，${mid.champion}亏掉一波兵线，${oMid.name} 趁机推线。`
+      : `${mid.name} 放弃兵线强行游走，${mid.champion}在下路抓到 ${oADC.name}，${team} 拿到击杀。`;
+  }
+  if (kind === 'trade') {
+    if (a === 0) return fail
+      ? `${team} 放掉${objective}，但换塔慢了一步，${opp} 先拿到了地图资源。`
+      : `${team} 放掉${objective}，边线换到一座塔，经济上并不亏。`;
+    if (a === 1) return fail
+      ? `${team} 集合稍慢，${oJungle.name} 抢下${objective}，${team} 只能后撤。`
+      : `${team} 集合到位，${jungle.name} 稳稳拿下${objective}，${opp} 没能抢到。`;
+    return fail
+      ? `${team} 强行抢${objective}被 ${opp} 接团，${team} 阵型散开，资源和人头都丢了。`
+      : `${team} 不等队友强行抢${objective}，${jungle.name} 在拼惩中获胜，${team} 拿到资源。`;
+  }
+  if (kind === 'vision' && towerPhase) {
+    if (a === 0) return fail
+      ? `${team} 转下慢了一步，${oADC.name} 先推掉下路一塔，${team} 亏掉换塔。`
+      : `${team} 放掉上路一塔，全员转下，${adc.name} 的${adc.champion}守住了下路一塔。`;
+    if (a === 1) return fail
+      ? `${team} 推塔节奏被 ${opp} 拖住，${oADC.name} 先推完下塔，${team} 换塔失败。`
+      : `${team} 推掉上路一塔，同时换掉下路一塔，${top.name} 和 ${adc.name} 各自拿到经济。`;
+    return fail
+      ? `${team} 越塔过深，${oJungle.name} 赶到反打，${team} 被塔和防守留下。`
+      : `${team} 不等队友强行越塔，${top.name} 的${top.champion}在塔下打开缺口，${team} 连人带塔一起拿下。`;
+  }
+  if (kind === 'vision') {
+    if (a === 0) return fail
+      ? `${team} 排视野时被 ${opp} 抓到位置，${support.name} 被迫交出技能后撤。`
+      : `${support.name} 和 ${jungle.name} 一起排视野，${team} 把河道入口点亮，${opp} 的动向被提前看到。`;
+    if (a === 1) return fail
+      ? `${support.name} 的视野路线被 ${oSupport.name} 反排，${team} 进入资源区时信息不足。`
+      : `${support.name} 先做视野再靠近，${team} 在${phase.name}前拿到了安全入口。`;
+    return fail
+      ? `${p.name} 单人探草被 ${opp} 蹲到，${p.champion}被集火，${team} 只能放弃资源。`
+      : `${p.name} 单人探草，${p.champion}在黑暗里抓到 ${opp} 的落单目标，${team} 拿到先手。`;
+  }
+  if (kind === 'fight') {
+    if (a === 0) return fail
+      ? `${team} 排视野时阵型脱节，${opp} 先手开到 ${support.name}，${team} 被迫接团。`
+      : `${team} 和队友一起排视野，${support.name} 的${support.champion}保住了后排，${opp} 的第一轮开团被接住。`;
+    if (a === 1) return fail
+      ? `${team} 靠近时被 ${opp} 反排，${support.name} 失去视野，${team} 只能放弃入口。`
+      : `${support.name} 先做视野再靠近，${team} 在${phase.name}前占住了入口，${opp} 的动向被看清。`;
+    return fail
+      ? `${p.name} 单人探草被 ${opp} 集火，${p.champion}先倒，${team} 的团战还没开始就少了人。`
+      : `${p.name} 单人探草，${p.champion}抓到 ${opp} 的落单目标，${team} 先手开团得手。`;
+  }
+  if (kind === 'decisive') {
+    if (a === 0) return fail
+      ? `${team} 等得太久，${opp} 先手开到 ${adc.name}，${team} 的反打没有打出来。`
+      : `${team} 等 ${oMid.name} 先交技能再反打，${adc.name} 的${adc.champion}在后排安全输出，${team} 接住了团战。`;
+    if (a === 1) {
+      if (p.position === 'ADC') return fail
+        ? `${p.name} 的输出位置被 ${opp} 逼退，${p.champion}没能打出伤害，${team} 的团战失利。`
+        : `${p.name} 先找输出位置，${p.champion}在后排打出伤害，${team} 赢下团战。`;
+      if (p.position === '辅助') return fail
+        ? `${p.name} 的先手被 ${opp} 闪开，${p.champion}跟进不及，${team} 的团战阵型被冲散。`
+        : `${p.name} 找机会先手，${p.champion}开到 ${opp} 的关键目标，${team} 跟上输出。`;
+      return fail
+        ? `${p.name} 的进场被 ${opp} 控住，${p.champion}没能打出效果，${team} 的团战阵型被冲散。`
+        : `${p.name} 先进场，${p.champion}拼出一波操作，${team} 在团战里拿到优势。`;
+    }
+    if (p.position === 'ADC') return fail
+      ? `${p.name} 跟进输出时被 ${opp} 切到，${p.champion}倒下，${team} 输掉团战。`
+      : `${p.name} 跟进输出，${p.champion}在后排持续打伤害，${team} 赢下团战。`;
+    if (p.position === '辅助') return fail
+      ? `${p.name} 的先手开团被 ${opp} 反打，${p.champion}被集火，${team} 输掉团战。`
+      : `${p.name} 先手开团，${p.champion}控住 ${opp} 的关键目标，${team} 一波打赢。`;
+    return fail
+      ? `${p.name} 的切入被 ${opp} 反手控住，${p.champion}被集火，${team} 输掉这波团。`
+      : `${p.name} 直接切后排，${p.champion}找到 ${oADC.name}，${team} 一波打崩对手。`;
+  }
+  if (kind === 'finish') {
+    if (a === 0) return fail
+      ? `${team} 推进节奏太慢，${opp} 清掉兵线，${team} 只能后撤等下一波。`
+      : `${team} 稳步推进，${adc.name} 的${adc.champion}点掉高地塔，${opp} 没有找到反打角度。`;
+    if (a === 1) return fail
+      ? `${team} 强压高地被 ${opp} 反打，${top.name} 先倒，${team} 只能撤退。`
+      : `${team} 集体压上，${top.name} 和 ${support.name} 顶在前面，${adc.name} 点掉高地塔。`;
+    return fail
+      ? `${p.name} 前压过深，${opp} 集火 ${p.champion}，${team} 被反一波。`
+      : `${p.name} 单人前压，${p.champion}强开水晶，${team} 一波结束比赛。`;
+  }
+  return fail ? '这波行动失败，队伍被迫后撤。' : '这波行动成功，队伍拿到了想要的结果。';
 }
 function matchView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex], phases = c.phases || PHASES;
@@ -893,14 +1047,16 @@ function matchView() {
   let phaseCopy = phase.copy;
   if (phase.kind === 'finish') {
     if (state === 'ahead') {
-      phaseCopy = `你拿下了大龙 buff。兵线压到 ${c.opponent} 高地塔下。我方英雄装备已经成型，但 ${c.opponent} 在高地上架好了防守。这波推高是捧杯还是被反一波？`;
+      phaseCopy = `队伍拿下了大龙 buff。兵线压到 ${c.opponent} 高地塔下。我方英雄装备已经成型，但 ${c.opponent} 在高地上架好了防守。这波推高是捧杯还是被反一波？`;
     } else if (state === 'behind') {
       phaseCopy = `${c.opponent} 拿下了大龙 buff。兵线压到我方高地塔下。对方英雄装备已经成型，我方只能在高地上防守。这波守不住就结束了！`;
+    } else {
+      phaseCopy = `大龙争夺结束，兵线来到 ${c.opponent} 高地附近。双方都还有机会，这波推进是一波结束还是被反一波？`;
     }
   }
   if (phase.kind === 'decisive') {
     if (state === 'ahead') {
-      phaseCopy = `${c.opponent} 大龙血量在下降！我方已经逼到龙坑口了。对方不敢过来抢。这波是稳稳拿龙还是直接开团？`;
+      phaseCopy = `大龙血量在下降！我方已经逼到龙坑口了。对方不敢过来抢。这波是稳稳拿龙还是直接开团？`;
     } else if (state === 'behind') {
       phaseCopy = `${c.opponent} 先手动龙了。我方根本不敢过去抢。这波大龙要是丢了就真的没了！`;
     }
@@ -951,6 +1107,7 @@ function seriesScore(run, c) {
   const [a, b] = c.startingScore;
   return run.won ? `${a+1} : ${b}` : `${a} : ${b+1}`;
 }
+const gameLabel = c => c.game === 5 ? '第五局' : `第${['一','二','三','四','五'][c.game - 1]}局`;
 function reviewView() {
   const c = getChapter(run.chapterId), p = c.players[run.playerIndex];
   const basic = basicReview(run);
@@ -1036,19 +1193,11 @@ function render(focus = false) {
           `可惜...${c.team}离冠军就差这一步...`
         ];
       } else {
-        msgs = liveFeed(run ? getPhases(getChapter(run.chapterId))[run.step].kind : 'setup', run ? getChapter(run.chapterId) : null, run);
-        // 如果是选完选项后，在开头加一条结算反馈
+        const phaseData = run ? getPhases(getChapter(run.chapterId))[run.step] : null;
+        msgs = liveFeed(phaseData ? phaseData.kind : 'setup', run ? getChapter(run.chapterId) : null, run, phaseData ? phaseData.name : '');
+        // 如果是选完选项后，在开头加一条贴合本节点的结算反馈
         if (run && run.history && run.history.length > 0) {
-          const lastH = run.history[run.history.length - 1];
-          let resultMsg = '';
-          if (lastH.result === 'good') {
-            resultMsg = run.gold > 0 ? '成功了！经济领先更多了！' : '成功了！这波经济追回来了！';
-          } else if (lastH.result === 'risk') {
-            resultMsg = run.gold > 0 ? '失败了！对方经济要追上来了！' : '失败了！这个经济差距，我们还能追回来吗？';
-          } else {
-            resultMsg = `这波稳了一手，经济小赚。但评分上没占到便宜。`;
-          }
-          msgs.unshift(resultMsg);
+          msgs.unshift(resultNarrative(run, run.history[run.history.length - 1]));
         }
       }
       let i = 0;
@@ -1134,7 +1283,7 @@ function showModal(title, body, footer = '') {
 }
 function briefing() {
   const c = getChapter(chapterId), p = c.players[playerIndex];
-  showModal('坐上选手席之前', `<p class="modal-lead">${c.year} · ${c.team} vs ${c.opponent} · 第五局</p><div class="briefing-identity">${championImg(p,c)}<div><strong>${p.name}</strong><span>${p.position} / ${p.champion}</span></div></div><ul class="briefing-list"><li><span>你的目标</span>${c.goal}</li><li><span>介入时刻</span>00:00 开局。真实阵容与英雄保留，此后赛况为战术推演。</li><li><span>比赛方式</span>阅读直播，在 8 个节点选择行动。只控制自己，队友与对手响应局势。</li><li><span>安心游玩</span>关键决策不限时，过程无广告，进度自动保存。</li></ul>${run&&!run.finished?'<p class="warning-note">开始新局会替换当前未完成对局的存档。</p>':''}`, `<button class="secondary" data-modal="close">再想一下</button><button class="primary" data-modal="start">我准备好了 ${icon('arrow')}</button>`);
+  showModal('坐上选手席之前', `<p class="modal-lead">${c.year} · ${c.team} vs ${c.opponent} · ${gameLabel(c)}</p><div class="briefing-identity">${championImg(p,c)}<div><strong>${p.name}</strong><span>${p.position} / ${p.champion}</span></div></div><ul class="briefing-list"><li><span>你的目标</span>${c.goal}</li><li><span>介入时刻</span>00:00 开局。真实阵容与英雄保留，此后赛况为战术推演。</li><li><span>比赛方式</span>阅读直播，在 8 个节点选择行动。只控制自己，队友与对手响应局势。</li><li><span>安心游玩</span>关键决策不限时，过程无广告，进度自动保存。</li></ul>${run&&!run.finished?'<p class="warning-note">开始新局会替换当前未完成对局的存档。</p>':''}`, `<button class="secondary" data-modal="close">再想一下</button><button class="primary" data-modal="start">我准备好了 ${icon('arrow')}</button>`);
 }
 function startRun() {
   const c = getChapter(chapterId);
@@ -1183,7 +1332,7 @@ function sources() {
 }
 function chapterInfo() {
   const c = getChapter(chapterId);
-  showModal(`${c.year} · ${c.team} vs ${c.opponent}`, `<p class="modal-lead">${c.event} · 第五局 · 版本 ${c.patch}</p><p>${c.description}</p><h3>双方当局首发</h3><div class="roster-table">${c.players.map((p,i)=>`<div><span>${p.position}</span><strong>${p.name}<small>${p.champion}</small></strong><strong>${c.enemies[i].name}<small>${c.enemies[i].champion}</small></strong></div>`).join('')}</div><details class="history-spoiler"><summary>展开真实历史赛果</summary><p>${c.historicalResult} 当局时长 ${c.historicalDuration}。</p></details><small>比赛数据来源：历史赛事记录</small>`, '<button class="primary" data-modal="close">返回选手席</button>');
+  showModal(`${c.year} · ${c.team} vs ${c.opponent}`, `<p class="modal-lead">${c.event} · ${gameLabel(c)} · 版本 ${c.patch}</p><p>${c.description}</p><h3>双方当局首发</h3><div class="roster-table">${c.players.map((p,i)=>`<div><span>${p.position}</span><strong>${p.name}<small>${p.champion}</small></strong><strong>${c.enemies[i].name}<small>${c.enemies[i].champion}</small></strong></div>`).join('')}</div><details class="history-spoiler"><summary>展开真实历史赛果</summary><p>${c.historicalResult}${c.historicalDuration ? ` 当局时长 ${c.historicalDuration}。` : ''}</p></details><small>比赛数据来源：历史赛事记录</small>`, '<button class="primary" data-modal="close">返回选手席</button>');
 }
 
 app.addEventListener('click', event=>{
